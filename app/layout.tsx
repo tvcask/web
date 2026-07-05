@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import { site } from "@/lib/site";
 import "./globals.css";
 
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"]
+});
+
 export const metadata: Metadata = {
-  title: "TV Cask",
-  description: "Import your TV Time export, preserve your watch history, and keep tracking."
+  title: `${site.displayName} — ${site.tagline}`,
+  description: site.description
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={jakarta.variable}>
       <body>{children}</body>
     </html>
   );

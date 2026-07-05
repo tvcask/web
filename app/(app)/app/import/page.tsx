@@ -1,49 +1,44 @@
 import { Upload } from "lucide-react";
 import { uploadTvTimeExport } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { getUserId } from "@/lib/auth/session";
 import { getImports } from "@/lib/services/import-service";
 
 export default async function ImportPage() {
   const userId = await getUserId();
-  const imports = getImports(userId);
+  const imports = await getImports(userId);
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold">Import TV Time data</h1>
-        <p className="mt-2 text-[#A79B8E]">
-          Upload the export file you downloaded from TV Time. We&apos;ll parse your shows, movies, episodes, and watch history before saving anything.
-        </p>
+        <h1 className="display text-3xl text-[#F3EDE4]">Import from TV Time</h1>
+        <p className="mt-2 text-[#9a9086]">Upload your export. Nothing is saved until you confirm the preview.</p>
       </div>
 
-      <Card className="p-6">
-        <form action={uploadTvTimeExport} className="space-y-5">
-          <label className="grid min-h-48 cursor-pointer place-items-center rounded-lg border border-dashed border-[#5a3821] bg-[#211A14]/65 p-6 text-center">
-            <span>
-              <Upload className="mx-auto mb-4 size-8 text-[#F0A85A]" />
-              <span className="block font-semibold">Choose your TV Time export</span>
-              <span className="mt-2 block text-sm text-[#A79B8E]">JSON and CSV are parsed now. ZIP uploads are accepted for later processing.</span>
-            </span>
-            <input className="sr-only" name="file" type="file" accept=".json,.csv,.zip,application/json,text/csv,application/zip" required />
-          </label>
-          <Button>Parse import</Button>
-        </form>
-      </Card>
+      <form action={uploadTvTimeExport} className="space-y-4">
+        <label className="grid min-h-52 cursor-pointer place-items-center rounded-[16px] border border-dashed border-[#332a20] bg-[#131110] p-6 text-center transition hover:border-[#E0A960]/50">
+          <span>
+            <Upload className="mx-auto mb-3 size-7 text-[#E0A960]" />
+            <span className="display block text-[15px] text-[#F3EDE4]">Choose your export</span>
+            <span className="mt-1 block text-[13px] text-[#6f665c]">JSON or CSV</span>
+          </span>
+          <input className="sr-only" name="file" type="file" accept=".json,.csv,.zip,application/json,text/csv,application/zip" required />
+        </label>
+        <Button>Parse import</Button>
+      </form>
 
       {imports.length > 0 ? (
-        <section>
-          <h2 className="mb-3 text-lg font-semibold">Import history</h2>
-          <div className="space-y-3">
+        <section className="space-y-3">
+          <p className="eyebrow">History</p>
+          <div className="divide-y divide-[#1c1813] rounded-[14px] border border-[#241f19] bg-[#131110]">
             {imports.map((item) => (
-              <Card key={item.id} className="flex items-center justify-between p-4">
-                <div>
-                  <p className="font-medium">{item.originalFilename}</p>
-                  <p className="text-sm text-[#A79B8E]">{item.totalTitles} titles · {item.status}</p>
+              <a key={item.id} href={`/app/import/${item.id}`} className="flex items-center justify-between p-4 transition hover:bg-[#16130f]">
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] text-[#e7ddd0]">{item.originalFilename}</p>
+                  <p className="text-[13px] text-[#6f665c]">{item.totalTitles} titles · {item.status}</p>
                 </div>
-                <a className="text-sm text-[#F0A85A]" href={`/app/import/${item.id}`}>Open</a>
-              </Card>
+                <span className="text-[13px] font-semibold text-[#E0A960]">Open</span>
+              </a>
             ))}
           </div>
         </section>

@@ -11,14 +11,17 @@ export default function LoginPage() {
       <MarketingHeader />
       <main className="mx-auto max-w-md px-5 py-16">
         <Card className="p-6">
-          <h1 className="text-2xl font-semibold">Log in</h1>
-          <form action={startDevSession} className="mt-6 space-y-4">
+          <h1 className="display text-2xl text-white">Log in</h1>
+          <form action={startDevSession} className="mt-6 space-y-3">
             <Input name="email" type="email" placeholder="you@example.com" />
             <Input name="password" type="password" placeholder="Password" />
-            <Button className="w-full">Log in</Button>
+            <Button className="h-11 w-full">Log in</Button>
           </form>
-          <p className="mt-4 text-sm text-[#A79B8E]">
-            New here? <Link className="text-[#F0A85A]" href="/signup">Create an account</Link>
+          <p className="mt-4 text-sm text-white/50">
+            New here?{" "}
+            <Link className="font-semibold text-[color:var(--accent-text)]" href="/signup">
+              Create an account
+            </Link>
           </p>
         </Card>
       </main>

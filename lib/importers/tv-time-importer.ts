@@ -29,6 +29,16 @@ function coerceTitle(row: Record<string, unknown>): ParsedTitle | null {
   const yearValue = row.year ?? row.release_year ?? row["Year"];
   const statusValue = String(row.status ?? row.state ?? row["Status"] ?? "watching").toLowerCase();
   const typeValue = String(row.type ?? row.kind ?? row["Type"] ?? "unknown").toLowerCase();
+  const listValue = row.list ?? row.lists ?? row.collection ?? row.collections ?? row["List"] ?? row["Lists"];
+  const listNames =
+    typeof listValue === "string"
+      ? listValue
+          .split(/[;,|]/)
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : Array.isArray(listValue)
+        ? listValue.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+        : undefined;
 
   return {
     sourceId: typeof row.id === "string" ? row.id : undefined,
@@ -45,7 +55,8 @@ function coerceTitle(row: Record<string, unknown>): ParsedTitle | null {
             ? "watchlist"
             : "watching",
     favorite: Boolean(row.favorite ?? row.favorited),
-    rating: typeof row.rating === "number" ? row.rating : undefined
+    rating: typeof row.rating === "number" ? row.rating : typeof row.rating === "string" ? Number(row.rating) || undefined : undefined,
+    listNames
   };
 }
 

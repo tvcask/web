@@ -1,79 +1,133 @@
-import { endSession } from "@/app/actions";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+import { endSession, setThemeAction, toggleSettingAction } from "@/app/actions";
 import { getCurrentUser, getUserId } from "@/lib/auth/session";
-import { getImports } from "@/lib/services/import-service";
-import { getStats } from "@/lib/services/stats-service";
-import { getUserList } from "@/lib/services/tracking-service";
+import { getSettings } from "@/lib/services/settings-service";
+import { cn } from "@/lib/utils";
 
-export default async function SettingsPage() {
+const nav = [
+  { value: "account", label: "Account" },
+  { value: "app", label: "App" },
+  { value: "upcoming", label: "Upcoming" }
+];
+
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ section?: string }> }) {
   const user = await getCurrentUser();
   const userId = await getUserId();
-  const imports = getImports(userId);
-  const stats = getStats(userId);
-  const list = getUserList(userId);
-  const heroImage = list.find((item) => item.title.backdropUrl)?.title.backdropUrl ?? list.find((item) => item.title.posterUrl)?.title.posterUrl;
+  const { section } = await searchParams;
+  const active = nav.some((n) => n.value === section) ? section! : "account";
+  const settings = await getSettings(userId);
+  const username = user?.name || user?.email?.split("@")[0] || "you";
 
   return (
-    <div className="space-y-8">
-      <section className="relative -mx-5 -mt-6 overflow-hidden border-b border-[#242424] bg-[#090909] px-5 py-10 sm:-mx-8 sm:px-8">
-        {heroImage ? <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25 blur-sm" /> : null}
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/78 to-black/45" />
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="flex items-end gap-4">
-            <div className="grid size-20 place-items-center rounded-full border-2 border-white bg-[#181818] text-3xl font-black text-[#D88945]">
-              {(user?.email ?? "T").slice(0, 1).toUpperCase()}
+    <div className="mx-auto grid max-w-[900px] gap-8 md:grid-cols-[200px_1fr]">
+      <aside>
+        <Link href="/app/profile" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
+          <ChevronLeft className="size-4" /> Profile
+        </Link>
+        <h1 className="display mb-4 text-xl text-white">Settings</h1>
+        <nav className="flex flex-col gap-1">
+          {nav.map((item) => (
+            <Link
+              key={item.value}
+              href={`/app/settings?section=${item.value}`}
+              className={cn(
+                "rounded-[11px] px-3.5 py-2.5 text-sm font-semibold transition",
+                active === item.value ? "bg-white/5 text-white" : "text-white/60 hover:text-white"
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </aside>
+
+      <div className="max-w-[560px]">
+        {active === "account" ? (
+          <>
+            <p className="eyebrow mb-2.5 px-0.5">Identification</p>
+            <div className="surface mb-5 overflow-hidden rounded-[14px]">
+              <Row label="Username" value={username} />
+              <Row label="Email" value={user?.email ?? "—"} border={false} />
             </div>
-            <div>
-              <h1 className="text-4xl font-black">Profile</h1>
-              <p className="mt-2 text-[#D2C6BB]">{user?.email}</p>
+            <div className="flex gap-3">
+              <form action={endSession} className="flex-1">
+                <button className="accent-fill h-[52px] w-full rounded-full text-sm font-extrabold">Log out</button>
+              </form>
+              <button className="h-[52px] rounded-full border border-white/12 px-6 text-sm font-bold" style={{ color: "var(--accent-text)" }}>
+                Delete account
+              </button>
             </div>
-          </div>
-          <form action={endSession}>
-            <Button variant="secondary">Log out</Button>
-          </form>
-        </div>
-      </section>
+          </>
+        ) : null}
 
-      <section className="grid gap-3 sm:grid-cols-4">
-        {[
-          ["Titles", list.length],
-          ["Episodes", stats.episodesWatched],
-          ["Completed", stats.completedTitles],
-          ["Favorites", stats.favorites]
-        ].map(([label, value]) => (
-          <Card key={label} className="p-4">
-            <p className="text-sm font-bold text-[#A79B8E]">{label}</p>
-            <p className="mt-2 text-3xl font-black">{value}</p>
-          </Card>
-        ))}
-      </section>
-
-      <section className="grid gap-5 lg:grid-cols-[1fr_1fr]">
-        <Card className="p-5">
-          <h2 className="text-xl font-black">Data export</h2>
-          <p className="mt-2 text-sm leading-6 text-[#A79B8E]">Your data belongs to you. Export your TV Cask history anytime.</p>
-          <form action="/api/export" method="post" className="mt-5">
-            <Button>Export my TV Cask data</Button>
-          </form>
-        </Card>
-
-        <Card className="p-5">
-          <h2 className="text-xl font-black">Import history</h2>
-          {imports.length === 0 ? (
-            <p className="mt-3 text-sm text-[#A79B8E]">No imports yet.</p>
-          ) : (
-            <div className="mt-4 space-y-2">
-              {imports.map((item) => (
-                <div key={item.id} className="flex justify-between border-b border-[#272727] py-2 text-sm">
-                  <span>{item.originalFilename}</span>
-                  <span className="text-[#A79B8E]">{item.status}</span>
-                </div>
+        {active === "app" ? (
+          <>
+            <p className="eyebrow mb-2.5 px-0.5">Theme</p>
+            <div className="surface mb-5 overflow-hidden rounded-[14px]">
+              {["dark", "light", "system"].map((theme, i, arr) => (
+                <form key={theme} action={setThemeAction}>
+                  <input type="hidden" name="theme" value={theme} />
+                  <button className={cn("flex w-full items-center justify-between px-4 py-3.5 text-left", i < arr.length - 1 && "border-b border-white/[0.06]")}>
+                    <span className="text-sm font-semibold capitalize text-white">{theme === "system" ? "Sync with device" : theme}</span>
+                    <span
+                      className="grid size-[21px] place-items-center rounded-full"
+                      style={{ boxShadow: `inset 0 0 0 2px ${settings.theme === theme ? "var(--accent)" : "rgba(255,255,255,0.25)"}` }}
+                    >
+                      {settings.theme === theme ? <span className="size-[11px] rounded-full" style={{ background: "var(--accent)" }} /> : null}
+                    </span>
+                  </button>
+                </form>
               ))}
             </div>
-          )}
-        </Card>
-      </section>
+            <p className="eyebrow mb-2.5 px-0.5">Preferences</p>
+            <div className="surface overflow-hidden rounded-[14px]">
+              <Toggle label="Titles in your language" name="titlesInLanguage" on={settings.titlesInLanguage} border={false} />
+            </div>
+            <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version 1.0.0</p>
+          </>
+        ) : null}
+
+        {active === "upcoming" ? (
+          <>
+            <p className="eyebrow mb-2.5 px-0.5">Notifications</p>
+            <div className="surface overflow-hidden rounded-[14px]">
+              <Toggle label="New episode alerts" name="newEpisodeAlerts" on={settings.newEpisodeAlerts} />
+              <Toggle label="Premiere reminders" name="premiereReminders" on={settings.premiereReminders} />
+              <Toggle label="Weekly digest" name="weeklyDigest" on={settings.weeklyDigest} border={false} />
+            </div>
+          </>
+        ) : null}
+      </div>
     </div>
+  );
+}
+
+function Row({ label, value, border = true }: { label: string; value: string; border?: boolean }) {
+  return (
+    <div className={cn("flex items-center justify-between px-4 py-3.5", border && "border-b border-white/[0.06]")}>
+      <span className="text-[13.5px] text-white/50">{label}</span>
+      <span className="truncate pl-4 text-[13.5px] font-semibold text-white">{value}</span>
+    </div>
+  );
+}
+
+function Toggle({ label, name, on, border = true }: { label: string; name: string; on: boolean; border?: boolean }) {
+  return (
+    <form action={toggleSettingAction}>
+      <input type="hidden" name="key" value={name} />
+      <button className={cn("flex w-full items-center justify-between px-4 py-3.5 text-left", border && "border-b border-white/[0.06]")}>
+        <span className="text-[13.5px] font-semibold text-white">{label}</span>
+        <span
+          className="relative h-[27px] w-[46px] rounded-full transition"
+          style={{ background: on ? "var(--accent)" : "rgba(255,255,255,0.15)" }}
+        >
+          <span
+            className="absolute top-[3px] size-[21px] rounded-full bg-white transition-all"
+            style={{ left: on ? "22px" : "3px" }}
+          />
+        </span>
+      </button>
+    </form>
   );
 }

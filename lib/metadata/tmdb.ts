@@ -16,6 +16,33 @@ type TmdbSearchResult = {
   genre_ids?: number[];
 };
 
+type TmdbShowDetails = {
+  id: number;
+  number_of_seasons?: number;
+  seasons?: { season_number: number; episode_count: number }[];
+  next_episode_to_air?: {
+    id: number;
+    name?: string;
+    overview?: string;
+    air_date?: string;
+    season_number?: number;
+    episode_number?: number;
+    runtime?: number;
+  } | null;
+  networks?: { name: string }[];
+};
+
+export type TmdbEpisode = {
+  id: number;
+  season_number: number;
+  episode_number: number;
+  name?: string;
+  overview?: string;
+  air_date?: string | null;
+  runtime?: number | null;
+  still_path?: string | null;
+};
+
 const genreMap = new Map<number, string>([
   [12, "Adventure"],
   [14, "Fantasy"],
@@ -94,4 +121,36 @@ export async function getTmdbCollection(kind: "trending-tv" | "trending-movies" 
     return fetchTmdbTitles("/discover/tv", { sort_by: "popularity.desc", vote_count_gte: "200" }, "tv");
   }
   return fetchTmdbTitles("/discover/movie", { sort_by: "popularity.desc", vote_count_gte: "300" }, "movie");
+}
+
+export async function getTmdbShowDetails(externalId?: string | null) {
+  if (!env.TMDB_API_KEY || !externalId) {
+    return null;
+  }
+
+  const params = new URLSearchParams({ api_key: env.TMDB_API_KEY });
+  const response = await fetch(`https://api.themoviedb.org/3/tv/${externalId}?${params}`, {
+    next: { revalidate: 60 * 60 }
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return (await response.json()) as TmdbShowDetails;
+}
+
+export async function getTmdbSeason(externalId: string, seasonNumber: number): Promise<TmdbEpisode[]> {
+  if (!env.TMDB_API_KEY) {
+    return [];
+  }
+  const params = new URLSearchParams({ api_key: env.TMDB_API_KEY });
+  const response = await fetch(`https://api.themoviedb.org/3/tv/${externalId}/season/${seasonNumber}?${params}`, {
+    next: { revalidate: 60 * 60 * 6 }
+  });
+  if (!response.ok) {
+    return [];
+  }
+  const payload = (await response.json()) as { episodes?: TmdbEpisode[] };
+  return payload.episodes ?? [];
 }

@@ -1,78 +1,55 @@
-# TV Cask Web
+# TV Cask
 
-TV Cask is a Next.js App Router MVP for former TV Time users who want to preserve and continue tracking their watch history.
+A modern watch tracker for people migrating from TV Time. Import your TV Time
+export, keep every episode you tracked, and continue watching — shows, movies,
+anime and K-dramas — with real metadata from TMDB.
 
 ## Stack
 
-- Next.js, TypeScript, React Server Components
-- Tailwind CSS and small shadcn-style UI primitives
-- Better Auth configuration with email/password enabled
-- Drizzle schema for PostgreSQL
-- TMDB-backed metadata search and import matching
+- Next.js 15 (App Router) · React 19 · TypeScript
+- PostgreSQL · Drizzle ORM
+- Better Auth
+- Tailwind CSS v4 · Plus Jakarta Sans
+- TMDB for catalog, seasons, episodes and images
 
-## Setup
+## Getting started
 
-1. Install dependencies:
+Requires Node 20+, pnpm, and Docker (for Postgres).
 
 ```bash
 pnpm install
+cp .env.example .env          # then fill in the values below
+docker compose up -d          # start Postgres
+pnpm db:migrate               # apply the schema
+pnpm dev                      # http://localhost:3000
 ```
 
-2. Create `.env`:
+### Environment
 
-```bash
-cp .env.example .env
 ```
-
-Set at least:
-
-```txt
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/tvcask
-BETTER_AUTH_SECRET=<32+ character random secret>
+BETTER_AUTH_SECRET=<long random string>
 BETTER_AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-TMDB_API_KEY=<your tmdb key>
+TMDB_API_KEY=<your TMDB key>
 ```
 
-3. Start PostgreSQL:
+`TMDB_API_KEY` is required for real search, discovery and episode data.
 
-```bash
-docker compose up -d
+## Structure
+
+```
+app/
+  (marketing)/      landing
+  (auth)/           login · signup
+  (app)/app/        shows · movies · explore · profile · settings · import
+    @modal/         intercepting-route drawer for title detail
+  api/              route handlers
+components/         app-shell · titles · ui · marketing
+lib/
+  services/         tracking · metadata · import · stats · export · calendar · settings
+  metadata/         TMDB client
+  db/ · auth/ · env/
+db/                 schema · migrations
 ```
 
-4. Generate and run migrations:
-
-```bash
-pnpm db:generate
-pnpm db:migrate
-```
-
-5. Start the app:
-
-```bash
-pnpm dev
-```
-
-Open `http://localhost:3000`.
-
-## Real Metadata
-
-This project intentionally does not ship fake catalog seed data. Search and import matching use TMDB when `TMDB_API_KEY` is configured. Imported TV Time titles that cannot be matched are still preserved in the user's library with their original import metadata.
-
-## Current MVP Coverage
-
-- Migration-first landing page
-- Login/signup pages with Better Auth wiring and a local dev session fallback
-- Protected app shell
-- My List as the main product screen
-- TV Time JSON/CSV upload, defensive parsing, preview, confirm import
-- TMDB search and add-to-list flow
-- Title detail, calendar, stats, settings, and JSON export screens
-- Drizzle schema for profiles, titles, episodes, user titles, watched episodes, imports, import items, and exports
-
-## Notes
-
-ZIP uploads are accepted by the form but not parsed yet. Add a ZIP extraction dependency before enabling ZIP processing server-side.
-
-The in-memory store keeps the MVP usable during local UI work before PostgreSQL migrations are connected to the service layer. The Drizzle schema and service boundaries are in place for replacing that store with database queries.
-# tvcask
+Business logic lives in `lib/services`; route handlers and server actions stay thin.

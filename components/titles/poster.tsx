@@ -1,14 +1,32 @@
-import { Clapperboard } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Deterministic gradient seeded from the title, so empty poster slots stay
+// varied and on-brand instead of all rendering the same color.
+function seededGradient(title: string) {
+  let hash = 0;
+  for (let i = 0; i < title.length; i += 1) {
+    hash = (hash * 31 + title.charCodeAt(i)) >>> 0;
+  }
+  const hue = hash % 360;
+  return `linear-gradient(150deg, hsl(${hue} 44% 32%), hsl(${(hue + 44) % 360} 46% 12%))`;
+}
 
 export function Poster({ src, title, className }: { src?: string | null; title: string; className?: string }) {
   if (src) {
-    return <img src={src} alt={`${title} poster`} className={cn("aspect-[2/3] w-full rounded-md object-cover poster-shadow", className)} />;
+    return (
+      <img src={src} alt="" loading="lazy" className={cn("aspect-[2/3] w-full rounded-[12px] object-cover", className)} />
+    );
   }
 
   return (
-    <div className={cn("grid aspect-[2/3] w-full place-items-center rounded-md border border-[#33281F] bg-[#211A14] text-[#A79B8E]", className)}>
-      <Clapperboard className="size-8" />
+    <div
+      className={cn("relative flex aspect-[2/3] w-full items-end overflow-hidden rounded-[12px] p-2.5", className)}
+      style={{ background: seededGradient(title) }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+      <span className="display relative line-clamp-3 text-[13px] leading-tight text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
+        {title}
+      </span>
     </div>
   );
 }

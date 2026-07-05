@@ -28,6 +28,7 @@ export type Episode = {
   overview?: string | null;
   airDate?: string | null;
   runtimeMinutes?: number | null;
+  network?: string | null;
 };
 
 export type UserTitle = {
@@ -48,6 +49,28 @@ export type UserTitleWithTitle = UserTitle & {
   episodeCount: number;
 };
 
+export type UserCollectionKind = "custom" | "watchlist" | "favorites" | "completed" | "watching";
+
+export type UserCollection = {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string | null;
+  kind: UserCollectionKind;
+  titleIds: string[];
+  importedFrom?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserCollectionWithTitles = UserCollection & {
+  items: UserTitleWithTitle[];
+};
+
+export type CalendarEpisode = Episode & {
+  title: Title;
+};
+
 export type ParsedTitle = {
   sourceId?: string;
   title: string;
@@ -57,6 +80,7 @@ export type ParsedTitle = {
   status?: UserTitleStatus | "unknown";
   favorite?: boolean;
   rating?: number;
+  listNames?: string[];
 };
 
 export type ParsedEpisode = {
