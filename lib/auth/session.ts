@@ -1,36 +1,24 @@
-import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth/auth";
+import { api, getToken } from "@/lib/api";
 
-const devUserId = "dev-user";
+export type SessionUser = { id: string; name: string; email: string };
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<SessionUser | null> {
+  const token = await getToken();
+  if (!token) {
+    return null;
+  }
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.user) {
-      return session.user;
-    }
+    return await api<SessionUser>("/v1/me");
   } catch {
-    // Local development can still exercise the app before Better Auth tables exist.
+    return null;
   }
-
-  const cookieStore = await cookies();
-  if (cookieStore.get("tvcask_dev_session")?.value) {
-    return { id: devUserId, name: "TV Cask User", email: "dev@tvcask.local" };
-  }
-
-  return null;
 }
 
-export async function requireUser() {
+export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
   return user;
-}
-
-export async function getUserId() {
-  const user = await requireUser();
-  return user.id;
 }

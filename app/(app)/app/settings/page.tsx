@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { endSession, setThemeAction, toggleSettingAction } from "@/app/actions";
-import { getCurrentUser, getUserId } from "@/lib/auth/session";
-import { getSettings } from "@/lib/services/settings-service";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getSettings } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -12,11 +12,9 @@ const nav = [
 ];
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ section?: string }> }) {
-  const user = await getCurrentUser();
-  const userId = await getUserId();
+  const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
   const { section } = await searchParams;
   const active = nav.some((n) => n.value === section) ? section! : "account";
-  const settings = await getSettings(userId);
   const username = user?.name || user?.email?.split("@")[0] || "you";
 
   return (

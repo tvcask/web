@@ -29,16 +29,16 @@ export default function HomePage() {
             </span>
             <h1 className="display text-5xl leading-[1.05] md:text-6xl">Your watch history has a new home.</h1>
             <p className="max-w-lg text-lg leading-8 text-white/55">
-              Import years of tracking, keep every episode, and continue where you left off.
+              Track every show and movie, keep every episode, and continue where you left off.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
-                <Link href="/app/import">
-                  Import my library <ArrowRight className="size-4" />
+                <Link href="/signup">
+                  Get started <ArrowRight className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="secondary" className="h-12 px-6 text-[15px]">
-                <Link href="/signup">Create account</Link>
+                <Link href="/login">Log in</Link>
               </Button>
             </div>
             <div className="flex flex-wrap gap-2 pt-2">

@@ -7,30 +7,24 @@ import {
   toggleFavoriteAction,
   updateTitleStatusAction
 } from "@/app/actions";
-import { getUserId } from "@/lib/auth/session";
-import { ensureEpisodes, getEpisodesForTitle, getTitle } from "@/lib/services/metadata-service";
-import { getUserTitle, getWatchedEpisodeKeys } from "@/lib/services/tracking-service";
+import { getMyTitle, getTitleDetail } from "@/lib/data";
 import type { Episode } from "@/lib/services/types";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 
 export async function TitleDetail({ id }: { id: string }) {
-  const userId = await getUserId();
-  const title = await getTitle(id);
-  if (!title) {
+  const detail = await getTitleDetail(id);
+  if (!detail) {
     return <p className="p-10 text-white/60">Title not found.</p>;
   }
 
+  const title = detail;
   const isMovie = title.type === "movie";
-  if (!isMovie) {
-    await ensureEpisodes(title);
-  }
+  const episodes: Episode[] = detail.episodes ?? [];
 
-  const [userTitle, episodes, watchedKeys] = await Promise.all([
-    getUserTitle(userId, id),
-    isMovie ? Promise.resolve([] as Episode[]) : getEpisodesForTitle(id),
-    getWatchedEpisodeKeys(userId, id)
-  ]);
+  const my = await getMyTitle(id);
+  const userTitle = my.userTitle ?? null;
+  const watchedKeys = new Set(my.watched);
 
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   // Count only watched episodes that exist in the ingested list, so progress

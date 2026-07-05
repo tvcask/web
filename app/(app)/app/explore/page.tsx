@@ -3,21 +3,19 @@ import { Plus, Search } from "lucide-react";
 import { addTitleAction } from "@/app/actions";
 import { MediaRail } from "@/components/titles/media-rail";
 import { Poster } from "@/components/titles/poster";
-import { getUserId } from "@/lib/auth/session";
-import { getDiscoverSections, searchTitles } from "@/lib/services/metadata-service";
-import { getUserList } from "@/lib/services/tracking-service";
+import { getDiscover, getLibrary, searchTitles } from "@/lib/data";
 
 export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const userId = await getUserId();
   const { q = "" } = await searchParams;
   const query = q.trim();
   const returnTo = query ? `/app/explore?q=${encodeURIComponent(query)}` : "/app/explore";
 
-  const [results, sections, trackedTitleIds] = await Promise.all([
+  const [results, sections, library] = await Promise.all([
     query ? searchTitles(query) : Promise.resolve([]),
-    query ? Promise.resolve([]) : getDiscoverSections(),
-    getUserList(userId).then((list) => list.map((item) => item.titleId))
+    query ? Promise.resolve([]) : getDiscover(),
+    getLibrary()
   ]);
+  const trackedTitleIds = library.map((item) => item.titleId);
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">

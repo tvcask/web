@@ -1,15 +1,12 @@
 import Link from "next/link";
-import { FileUp, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { LibraryGrid } from "@/components/titles/library-grid";
 import { MediaRail } from "@/components/titles/media-rail";
 import { UpNextCard } from "@/components/titles/up-next-card";
-import { getUserId } from "@/lib/auth/session";
-import { getCalendar } from "@/lib/services/calendar-service";
-import { getDiscoverSections } from "@/lib/services/metadata-service";
-import { getEpisodeNameMap, getUserShows } from "@/lib/services/tracking-service";
+import { getCalendar, getDiscover, getLibrary, type Calendar } from "@/lib/data";
 
 const tabs = [
   { value: "watchlist", label: "Watch list" },
@@ -17,26 +14,17 @@ const tabs = [
 ];
 
 export default async function ShowsPage({ searchParams }: { searchParams: Promise<{ tab?: string; view?: string }> }) {
-  const userId = await getUserId();
   const { tab, view } = await searchParams;
   const activeTab = tab === "upcoming" ? "upcoming" : "watchlist";
   const activeView = view === "grid" ? "grid" : "list";
 
-  const list = await getUserShows(userId);
+  const list = await getLibrary("show");
   const upNext = list.filter((item) => item.status === "watching");
   const notStarted = list.filter((item) => item.status === "watchlist");
   const everything = [...upNext, ...notStarted];
-  const calendar = activeTab === "upcoming" ? await getCalendar(userId) : null;
+  const calendar = activeTab === "upcoming" ? await getCalendar() : null;
 
   const returnTo = `/app/shows?tab=watchlist&view=${activeView}`;
-
-  // Next-episode names for the watch-next rows (one batched query).
-  const nameMap =
-    activeTab === "watchlist" && activeView === "list" && everything.length > 0
-      ? await getEpisodeNameMap(everything.map((item) => item.title.id))
-      : new Map<string, string>();
-  const nextName = (item: (typeof everything)[number]) =>
-    nameMap.get(`${item.title.id}-${item.currentSeason ?? 1}-${(item.currentEpisode ?? 0) + 1}`);
 
   return (
     <div className="mx-auto max-w-[1300px]">
@@ -61,7 +49,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
               <p className="eyebrow mb-3">Watch next</p>
               <div className="space-y-3">
                 {upNext.map((item) => (
-                  <UpNextCard key={item.id} item={item} returnTo={returnTo} nextEpisodeName={nextName(item)} />
+                  <UpNextCard key={item.id} item={item} returnTo={returnTo} />
                 ))}
               </div>
             </section>
@@ -71,7 +59,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
               <p className="eyebrow mb-3">Haven&apos;t watched for a while</p>
               <div className="space-y-3">
                 {notStarted.map((item) => (
-                  <UpNextCard key={item.id} item={item} returnTo={returnTo} nextEpisodeName={nextName(item)} />
+                  <UpNextCard key={item.id} item={item} returnTo={returnTo} />
                 ))}
               </div>
             </section>
@@ -83,26 +71,19 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
 }
 
 async function EmptyShows() {
-  const sections = await getDiscoverSections();
+  const sections = await getDiscover();
   const shows = sections.find((section) => section.items.some((item) => item.type !== "movie"));
 
   return (
     <div className="space-y-8">
       <div className="surface rounded-[16px] p-8">
         <h2 className="display text-xl text-white">Nothing tracked yet.</h2>
-        <p className="mt-2 max-w-md text-white/50">Bring your TV Time history over, or add shows from Explore.</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/app/import">
-              <FileUp className="size-4" /> Import from TV Time
-            </Link>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/app/explore">
-              <Search className="size-4" /> Explore
-            </Link>
-          </Button>
-        </div>
+        <p className="mt-2 max-w-md text-white/50">Add shows from Explore to start tracking.</p>
+        <Button asChild className="mt-5">
+          <Link href="/app/explore">
+            <Search className="size-4" /> Explore
+          </Link>
+        </Button>
       </div>
       {shows ? (
         <MediaRail
@@ -115,12 +96,12 @@ async function EmptyShows() {
   );
 }
 
-function Upcoming({ calendar }: { calendar: Awaited<ReturnType<typeof getCalendar>> | null }) {
+function Upcoming({ calendar }: { calendar: Calendar | null }) {
   const groups = calendar
     ? ([
         ["Today", calendar.today],
         ["This week", calendar.thisWeek],
-        ["Later", calendar.upcoming]
+        ["Later", calendar.later]
       ] as const)
     : [];
   const hasItems = groups.some(([, items]) => items.length > 0);

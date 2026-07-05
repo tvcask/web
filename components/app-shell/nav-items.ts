@@ -13,7 +13,7 @@ export const navItems: NavItem[] = [
   { href: "/app/shows", label: "Shows", icon: Tv, match: ["/app", "/app/titles"] },
   { href: "/app/movies", label: "Movies", icon: Clapperboard },
   { href: "/app/explore", label: "Explore", icon: Compass },
-  { href: "/app/profile", label: "Profile", icon: User, match: ["/app/import", "/app/settings"] }
+  { href: "/app/profile", label: "Profile", icon: User, match: ["/app/settings"] }
 ];
 
 export function isNavActive(pathname: string, item: NavItem) {
