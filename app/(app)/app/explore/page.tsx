@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { addTitleAction } from "@/app/actions";
 import { MediaRail } from "@/components/titles/media-rail";
 import { Poster } from "@/components/titles/poster";
+import { SearchBox } from "@/components/titles/search-box";
 import { getDiscover, getLibrary, searchTitles } from "@/lib/data";
 
 export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -19,16 +20,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
-      <form className="relative max-w-xl">
-        <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-white/40" />
-        <input
-          name="q"
-          defaultValue={query}
-          autoComplete="off"
-          placeholder="Search shows, movies, anime, K-dramas"
-          className="cask-focus h-12 w-full rounded-full bg-white/5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-white/40"
-        />
-      </form>
+      <SearchBox initialQuery={query} />
 
       {!query ? (
         <div className="space-y-7">
