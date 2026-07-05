@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import Link from "next/link";
-import { LogOut, Settings, User } from "lucide-react";
+import { FileUp, LogOut, Settings, User } from "lucide-react";
 import { endSession } from "@/app/actions";
 
 export function AccountMenu({ name, email }: { name: string; email?: string | null }) {
@@ -41,6 +41,7 @@ export function AccountMenu({ name, email }: { name: string; email?: string | nu
           <div className="py-1">
             <MenuLink href="/app/profile" icon={User} label="Profile" onClick={() => setOpen(false)} />
             <MenuLink href="/app/settings" icon={Settings} label="Settings" onClick={() => setOpen(false)} />
+            <MenuLink href="/app/import" icon={FileUp} label="Import from TV Time" onClick={() => setOpen(false)} />
           </div>
           <form action={endSession} className="border-t border-white/[0.06] pt-1">
             <button className="flex w-full items-center gap-3 rounded-[8px] px-3 py-2.5 text-left text-sm font-semibold text-white/70 transition hover:bg-white/5 hover:text-white">

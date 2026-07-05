@@ -3,7 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { api, TOKEN_COOKIE } from "@/lib/api";
+import { api, API_URL, getToken, TOKEN_COOKIE } from "@/lib/api";
+import type { ImportRecord } from "@/lib/data";
 
 type AuthResponse = { token: string; expiresAt: string };
 
@@ -144,4 +145,69 @@ export async function toggleSettingAction(formData: FormData) {
 export async function setThemeAction(formData: FormData) {
   await api("/v1/me/settings", { method: "PATCH", body: { theme: String(formData.get("theme")) } });
   revalidatePath("/app/settings");
+}
+
+export async function updateProfileAction(formData: FormData) {
+  const body: { name?: string; avatarUrl?: string } = {};
+  const name = formData.get("name");
+  const avatarUrl = formData.get("avatarUrl");
+  if (typeof name === "string" && name.trim()) body.name = name.trim();
+  if (typeof avatarUrl === "string") body.avatarUrl = avatarUrl.trim();
+  try {
+    await api("/v1/me", { method: "PATCH", body });
+  } catch {
+    redirect("/app/settings?section=account&error=profile");
+  }
+  revalidatePath("/app/settings");
+  revalidatePath("/app/profile");
+  redirect("/app/settings?section=account&saved=profile");
+}
+
+export async function changePasswordAction(formData: FormData) {
+  try {
+    await api("/v1/me/password", {
+      method: "POST",
+      body: {
+        currentPassword: String(formData.get("currentPassword")),
+        newPassword: String(formData.get("newPassword"))
+      }
+    });
+  } catch {
+    redirect("/app/settings?section=account&error=password");
+  }
+  redirect("/app/settings?section=account&saved=password");
+}
+
+export async function deleteAccountAction() {
+  await api("/v1/me", { method: "DELETE" });
+  const store = await cookies();
+  store.delete(TOKEN_COOKIE);
+  redirect("/");
+}
+
+// Forwards the uploaded TV Time export to the Go API as multipart form data.
+export async function importTvTimeAction(formData: FormData) {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    redirect("/app/import?error=nofile");
+  }
+  const token = await getToken();
+  const body = new FormData();
+  body.append("file", file as File);
+
+  const res = await fetch(`${API_URL}/v1/me/import/tv-time`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body,
+    cache: "no-store"
+  });
+  if (!res.ok) {
+    redirect("/app/import?error=upload");
+  }
+  const rec = (await res.json()) as ImportRecord;
+  redirect(`/app/import?id=${rec.id}`);
+}
+
+export async function getImportStatus(id: string): Promise<ImportRecord> {
+  return api<ImportRecord>(`/v1/me/import/${id}`);
 }

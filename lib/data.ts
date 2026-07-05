@@ -62,6 +62,24 @@ export async function getTitleDetail(id: string): Promise<TitleDetail | null> {
   }
 }
 
+export type ImportRecord = {
+  id: string;
+  status: "processing" | "completed" | "failed";
+  totalTitles: number;
+  matchedTitles: number;
+  unmatchedTitles: number;
+  watchedEpisodes: number;
+  errorMessage?: string;
+};
+
+export async function getImport(id: string): Promise<ImportRecord | null> {
+  try {
+    return await api<ImportRecord>(`/v1/me/import/${id}`);
+  } catch {
+    return null;
+  }
+}
+
 export async function getMyTitle(id: string): Promise<MyTitle> {
   try {
     return await api<MyTitle>(`/v1/me/titles/${id}`);
