@@ -5,3 +5,4 @@ uploads
 *.tsbuildinfo
 .pnpm-store
 .DS_Store
+.env.production
