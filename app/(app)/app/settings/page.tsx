@@ -64,14 +64,11 @@ export default async function SettingsPage({
         </Link>
       </Section>
 
-      {/* Catalog health */}
-      {catalog ? (
-        <Section title="Catalog health">
-          <div className="surface overflow-hidden rounded-[14px]">
-            <StatusRow label="TMDB" value={catalog.tmdbConfigured ? "Connected" : "Not configured"} bad={!catalog.tmdbConfigured} />
-            <StatusRow label="Titles cached" value={catalog.titles.toLocaleString()} />
-            <StatusRow label="Episodes cached" value={catalog.episodes.toLocaleString()} />
-            <StatusRow label="Last updated" value={catalog.lastUpdatedAt ? timeAgo(catalog.lastUpdatedAt) : "never"} border={false} />
+      {/* Catalog */}
+      {catalog?.lastUpdatedAt ? (
+        <Section title="Catalog">
+          <div className="surface rounded-[14px]">
+            <StatusRow label="Data updated" value={timeAgo(catalog.lastUpdatedAt)} border={false} />
           </div>
         </Section>
       ) : null}
