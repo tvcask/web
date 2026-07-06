@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { api, getToken } from "@/lib/api";
 
-export type SessionUser = { id: string; name: string; email: string; avatarUrl?: string };
+export type SessionUser = { id: string; name: string; email: string; avatarUrl?: string; emailVerified?: boolean };
 
 export async function getCurrentUser(): Promise<SessionUser | null> {
   const token = await getToken();

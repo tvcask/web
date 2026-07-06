@@ -156,17 +156,6 @@ export async function markSeasonAction(formData: FormData) {
   revalidateTracking(titleId);
 }
 
-export async function toggleSettingAction(formData: FormData) {
-  const key = String(formData.get("key"));
-  const current = await api<Record<string, boolean>>("/v1/me/settings");
-  await api("/v1/me/settings", { method: "PATCH", body: { [key]: !current[key] } });
-  revalidatePath("/app/settings");
-}
-
-export async function setThemeAction(formData: FormData) {
-  await api("/v1/me/settings", { method: "PATCH", body: { theme: String(formData.get("theme")) } });
-  revalidatePath("/app/settings");
-}
 
 export async function updateProfileAction(formData: FormData) {
   const body: { name?: string; avatarUrl?: string } = {};
@@ -207,6 +196,26 @@ export async function deleteAccountAction() {
   const store = await cookies();
   store.delete(TOKEN_COOKIE);
   redirect("/");
+}
+
+export async function resendVerificationAction() {
+  try {
+    await api("/v1/me/resend-verification", { method: "POST" });
+  } catch {
+    // best effort
+  }
+  redirect("/app/settings?verify=sent");
+}
+
+export async function logoutEverywhereAction() {
+  try {
+    await api("/v1/me/logout-all", { method: "POST" });
+  } catch {
+    // best effort — clear the local cookie regardless
+  }
+  const store = await cookies();
+  store.delete(TOKEN_COOKIE);
+  redirect("/login");
 }
 
 // Forwards the uploaded TV Time export to the Go API as multipart form data.
