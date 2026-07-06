@@ -3,10 +3,9 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
-import { LibraryGrid } from "@/components/titles/library-grid";
 import { MediaRail } from "@/components/titles/media-rail";
-import { UpNextCard } from "@/components/titles/up-next-card";
-import { getCalendar, getDiscover, getLibrary, type Calendar } from "@/lib/data";
+import { InfiniteLibrary } from "@/components/titles/infinite-library";
+import { getCalendar, getDiscover, getLibraryPage, type Calendar } from "@/lib/data";
 
 const tabs = [
   { value: "watchlist", label: "Watch list" },
@@ -18,10 +17,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
   const activeTab = tab === "upcoming" ? "upcoming" : "watchlist";
   const activeView = view === "grid" ? "grid" : "list";
 
-  const list = await getLibrary("show");
-  const upNext = list.filter((item) => item.status === "watching");
-  const notStarted = list.filter((item) => item.status === "watchlist");
-  const everything = [...upNext, ...notStarted];
+  const { items, total } = activeTab === "watchlist" ? await getLibraryPage({ type: "show", limit: 40 }) : { items: [], total: 0 };
   const calendar = activeTab === "upcoming" ? await getCalendar() : null;
 
   const returnTo = `/app/shows?tab=watchlist&view=${activeView}`;
@@ -31,40 +27,17 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
       <header className="mb-6 flex items-center gap-4">
         <h1 className="display text-2xl text-white">Shows</h1>
         <TabsNav tabs={tabs} active={activeTab} base="/app/shows" />
-        {activeTab === "watchlist" && list.length > 0 ? (
+        {activeTab === "watchlist" && total > 0 ? (
           <ViewToggle view={activeView} listHref="/app/shows?tab=watchlist&view=list" gridHref="/app/shows?tab=watchlist&view=grid" />
         ) : null}
       </header>
 
       {activeTab === "upcoming" ? (
         <Upcoming calendar={calendar} />
-      ) : list.length === 0 ? (
+      ) : total === 0 ? (
         <EmptyShows />
-      ) : activeView === "grid" ? (
-        <LibraryGrid items={everything} returnTo={returnTo} />
       ) : (
-        <div className="space-y-8">
-          {upNext.length > 0 ? (
-            <section>
-              <p className="eyebrow mb-3">Watch next</p>
-              <div className="space-y-3">
-                {upNext.map((item) => (
-                  <UpNextCard key={item.id} item={item} returnTo={returnTo} />
-                ))}
-              </div>
-            </section>
-          ) : null}
-          {notStarted.length > 0 ? (
-            <section>
-              <p className="eyebrow mb-3">Haven&apos;t watched for a while</p>
-              <div className="space-y-3">
-                {notStarted.map((item) => (
-                  <UpNextCard key={item.id} item={item} returnTo={returnTo} />
-                ))}
-              </div>
-            </section>
-          ) : null}
-        </div>
+        <InfiniteLibrary type="show" view={activeView} initial={items} total={total} returnTo={returnTo} />
       )}
     </div>
   );

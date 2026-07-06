@@ -14,7 +14,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
   const [results, sections, library] = await Promise.all([
     query ? searchTitles(query) : Promise.resolve([]),
     query ? Promise.resolve([]) : getDiscover(),
-    getLibrary()
+    getLibrary({ limit: 100 })
   ]);
   const trackedTitleIds = library.map((item) => item.titleId);
 

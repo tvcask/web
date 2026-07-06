@@ -15,7 +15,7 @@ function duration(minutes: number) {
 }
 
 export default async function ProfilePage() {
-  const [user, stats, list] = await Promise.all([getCurrentUser(), getStats(), getLibrary()]);
+  const [user, stats, list] = await Promise.all([getCurrentUser(), getStats(), getLibrary({ limit: 100 })]);
   const favorites = list.filter((item) => item.favorite);
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
