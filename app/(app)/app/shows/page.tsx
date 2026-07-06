@@ -17,7 +17,10 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
   const activeTab = tab === "upcoming" ? "upcoming" : "watchlist";
   const activeView = view === "grid" ? "grid" : "list";
 
-  const { items, total } = activeTab === "watchlist" ? await getLibraryPage({ type: "show", limit: 40 }) : { items: [], total: 0 };
+  // The watch list is active shows only — completed shows leave it.
+  const status = "watchlist,watching";
+  const { items, total } =
+    activeTab === "watchlist" ? await getLibraryPage({ type: "show", status, limit: 40 }) : { items: [], total: 0 };
   const calendar = activeTab === "upcoming" ? await getCalendar() : null;
 
   const returnTo = `/app/shows?tab=watchlist&view=${activeView}`;
@@ -37,7 +40,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
       ) : total === 0 ? (
         <EmptyShows />
       ) : (
-        <InfiniteLibrary type="show" view={activeView} initial={items} total={total} returnTo={returnTo} />
+        <InfiniteLibrary type="show" view={activeView} status={status} initial={items} total={total} returnTo={returnTo} />
       )}
     </div>
   );
