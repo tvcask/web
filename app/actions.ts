@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { api, API_URL, getToken, TOKEN_COOKIE } from "@/lib/api";
+import { api, ApiError, API_URL, getToken, TOKEN_COOKIE } from "@/lib/api";
 import type { ImportRecord } from "@/lib/data";
 
 type AuthResponse = { token: string; expiresAt: string };
@@ -158,19 +158,22 @@ export async function markSeasonAction(formData: FormData) {
 
 
 export async function updateProfileAction(formData: FormData) {
-  const body: { name?: string; avatarUrl?: string } = {};
+  const body: { name?: string; username?: string; avatarUrl?: string } = {};
   const name = formData.get("name");
+  const username = formData.get("username");
   const avatarUrl = formData.get("avatarUrl");
   if (typeof name === "string" && name.trim()) body.name = name.trim();
+  if (typeof username === "string" && username.trim()) body.username = username.trim();
   if (typeof avatarUrl === "string") body.avatarUrl = avatarUrl.trim();
   try {
     await api("/v1/me", { method: "PATCH", body });
-  } catch {
-    redirect("/app/settings?section=account&error=profile");
+  } catch (e) {
+    const reason = e instanceof ApiError && e.status === 409 ? "username" : "profile";
+    redirect(`/app/profile/edit?error=${reason}`);
   }
-  revalidatePath("/app/settings");
   revalidatePath("/app/profile");
-  redirect("/app/settings?section=account&saved=profile");
+  revalidatePath("/app/profile/edit");
+  redirect("/app/profile/edit?saved=1");
 }
 
 export async function changePasswordAction(formData: FormData) {

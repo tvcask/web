@@ -5,8 +5,7 @@ import {
   deleteAccountAction,
   endSession,
   logoutEverywhereAction,
-  resendVerificationAction,
-  updateProfileAction
+  resendVerificationAction
 } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ConfirmButton } from "@/components/ui/confirm-button";
@@ -26,28 +25,6 @@ export default async function SettingsPage({
         <ChevronLeft className="size-4" /> Profile
       </Link>
       <h1 className="display mb-7 text-2xl text-white">Settings</h1>
-
-      {/* Profile */}
-      <Section title="Profile">
-        <form action={updateProfileAction} className="surface rounded-[14px] p-4">
-          <Label>Display name</Label>
-          <input
-            name="name"
-            defaultValue={user?.name ?? ""}
-            className="cask-focus mt-1.5 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none"
-          />
-          <Label className="mt-4">Avatar URL</Label>
-          <input
-            name="avatarUrl"
-            defaultValue={user?.avatarUrl ?? ""}
-            placeholder="https://…"
-            className="cask-focus mt-1.5 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
-          />
-          {saved === "profile" ? <Note tone="ok">Profile saved.</Note> : null}
-          {error === "profile" ? <Note tone="err">Could not save profile.</Note> : null}
-          <button className="accent-fill mt-4 h-11 rounded-full px-6 text-sm font-extrabold">Save profile</button>
-        </form>
-      </Section>
 
       {/* Email + verification */}
       <Section title="Email">
@@ -146,10 +123,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       {children}
     </section>
   );
-}
-
-function Label({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <label className={`block text-[13px] font-semibold text-white/60 ${className}`}>{children}</label>;
 }
 
 function Note({ tone, children }: { tone: "ok" | "err"; children: React.ReactNode }) {

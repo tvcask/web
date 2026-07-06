@@ -47,7 +47,8 @@ export default async function ProfilePage() {
         <div className="absolute inset-x-6 bottom-5 flex items-end gap-4">
           <Avatar src={user?.avatarUrl} size={78} className="ring-[3px] ring-white/90" />
           <div className="flex-1">
-            <p className="display text-[26px] text-white">{displayName}</p>
+            <p className="display text-[26px] leading-tight text-white">{displayName}</p>
+            {user?.username ? <p className="text-sm font-semibold text-white/50">@{user.username}</p> : null}
             <div className="mt-1.5 flex gap-5 text-[13px] font-semibold text-white/70">
               <span><b className="text-white">0</b> Following</span>
               <span><b className="text-white">0</b> Followers</span>
@@ -55,7 +56,7 @@ export default async function ProfilePage() {
             </div>
           </div>
           <Button asChild variant="secondary" className="border-white/50">
-            <Link href="/app/settings">Edit profile</Link>
+            <Link href="/app/profile/edit">Edit profile</Link>
           </Button>
         </div>
       </section>
