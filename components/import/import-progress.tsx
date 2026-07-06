@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
 import { getImportStatus } from "@/app/actions";
+import { celebrate } from "@/lib/celebrate";
+import { toast } from "@/lib/toast";
 import type { ImportRecord } from "@/lib/data";
 
 export function ImportProgress({ initial }: { initial: ImportRecord }) {
   const [rec, setRec] = useState(initial);
+  const announced = useRef(false);
 
   useEffect(() => {
     if (rec.status !== "processing") {
@@ -23,9 +26,45 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
     return () => clearInterval(timer);
   }, [rec.status, rec.id]);
 
+  // Announce the outcome once, when the background matching settles.
+  useEffect(() => {
+    if (announced.current) return;
+    if (rec.status === "completed") {
+      announced.current = true;
+      celebrate(`${rec.matchedTitles} titles from TV Time`);
+    } else if (rec.status === "failed") {
+      announced.current = true;
+      toast(rec.errorMessage ?? "Import failed. Please try again.");
+    }
+  }, [rec.status, rec.matchedTitles, rec.errorMessage]);
+
   const processed = rec.matchedTitles + rec.unmatchedTitles;
   const pct = rec.totalTitles > 0 ? Math.min(100, Math.round((processed / rec.totalTitles) * 100)) : 0;
   const done = rec.status === "completed";
+  const failed = rec.status === "failed";
+
+  if (failed) {
+    return (
+      <div className="surface rounded-[16px] p-7">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="size-6 text-[#ef6d5a]" />
+          <h2 className="display text-xl text-white">Import failed</h2>
+        </div>
+        <p className="mt-4 text-sm text-white/60">
+          {rec.errorMessage ?? "Something went wrong while matching your history."}
+        </p>
+        <div className="mt-6">
+          <Link
+            href="/app/import"
+            className="inline-block rounded-full px-5 py-2.5 text-sm font-bold"
+            style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+          >
+            Try again
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="surface rounded-[16px] p-7">

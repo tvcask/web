@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { ChevronLeft, FileUp } from "lucide-react";
-import { importTvTimeAction } from "@/app/actions";
+import { ChevronLeft } from "lucide-react";
+import { API_URL, getToken } from "@/lib/api";
 import { getImport } from "@/lib/data";
 import { ImportProgress } from "@/components/import/import-progress";
+import { TvTimeUpload } from "@/components/import/tv-time-upload";
 
 export default async function ImportPage({
   searchParams
 }: {
-  searchParams: Promise<{ id?: string; error?: string }>;
+  searchParams: Promise<{ id?: string }>;
 }) {
-  const { id, error } = await searchParams;
+  const { id } = await searchParams;
   const record = id ? await getImport(id) : null;
+  const token = await getToken();
 
   return (
     <div className="mx-auto max-w-[640px]">
@@ -29,26 +31,7 @@ export default async function ImportPage({
             pull in every watched episode.
           </p>
 
-          {error ? (
-            <p className="mt-4 text-sm text-[#ef6d5a]">
-              {error === "nofile" ? "Please choose your TV Time .zip file." : "Upload failed. Make sure it's the .zip you downloaded."}
-            </p>
-          ) : null}
-
-          <form action={importTvTimeAction} className="mt-6 space-y-4">
-            <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[12px] border border-dashed border-white/20 px-4 py-8 text-center transition hover:border-white/40">
-              <FileUp className="size-6 text-white/50" />
-              <span className="text-sm font-semibold text-white">Choose your TV Time export</span>
-              <span className="text-xs text-white/40">.zip file</span>
-              <input type="file" name="file" accept=".zip,application/zip" required className="mt-2 text-xs text-white/60 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-white" />
-            </label>
-            <button
-              className="h-11 w-full rounded-full text-sm font-bold"
-              style={{ background: "var(--accent)", color: "var(--on-accent)" }}
-            >
-              Start import
-            </button>
-          </form>
+          <TvTimeUpload apiBase={API_URL} token={token ?? ""} />
         </div>
       )}
     </div>
