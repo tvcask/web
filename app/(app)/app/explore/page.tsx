@@ -3,7 +3,6 @@ import { Plus } from "lucide-react";
 import { addTitleAction } from "@/app/actions";
 import { MediaRail } from "@/components/titles/media-rail";
 import { Poster } from "@/components/titles/poster";
-import { SearchBox } from "@/components/titles/search-box";
 import { getDiscover, getLibrary, searchTitles } from "@/lib/data";
 
 export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -14,27 +13,42 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
   const [results, sections, library] = await Promise.all([
     query ? searchTitles(query) : Promise.resolve([]),
     query ? Promise.resolve([]) : getDiscover(),
-    getLibrary()
+    getLibrary({ limit: 100 })
   ]);
   const trackedTitleIds = library.map((item) => item.titleId);
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
-      <SearchBox initialQuery={query} />
-
       {!query ? (
-        <div className="space-y-7">
-          {sections.map((section) => (
-            <MediaRail
-              key={section.title}
-              title={section.title}
-              items={section.items}
-              trackedTitleIds={trackedTitleIds}
-              returnTo="/app/explore"
-            />
-          ))}
-        </div>
-      ) : results.length === 0 ? (
+        sections.some((s) => s.items.length > 0) ? (
+          <div className="space-y-7">
+            {sections
+              .filter((section) => section.items.length > 0)
+              .map((section) => (
+                <MediaRail
+                  key={section.title}
+                  title={section.title}
+                  items={section.items}
+                  trackedTitleIds={trackedTitleIds}
+                  returnTo="/app/explore"
+                  seeAllHref={`/app/browse/${section.kind}`}
+                />
+              ))}
+          </div>
+        ) : (
+          <div className="surface rounded-[16px] p-8 text-center">
+            <p className="display text-lg text-white">Nothing to explore right now.</p>
+            <p className="mt-2 text-sm text-white/50">
+              Recommendations couldn&apos;t be loaded. Try searching for a title in the header.
+            </p>
+          </div>
+        )
+      ) : (
+        <div className="space-y-5">
+          <h1 className="display text-xl text-white">
+            Results for <span style={{ color: "var(--accent-text)" }}>&ldquo;{query}&rdquo;</span>
+          </h1>
+          {results.length === 0 ? (
         <p className="surface rounded-[14px] p-6 text-white/50">No results for “{query}”.</p>
       ) : (
         <div className="grid grid-cols-3 gap-3.5 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
@@ -62,6 +76,8 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
               </div>
             );
           })}
+        </div>
+          )}
         </div>
       )}
     </div>

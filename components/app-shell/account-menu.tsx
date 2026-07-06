@@ -5,8 +5,9 @@ import type { ComponentType } from "react";
 import Link from "next/link";
 import { FileUp, LogOut, Settings, User } from "lucide-react";
 import { endSession } from "@/app/actions";
+import { Avatar } from "@/components/ui/avatar";
 
-export function AccountMenu({ name, email }: { name: string; email?: string | null }) {
+export function AccountMenu({ name, email, avatarUrl }: { name: string; email?: string | null; avatarUrl?: string | null }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,9 +29,10 @@ export function AccountMenu({ name, email }: { name: string; email?: string | nu
         aria-expanded={open}
         aria-label="Account"
         onClick={() => setOpen((value) => !value)}
-        className="cask-focus size-[34px] rounded-full"
-        style={{ background: "linear-gradient(140deg,#3a2f2a,#c0956a)" }}
-      />
+        className="cask-focus rounded-full"
+      >
+        <Avatar src={avatarUrl} size={34} />
+      </button>
 
       {open ? (
         <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 rounded-[14px] border border-white/[0.09] bg-[#131316] p-2 shadow-2xl shadow-black/60" role="menu">

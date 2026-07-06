@@ -3,6 +3,7 @@ import { ChevronRight, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
+import { Avatar } from "@/components/ui/avatar";
 import { getLibrary, getStats } from "@/lib/data";
 
 function duration(minutes: number) {
@@ -15,7 +16,7 @@ function duration(minutes: number) {
 }
 
 export default async function ProfilePage() {
-  const [user, stats, list] = await Promise.all([getCurrentUser(), getStats(), getLibrary()]);
+  const [user, stats, list] = await Promise.all([getCurrentUser(), getStats(), getLibrary({ limit: 100 })]);
   const favorites = list.filter((item) => item.favorite);
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
@@ -44,12 +45,10 @@ export default async function ProfilePage() {
           <Settings className="size-[18px]" />
         </Link>
         <div className="absolute inset-x-6 bottom-5 flex items-end gap-4">
-          <div
-            className="size-[78px] shrink-0 rounded-full ring-[3px] ring-white/90"
-            style={{ background: "linear-gradient(140deg,#3a2f2a,#c0956a)" }}
-          />
+          <Avatar src={user?.avatarUrl} size={78} className="ring-[3px] ring-white/90" />
           <div className="flex-1">
-            <p className="display text-[26px] text-white">{displayName}</p>
+            <p className="display text-[26px] leading-tight text-white">{displayName}</p>
+            {user?.username ? <p className="text-sm font-semibold text-white/50">@{user.username}</p> : null}
             <div className="mt-1.5 flex gap-5 text-[13px] font-semibold text-white/70">
               <span><b className="text-white">0</b> Following</span>
               <span><b className="text-white">0</b> Followers</span>
@@ -57,7 +56,7 @@ export default async function ProfilePage() {
             </div>
           </div>
           <Button asChild variant="secondary" className="border-white/50">
-            <Link href="/app/settings">Edit profile</Link>
+            <Link href="/app/profile/edit">Edit profile</Link>
           </Button>
         </div>
       </section>

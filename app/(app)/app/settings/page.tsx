@@ -1,194 +1,169 @@
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { FileUp } from "lucide-react";
+import { ChevronDown, ChevronLeft, FileUp } from "lucide-react";
 import {
   changePasswordAction,
   deleteAccountAction,
-  endSession,
-  setThemeAction,
-  toggleSettingAction,
-  updateProfileAction
+  logoutEverywhereAction,
+  resendVerificationAction
 } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getSettings } from "@/lib/data";
-import { cn } from "@/lib/utils";
-
-const nav = [
-  { value: "account", label: "Account" },
-  { value: "app", label: "App" },
-  { value: "upcoming", label: "Upcoming" }
-];
+import { getCatalogStatus } from "@/lib/data";
+import { ConfirmButton } from "@/components/ui/confirm-button";
+import { version } from "@/package.json";
 
 export default async function SettingsPage({
   searchParams
 }: {
-  searchParams: Promise<{ section?: string; saved?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string; verify?: string }>;
 }) {
-  const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
-  const { section, saved, error } = await searchParams;
-  const active = nav.some((n) => n.value === section) ? section! : "account";
+  const [user, catalog] = await Promise.all([getCurrentUser(), getCatalogStatus()]);
+  const { saved, error, verify } = await searchParams;
 
   return (
-    <div className="mx-auto grid max-w-[900px] gap-8 md:grid-cols-[200px_1fr]">
-      <aside>
-        <Link href="/app/profile" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
-          <ChevronLeft className="size-4" /> Profile
-        </Link>
-        <h1 className="display mb-4 text-xl text-white">Settings</h1>
-        <nav className="flex flex-col gap-1">
-          {nav.map((item) => (
-            <Link
-              key={item.value}
-              href={`/app/settings?section=${item.value}`}
-              className={cn(
-                "rounded-[11px] px-3.5 py-2.5 text-sm font-semibold transition",
-                active === item.value ? "bg-white/5 text-white" : "text-white/60 hover:text-white"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
+    <div className="mx-auto max-w-[600px]">
+      <Link href="/app/profile" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
+        <ChevronLeft className="size-4" /> Profile
+      </Link>
+      <h1 className="display mb-7 text-2xl text-white">Settings</h1>
 
-      <div className="max-w-[560px]">
-        {active === "account" ? (
-          <>
-            <p className="eyebrow mb-2.5 px-0.5">Profile</p>
-            <form action={updateProfileAction} className="surface mb-5 rounded-[14px] p-4">
-              <label className="block text-[13px] font-semibold text-white/60">Display name</label>
-              <input
-                name="name"
-                defaultValue={user?.name ?? ""}
-                className="cask-focus mt-1.5 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none"
-              />
-              <label className="mt-4 block text-[13px] font-semibold text-white/60">Avatar URL</label>
-              <input
-                name="avatarUrl"
-                defaultValue={user?.avatarUrl ?? ""}
-                placeholder="https://…"
-                className="cask-focus mt-1.5 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
-              />
-              {saved === "profile" ? <p className="mt-3 text-xs font-semibold text-[color:var(--accent-text)]">Profile saved.</p> : null}
-              {error === "profile" ? <p className="mt-3 text-xs font-semibold text-[#ef6d5a]">Could not save profile.</p> : null}
-              <button className="accent-fill mt-4 h-11 rounded-full px-6 text-sm font-extrabold">Save profile</button>
-            </form>
-
-            <p className="eyebrow mb-2.5 px-0.5">Identification</p>
-            <div className="surface mb-5 overflow-hidden rounded-[14px]">
-              <Row label="Email" value={user?.email ?? "—"} border={false} />
-            </div>
-
-            <p className="eyebrow mb-2.5 px-0.5">Import</p>
-            <Link href="/app/import" className="surface mb-5 flex items-center gap-3 rounded-[14px] p-4 transition hover:bg-white/[0.04]">
-              <FileUp className="size-5 text-white/50" />
-              <div>
-                <p className="text-sm font-bold text-white">Import from TV Time</p>
-                <p className="text-xs text-white/45">Bring over your shows, movies and watched episodes.</p>
-              </div>
-            </Link>
-
-            <p className="eyebrow mb-2.5 px-0.5">Change password</p>
-            <form action={changePasswordAction} className="surface mb-5 rounded-[14px] p-4">
-              <input
-                name="currentPassword"
-                type="password"
-                placeholder="Current password"
-                required
-                className="cask-focus h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
-              />
-              <input
-                name="newPassword"
-                type="password"
-                placeholder="New password (min 6)"
-                required
-                className="cask-focus mt-3 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
-              />
-              {saved === "password" ? <p className="mt-3 text-xs font-semibold text-[color:var(--accent-text)]">Password changed.</p> : null}
-              {error === "password" ? <p className="mt-3 text-xs font-semibold text-[#ef6d5a]">Current password is incorrect.</p> : null}
-              <button className="mt-4 h-11 rounded-full border border-white/12 px-6 text-sm font-bold text-white">Update password</button>
-            </form>
-
-            <div className="flex gap-3">
-              <form action={endSession} className="flex-1">
-                <button className="accent-fill h-[52px] w-full rounded-full text-sm font-extrabold">Log out</button>
-              </form>
-              <form action={deleteAccountAction}>
-                <button className="h-[52px] rounded-full border border-white/12 px-6 text-sm font-bold" style={{ color: "var(--accent-text)" }}>
-                  Delete account
+      {/* Email + verification */}
+      <Section title="Email">
+        <div className="surface rounded-[14px] p-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="truncate text-sm font-semibold text-white">{user?.email ?? "—"}</span>
+            {user?.emailVerified ? (
+              <span className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: "rgba(224,169,96,0.12)", color: "var(--accent-text)" }}>
+                Verified
+              </span>
+            ) : (
+              <span className="shrink-0 rounded-full bg-white/8 px-2.5 py-1 text-[11px] font-bold text-white/50">Unverified</span>
+            )}
+          </div>
+          {!user?.emailVerified ? (
+            <form action={resendVerificationAction} className="mt-3">
+              {verify === "sent" ? (
+                <Note tone="ok">Verification email sent — check your inbox.</Note>
+              ) : (
+                <button className="h-10 rounded-full border border-white/12 px-5 text-sm font-bold text-white transition hover:bg-white/5">
+                  Resend verification email
                 </button>
-              </form>
-            </div>
-          </>
-        ) : null}
+              )}
+            </form>
+          ) : null}
+        </div>
+      </Section>
 
-        {active === "app" ? (
-          <>
-            <p className="eyebrow mb-2.5 px-0.5">Theme</p>
-            <div className="surface mb-5 overflow-hidden rounded-[14px]">
-              {["dark", "light", "system"].map((theme, i, arr) => (
-                <form key={theme} action={setThemeAction}>
-                  <input type="hidden" name="theme" value={theme} />
-                  <button className={cn("flex w-full items-center justify-between px-4 py-3.5 text-left", i < arr.length - 1 && "border-b border-white/[0.06]")}>
-                    <span className="text-sm font-semibold capitalize text-white">{theme === "system" ? "Sync with device" : theme}</span>
-                    <span
-                      className="grid size-[21px] place-items-center rounded-full"
-                      style={{ boxShadow: `inset 0 0 0 2px ${settings.theme === theme ? "var(--accent)" : "rgba(255,255,255,0.25)"}` }}
-                    >
-                      {settings.theme === theme ? <span className="size-[11px] rounded-full" style={{ background: "var(--accent)" }} /> : null}
-                    </span>
-                  </button>
-                </form>
-              ))}
-            </div>
-            <p className="eyebrow mb-2.5 px-0.5">Preferences</p>
-            <div className="surface overflow-hidden rounded-[14px]">
-              <Toggle label="Titles in your language" name="titlesInLanguage" on={settings.titlesInLanguage} border={false} />
-            </div>
-            <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version 1.0.0</p>
-          </>
-        ) : null}
+      {/* Import */}
+      <Section title="Import">
+        <Link href="/app/import" className="surface flex items-center gap-3 rounded-[14px] p-4 transition hover:bg-white/[0.04]">
+          <FileUp className="size-5 text-white/50" />
+          <div>
+            <p className="text-sm font-bold text-white">Import from TV Time</p>
+            <p className="text-xs text-white/45">Bring over your shows, movies and watched episodes.</p>
+          </div>
+        </Link>
+      </Section>
 
-        {active === "upcoming" ? (
-          <>
-            <p className="eyebrow mb-2.5 px-0.5">Notifications</p>
-            <div className="surface overflow-hidden rounded-[14px]">
-              <Toggle label="New episode alerts" name="newEpisodeAlerts" on={settings.newEpisodeAlerts} />
-              <Toggle label="Premiere reminders" name="premiereReminders" on={settings.premiereReminders} />
-              <Toggle label="Weekly digest" name="weeklyDigest" on={settings.weeklyDigest} border={false} />
-            </div>
-          </>
-        ) : null}
-      </div>
-    </div>
-  );
-}
+      {/* Catalog */}
+      {catalog?.lastUpdatedAt ? (
+        <Section title="Catalog">
+          <div className="surface rounded-[14px]">
+            <StatusRow label="Data updated" value={timeAgo(catalog.lastUpdatedAt)} border={false} />
+          </div>
+        </Section>
+      ) : null}
 
-function Row({ label, value, border = true }: { label: string; value: string; border?: boolean }) {
-  return (
-    <div className={cn("flex items-center justify-between px-4 py-3.5", border && "border-b border-white/[0.06]")}>
-      <span className="text-[13.5px] text-white/50">{label}</span>
-      <span className="truncate pl-4 text-[13.5px] font-semibold text-white">{value}</span>
-    </div>
-  );
-}
-
-function Toggle({ label, name, on, border = true }: { label: string; name: string; on: boolean; border?: boolean }) {
-  return (
-    <form action={toggleSettingAction}>
-      <input type="hidden" name="key" value={name} />
-      <button className={cn("flex w-full items-center justify-between px-4 py-3.5 text-left", border && "border-b border-white/[0.06]")}>
-        <span className="text-[13.5px] font-semibold text-white">{label}</span>
-        <span
-          className="relative h-[27px] w-[46px] rounded-full transition"
-          style={{ background: on ? "var(--accent)" : "rgba(255,255,255,0.15)" }}
-        >
-          <span
-            className="absolute top-[3px] size-[21px] rounded-full bg-white transition-all"
-            style={{ left: on ? "22px" : "3px" }}
+      {/* Security */}
+      <Section title="Security">
+        <form action={changePasswordAction} className="surface rounded-[14px] p-4">
+          <input
+            name="currentPassword"
+            type="password"
+            placeholder="Current password"
+            required
+            className="cask-focus h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
           />
-        </span>
-      </button>
-    </form>
+          <input
+            name="newPassword"
+            type="password"
+            placeholder="New password (min 6)"
+            required
+            className="cask-focus mt-3 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
+          />
+          {saved === "password" ? <Note tone="ok">Password changed.</Note> : null}
+          {error === "password" ? <Note tone="err">Current password is incorrect.</Note> : null}
+          <button className="mt-4 h-11 rounded-full border border-white/12 px-6 text-sm font-bold text-white">Update password</button>
+        </form>
+        <form action={logoutEverywhereAction} className="mt-3">
+          <ConfirmButton
+            message="Sign out of every device? You'll need to log in again."
+            className="text-sm font-semibold text-white/55 transition hover:text-white"
+          >
+            Log out of all devices
+          </ConfirmButton>
+        </form>
+      </Section>
+
+      {/* Danger zone */}
+      <Section title="Danger zone">
+        <details className="group surface overflow-hidden rounded-[14px]">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5">
+            <span className="text-sm font-bold text-[#ef6d5a]">Delete account</span>
+            <ChevronDown className="size-4 text-white/40 transition group-open:rotate-180" />
+          </summary>
+          <div className="border-t border-white/[0.06] px-4 py-4">
+            <p className="text-sm leading-6 text-white/50">
+              This permanently deletes your account and all your tracking data. This can&apos;t be undone.
+            </p>
+            <form action={deleteAccountAction} className="mt-4">
+              <ConfirmButton
+                message="Delete your account and all your tracking data? This cannot be undone."
+                className="h-11 rounded-full border border-[#ef6d5a]/40 px-6 text-sm font-bold text-[#ef6d5a] transition hover:bg-[#ef6d5a]/10"
+              >
+                Delete my account
+              </ConfirmButton>
+            </form>
+          </div>
+        </details>
+      </Section>
+
+      <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version {version}</p>
+    </div>
   );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-6">
+      <p className="eyebrow mb-2.5 px-0.5">{title}</p>
+      {children}
+    </section>
+  );
+}
+
+function Note({ tone, children }: { tone: "ok" | "err"; children: React.ReactNode }) {
+  return (
+    <p className={`mt-3 text-xs font-semibold ${tone === "ok" ? "text-[color:var(--accent-text)]" : "text-[#ef6d5a]"}`}>
+      {children}
+    </p>
+  );
+}
+
+function StatusRow({ label, value, bad = false, border = true }: { label: string; value: string; bad?: boolean; border?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between px-4 py-3 ${border ? "border-b border-white/[0.06]" : ""}`}>
+      <span className="text-[13px] text-white/50">{label}</span>
+      <span className={`text-[13px] font-semibold ${bad ? "text-[#ef6d5a]" : "text-white"}`}>{value}</span>
+    </div>
+  );
+}
+
+function timeAgo(iso: string): string {
+  const secs = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  if (secs < 60) return "just now";
+  const mins = Math.round(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
 }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 // Deterministic gradient seeded from the title, so empty poster slots stay
@@ -14,7 +15,15 @@ function seededGradient(title: string) {
 export function Poster({ src, title, className }: { src?: string | null; title: string; className?: string }) {
   if (src) {
     return (
-      <img src={src} alt="" loading="lazy" className={cn("aspect-[2/3] w-full rounded-[12px] object-cover", className)} />
+      <div className={cn("relative aspect-[2/3] w-full overflow-hidden rounded-[12px] bg-white/5", className)}>
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 33vw, (max-width: 1280px) 20vw, 160px"
+          className="object-cover"
+        />
+      </div>
     );
   }
 
