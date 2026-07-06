@@ -9,6 +9,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { getCatalogStatus } from "@/lib/data";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { version } from "@/package.json";
 
 export default async function SettingsPage({
@@ -44,9 +45,12 @@ export default async function SettingsPage({
               {verify === "sent" ? (
                 <Note tone="ok">Verification email sent — check your inbox.</Note>
               ) : (
-                <button className="h-10 rounded-full border border-white/12 px-5 text-sm font-bold text-white transition hover:bg-white/5">
+                <SubmitButton
+                  pendingLabel="Sending…"
+                  className="h-10 rounded-full border border-white/12 px-5 text-sm font-bold text-white hover:bg-white/5"
+                >
                   Resend verification email
-                </button>
+                </SubmitButton>
               )}
             </form>
           ) : null}
