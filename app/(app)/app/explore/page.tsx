@@ -20,17 +20,28 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
       {!query ? (
-        <div className="space-y-7">
-          {sections.map((section) => (
-            <MediaRail
-              key={section.title}
-              title={section.title}
-              items={section.items}
-              trackedTitleIds={trackedTitleIds}
-              returnTo="/app/explore"
-            />
-          ))}
-        </div>
+        sections.some((s) => s.items.length > 0) ? (
+          <div className="space-y-7">
+            {sections
+              .filter((section) => section.items.length > 0)
+              .map((section) => (
+                <MediaRail
+                  key={section.title}
+                  title={section.title}
+                  items={section.items}
+                  trackedTitleIds={trackedTitleIds}
+                  returnTo="/app/explore"
+                />
+              ))}
+          </div>
+        ) : (
+          <div className="surface rounded-[16px] p-8 text-center">
+            <p className="display text-lg text-white">Nothing to explore right now.</p>
+            <p className="mt-2 text-sm text-white/50">
+              Recommendations couldn&apos;t be loaded. Try searching for a title in the header.
+            </p>
+          </div>
+        )
       ) : (
         <div className="space-y-5">
           <h1 className="display text-xl text-white">

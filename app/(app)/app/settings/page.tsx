@@ -7,6 +7,7 @@ import {
   resendVerificationAction
 } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth/session";
+import { getCatalogStatus } from "@/lib/data";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { version } from "@/package.json";
 
@@ -15,7 +16,7 @@ export default async function SettingsPage({
 }: {
   searchParams: Promise<{ saved?: string; error?: string; verify?: string }>;
 }) {
-  const user = await getCurrentUser();
+  const [user, catalog] = await Promise.all([getCurrentUser(), getCatalogStatus()]);
   const { saved, error, verify } = await searchParams;
 
   return (
@@ -62,6 +63,18 @@ export default async function SettingsPage({
           </div>
         </Link>
       </Section>
+
+      {/* Catalog health */}
+      {catalog ? (
+        <Section title="Catalog health">
+          <div className="surface overflow-hidden rounded-[14px]">
+            <StatusRow label="TMDB" value={catalog.tmdbConfigured ? "Connected" : "Not configured"} bad={!catalog.tmdbConfigured} />
+            <StatusRow label="Titles cached" value={catalog.titles.toLocaleString()} />
+            <StatusRow label="Episodes cached" value={catalog.episodes.toLocaleString()} />
+            <StatusRow label="Last updated" value={catalog.lastUpdatedAt ? timeAgo(catalog.lastUpdatedAt) : "never"} border={false} />
+          </div>
+        </Section>
+      ) : null}
 
       {/* Security */}
       <Section title="Security">
@@ -137,4 +150,23 @@ function Note({ tone, children }: { tone: "ok" | "err"; children: React.ReactNod
       {children}
     </p>
   );
+}
+
+function StatusRow({ label, value, bad = false, border = true }: { label: string; value: string; bad?: boolean; border?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between px-4 py-3 ${border ? "border-b border-white/[0.06]" : ""}`}>
+      <span className="text-[13px] text-white/50">{label}</span>
+      <span className={`text-[13px] font-semibold ${bad ? "text-[#ef6d5a]" : "text-white"}`}>{value}</span>
+    </div>
+  );
+}
+
+function timeAgo(iso: string): string {
+  const secs = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  if (secs < 60) return "just now";
+  const mins = Math.round(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
 }

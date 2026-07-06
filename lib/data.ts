@@ -62,6 +62,21 @@ export async function getStats(): Promise<Stats> {
   return api<Stats>("/v1/me/stats");
 }
 
+export type CatalogStatus = {
+  tmdbConfigured: boolean;
+  titles: number;
+  episodes: number;
+  lastUpdatedAt: string | null;
+};
+
+export async function getCatalogStatus(): Promise<CatalogStatus | null> {
+  try {
+    return await api<CatalogStatus>("/v1/catalog/status");
+  } catch {
+    return null;
+  }
+}
+
 export async function getSettings(): Promise<Settings> {
   return api<Settings>("/v1/me/settings");
 }
