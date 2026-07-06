@@ -24,15 +24,25 @@ type ApiOptions = {
 
 export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
   const token = opts.token ?? (opts.auth === false ? null : await getToken());
-  const res = await fetch(`${API_URL}${path}`, {
-    method: opts.method ?? "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-    cache: "no-store"
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      method: opts.method ?? "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      cache: "no-store",
+      // Fail a hung request instead of freezing the page render forever.
+      signal: AbortSignal.timeout(15000)
+    });
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "TimeoutError") {
+      throw new ApiError(504, "the server took too long to respond");
+    }
+    throw e;
+  }
 
   if (!res.ok) {
     throw new ApiError(res.status, await res.text().catch(() => res.statusText));
