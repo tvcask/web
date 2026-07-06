@@ -31,6 +31,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
                   items={section.items}
                   trackedTitleIds={trackedTitleIds}
                   returnTo="/app/explore"
+                  seeAllHref={`/app/browse/${section.kind}`}
                 />
               ))}
           </div>

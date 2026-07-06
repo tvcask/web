@@ -8,12 +8,14 @@ export function MediaRail({
   title,
   items,
   trackedTitleIds = [],
-  returnTo
+  returnTo,
+  seeAllHref
 }: {
   title: string;
   items: Title[];
   trackedTitleIds?: string[];
   returnTo?: string;
+  seeAllHref?: string;
 }) {
   if (items.length === 0) {
     return null;
@@ -21,7 +23,14 @@ export function MediaRail({
 
   return (
     <section>
-      <h2 className="display mb-3.5 text-[17px] text-white">{title}</h2>
+      <div className="mb-3.5 flex items-baseline justify-between">
+        <h2 className="display text-[17px] text-white">{title}</h2>
+        {seeAllHref ? (
+          <Link href={seeAllHref} className="text-[13px] font-bold text-white/45 transition hover:text-white">
+            See all
+          </Link>
+        ) : null}
+      </div>
       <div className="nos flex gap-3.5 overflow-x-auto pb-1">
         {items.map((item) => {
           const href = returnTo
