@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { api, ApiError, API_URL, getToken, TOKEN_COOKIE } from "@/lib/api";
+import { api, ApiError, TOKEN_COOKIE } from "@/lib/api";
 import type { ImportRecord } from "@/lib/data";
 
 type AuthResponse = { token: string; expiresAt: string };
@@ -219,29 +219,6 @@ export async function logoutEverywhereAction() {
   const store = await cookies();
   store.delete(TOKEN_COOKIE);
   redirect("/login");
-}
-
-// Forwards the uploaded TV Time export to the Go API as multipart form data.
-export async function importTvTimeAction(formData: FormData) {
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    redirect("/app/import?error=nofile");
-  }
-  const token = await getToken();
-  const body = new FormData();
-  body.append("file", file as File);
-
-  const res = await fetch(`${API_URL}/v1/me/import/tv-time`, {
-    method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    body,
-    cache: "no-store"
-  });
-  if (!res.ok) {
-    redirect("/app/import?error=upload");
-  }
-  const rec = (await res.json()) as ImportRecord;
-  redirect(`/app/import?id=${rec.id}`);
 }
 
 export async function getImportStatus(id: string): Promise<ImportRecord> {
