@@ -12,6 +12,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { getSettings } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { version } from "@/package.json";
 
 const nav = [
   { value: "account", label: "Account" },
@@ -145,7 +146,7 @@ export default async function SettingsPage({
             <div className="surface overflow-hidden rounded-[14px]">
               <Toggle label="Titles in your language" name="titlesInLanguage" on={settings.titlesInLanguage} border={false} />
             </div>
-            <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version 1.0.0</p>
+            <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version {version}</p>
           </>
         ) : null}
 

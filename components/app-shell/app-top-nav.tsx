@@ -8,7 +8,7 @@ import { isNavActive, navItems } from "@/components/app-shell/nav-items";
 import { Logo } from "@/components/marketing/logo";
 import { cn } from "@/lib/utils";
 
-export function AppTopNav({ user }: { user: { name?: string | null; email?: string | null } }) {
+export function AppTopNav({ user }: { user: { name?: string | null; email?: string | null; avatarUrl?: string | null } }) {
   const pathname = usePathname();
   const displayName = user.name || user.email?.split("@")[0] || "you";
 
@@ -51,7 +51,7 @@ export function AppTopNav({ user }: { user: { name?: string | null; email?: stri
             <Search className="size-5" />
           </Link>
           <Bell className="hidden size-[19px] text-white/60 sm:block" />
-          <AccountMenu name={displayName} email={user.email} />
+          <AccountMenu name={displayName} email={user.email} avatarUrl={user.avatarUrl} />
         </div>
       </div>
     </header>

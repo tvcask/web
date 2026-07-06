@@ -3,6 +3,7 @@ import { ChevronRight, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
+import { Avatar } from "@/components/ui/avatar";
 import { getLibrary, getStats } from "@/lib/data";
 
 function duration(minutes: number) {
@@ -44,10 +45,7 @@ export default async function ProfilePage() {
           <Settings className="size-[18px]" />
         </Link>
         <div className="absolute inset-x-6 bottom-5 flex items-end gap-4">
-          <div
-            className="size-[78px] shrink-0 rounded-full ring-[3px] ring-white/90"
-            style={{ background: "linear-gradient(140deg,#3a2f2a,#c0956a)" }}
-          />
+          <Avatar src={user?.avatarUrl} size={78} className="ring-[3px] ring-white/90" />
           <div className="flex-1">
             <p className="display text-[26px] text-white">{displayName}</p>
             <div className="mt-1.5 flex gap-5 text-[13px] font-semibold text-white/70">

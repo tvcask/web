@@ -216,6 +216,14 @@ export async function TitleDetail({ id }: { id: string }) {
             )}
           </div>
         ) : null}
+
+        <p className="mt-8 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-white/30">
+          Metadata and artwork from{" "}
+          <a href="https://www.themoviedb.org/" target="_blank" rel="noreferrer" className="underline transition hover:text-white/55">
+            TMDB
+          </a>
+          . This product is not endorsed or certified by TMDB.
+        </p>
       </div>
     </div>
   );
