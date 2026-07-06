@@ -73,7 +73,8 @@ export function SearchBox({
     : "h-12 pl-11 pr-10 text-sm";
   const iconCls = compact ? "left-3.5 size-4" : "left-4 size-4";
   const spinnerCls = compact ? "right-3" : "right-4";
-  const wrapperCls = className ?? (compact ? "w-[230px]" : "max-w-xl");
+  const wrapperCls =
+    className ?? (compact ? "w-[220px] transition-[width] duration-300 ease-out focus-within:w-[340px]" : "max-w-xl");
   const dropdownCls = align === "right" ? "right-0 w-[min(380px,88vw)]" : "w-full";
 
   return (

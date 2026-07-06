@@ -1,5 +1,6 @@
 import { AppBottomNav } from "@/components/app-shell/app-bottom-nav";
 import { AppTopNav } from "@/components/app-shell/app-top-nav";
+import { Toaster } from "@/components/ui/toaster";
 
 type AppShellUser = {
   name?: string | null;
@@ -13,6 +14,7 @@ export function AppShell({ children, user }: { children: React.ReactNode; user: 
       <AppTopNav user={user} />
       <main className="soft-enter px-5 pb-28 pt-8 sm:px-8 lg:pb-16">{children}</main>
       <AppBottomNav />
+      <Toaster />
     </div>
   );
 }

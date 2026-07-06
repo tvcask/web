@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
 import { updateTitleStatusAction } from "@/app/actions";
 import { Poster } from "@/components/titles/poster";
@@ -83,10 +84,23 @@ export function InfiniteLibrary({
           ))}
         </div>
       ) : type === "show" ? (
-        <div className="space-y-3">
-          {items.map((item) => (
-            <UpNextCard key={item.id} item={item} returnTo={returnTo} />
-          ))}
+        <div className="flex flex-col gap-3">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
+                exit={{ opacity: 0, height: 0, transition: { duration: 0.32, ease: [0.2, 0.8, 0.2, 1] } }}
+                style={{ overflow: "hidden" }}
+              >
+                <UpNextCard
+                  item={item}
+                  returnTo={returnTo}
+                  onComplete={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       ) : (
         <div className="grid gap-x-6 gap-y-2.5 md:grid-cols-2">

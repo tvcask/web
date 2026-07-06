@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { AccountMenu } from "@/components/app-shell/account-menu";
 import { isNavActive, navItems } from "@/components/app-shell/nav-items";
 import { Logo } from "@/components/marketing/logo";
@@ -45,7 +45,6 @@ export function AppTopNav({ user }: { user: { name?: string | null; email?: stri
           <Link href="/app/explore" aria-label="Search" className="text-white/60 md:hidden">
             <Search className="size-5" />
           </Link>
-          <Bell className="hidden size-[19px] text-white/60 sm:block" />
           <AccountMenu name={displayName} email={user.email} avatarUrl={user.avatarUrl} />
         </div>
       </div>

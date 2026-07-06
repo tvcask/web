@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Heart, Plus, Share2, X } from "lucide-react";
+import { celebrate } from "@/lib/celebrate";
 import type { Episode, Title } from "@/lib/services/types";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
@@ -29,11 +31,20 @@ export function TitleDetailClient({
   episodes: Episode[];
   initial: TitleTracking;
 }) {
+  const router = useRouter();
   const isMovie = title.type === "movie";
   const [tracked, setTracked] = useState(initial.tracked);
   const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
   const [favorite, setFavorite] = useState(initial.favorite);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
+
+  // Keep the page behind the drawer in sync — debounced so rapid toggles
+  // trigger a single re-fetch of the underlying server components.
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  function scheduleRefresh() {
+    clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(() => router.refresh(), 600);
+  }
 
   const watchedCount = episodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
   const pct = episodes.length > 0 ? Math.min(100, Math.round((watchedCount / episodes.length) * 100)) : 0;
@@ -46,46 +57,51 @@ export function TitleDetailClient({
     { value: "completed", label: isMovie ? "Watched" : "Completed" }
   ] as const;
 
+  const isComplete = (set: Set<string>) =>
+    !isMovie && episodes.length > 0 && episodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
+
   function toggleEpisode(ep: Episode) {
     const k = key(ep.seasonNumber, ep.episodeNumber);
     const willWatch = !watched.has(k);
-    const prevWatched = watched;
-    const prevTracked = tracked;
-    setWatched((s) => {
-      const n = new Set(s);
-      if (willWatch) n.add(k);
-      else n.delete(k);
-      return n;
-    });
+    const nextWatched = new Set(watched);
+    if (willWatch) nextWatched.add(k);
+    else nextWatched.delete(k);
+
+    const prev = { watched, tracked };
+    setWatched(nextWatched);
     setTracked(true);
+    if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
+    scheduleRefresh();
+
     mutate(`me/titles/${title.id}/episodes`, "POST", {
       season: ep.seasonNumber,
       episode: ep.episodeNumber,
       episodeId: ep.id,
       watched: willWatch
     }).catch(() => {
-      setWatched(prevWatched);
-      setTracked(prevTracked);
+      setWatched(prev.watched);
+      setTracked(prev.tracked);
     });
   }
 
   function toggleSeason(seasonNumber: number, seasonEpisodes: Episode[], allWatched: boolean) {
     const willWatch = !allWatched;
-    const prevWatched = watched;
-    const prevTracked = tracked;
-    setWatched((s) => {
-      const n = new Set(s);
-      for (const e of seasonEpisodes) {
-        const k = key(e.seasonNumber, e.episodeNumber);
-        if (willWatch) n.add(k);
-        else n.delete(k);
-      }
-      return n;
-    });
+    const nextWatched = new Set(watched);
+    for (const e of seasonEpisodes) {
+      const k = key(e.seasonNumber, e.episodeNumber);
+      if (willWatch) nextWatched.add(k);
+      else nextWatched.delete(k);
+    }
+
+    const prev = { watched, tracked };
+    setWatched(nextWatched);
     setTracked(true);
+    if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
+    scheduleRefresh();
+
     mutate(`me/titles/${title.id}/seasons/${seasonNumber}`, "POST", { watched: willWatch }).catch(() => {
-      setWatched(prevWatched);
-      setTracked(prevTracked);
+      setWatched(prev.watched);
+      setTracked(prev.tracked);
     });
   }
 
@@ -95,7 +111,10 @@ export function TitleDetailClient({
     setTracked(true);
     if (next === "completed") {
       setWatched(new Set(episodes.map((e) => key(e.seasonNumber, e.episodeNumber))));
+      if (prev.status !== "completed") celebrate(title.title);
     }
+    scheduleRefresh();
+
     mutate(`me/titles/${title.id}`, "PATCH", { status: next }).catch(() => {
       setStatus(prev.status);
       setWatched(prev.watched);
@@ -107,6 +126,7 @@ export function TitleDetailClient({
     const prev = { favorite, tracked };
     setFavorite(!favorite);
     setTracked(true);
+    scheduleRefresh();
     mutate(`me/titles/${title.id}`, "PATCH", { favorite: !favorite }).catch(() => {
       setFavorite(prev.favorite);
       setTracked(prev.tracked);
@@ -116,6 +136,7 @@ export function TitleDetailClient({
   function track() {
     const prev = tracked;
     setTracked(true);
+    scheduleRefresh();
     mutate(`me/titles`, "POST", { titleId: title.id, status }).catch(() => setTracked(prev));
   }
 
@@ -124,6 +145,7 @@ export function TitleDetailClient({
     setTracked(false);
     setFavorite(false);
     setWatched(new Set());
+    scheduleRefresh();
     mutate(`me/titles/${title.id}`, "DELETE").catch(() => {
       setTracked(prev.tracked);
       setFavorite(prev.favorite);
