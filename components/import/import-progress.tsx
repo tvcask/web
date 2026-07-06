@@ -1,0 +1,87 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { getImportStatus } from "@/app/actions";
+import type { ImportRecord } from "@/lib/data";
+
+export function ImportProgress({ initial }: { initial: ImportRecord }) {
+  const [rec, setRec] = useState(initial);
+
+  useEffect(() => {
+    if (rec.status !== "processing") {
+      return;
+    }
+    const timer = setInterval(async () => {
+      try {
+        setRec(await getImportStatus(rec.id));
+      } catch {
+        // keep the last known state; next tick retries
+      }
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [rec.status, rec.id]);
+
+  const processed = rec.matchedTitles + rec.unmatchedTitles;
+  const pct = rec.totalTitles > 0 ? Math.min(100, Math.round((processed / rec.totalTitles) * 100)) : 0;
+  const done = rec.status === "completed";
+
+  return (
+    <div className="surface rounded-[16px] p-7">
+      <div className="flex items-center gap-3">
+        {done ? (
+          <CheckCircle2 className="size-6" style={{ color: "var(--accent-text)" }} />
+        ) : (
+          <Loader2 className="size-6 animate-spin text-white/60" />
+        )}
+        <h2 className="display text-xl text-white">
+          {done ? "Import complete" : "Importing your history…"}
+        </h2>
+      </div>
+
+      <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${done ? 100 : pct}%`, background: "var(--accent)" }}
+        />
+      </div>
+
+      <div className="mt-5 grid grid-cols-3 gap-4">
+        <Stat label="Matched" value={rec.matchedTitles} accent />
+        <Stat label="Episodes" value={rec.watchedEpisodes} />
+        <Stat label="Skipped" value={rec.unmatchedTitles} />
+      </div>
+
+      {!done ? (
+        <p className="mt-5 text-sm text-white/50">
+          Matching {rec.totalTitles} titles against TMDB. This runs in the background — you can keep using the app.
+        </p>
+      ) : (
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/app/shows"
+            className="rounded-full px-5 py-2.5 text-sm font-bold"
+            style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+          >
+            See my shows
+          </Link>
+          <Link href="/app/profile" className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-bold text-white">
+            View profile
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Stat({ label, value, accent = false }: { label: string; value: number; accent?: boolean }) {
+  return (
+    <div>
+      <p className="eyebrow">{label}</p>
+      <p className="display mt-1.5 text-2xl" style={{ color: accent ? "var(--accent-text)" : "#fff" }}>
+        {value.toLocaleString()}
+      </p>
+    </div>
+  );
+}

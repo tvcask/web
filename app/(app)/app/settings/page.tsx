@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { endSession, setThemeAction, toggleSettingAction } from "@/app/actions";
-import { getCurrentUser, getUserId } from "@/lib/auth/session";
-import { getSettings } from "@/lib/services/settings-service";
+import { FileUp } from "lucide-react";
+import {
+  changePasswordAction,
+  deleteAccountAction,
+  endSession,
+  setThemeAction,
+  toggleSettingAction,
+  updateProfileAction
+} from "@/app/actions";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getSettings } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -11,13 +19,14 @@ const nav = [
   { value: "upcoming", label: "Upcoming" }
 ];
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ section?: string }> }) {
-  const user = await getCurrentUser();
-  const userId = await getUserId();
-  const { section } = await searchParams;
+export default async function SettingsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ section?: string; saved?: string; error?: string }>;
+}) {
+  const [user, settings] = await Promise.all([getCurrentUser(), getSettings()]);
+  const { section, saved, error } = await searchParams;
   const active = nav.some((n) => n.value === section) ? section! : "account";
-  const settings = await getSettings(userId);
-  const username = user?.name || user?.email?.split("@")[0] || "you";
 
   return (
     <div className="mx-auto grid max-w-[900px] gap-8 md:grid-cols-[200px_1fr]">
@@ -45,18 +54,70 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <div className="max-w-[560px]">
         {active === "account" ? (
           <>
+            <p className="eyebrow mb-2.5 px-0.5">Profile</p>
+            <form action={updateProfileAction} className="surface mb-5 rounded-[14px] p-4">
+              <label className="block text-[13px] font-semibold text-white/60">Display name</label>
+              <input
+                name="name"
+                defaultValue={user?.name ?? ""}
+                className="cask-focus mt-1.5 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none"
+              />
+              <label className="mt-4 block text-[13px] font-semibold text-white/60">Avatar URL</label>
+              <input
+                name="avatarUrl"
+                defaultValue={user?.avatarUrl ?? ""}
+                placeholder="https://…"
+                className="cask-focus mt-1.5 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
+              />
+              {saved === "profile" ? <p className="mt-3 text-xs font-semibold text-[color:var(--accent-text)]">Profile saved.</p> : null}
+              {error === "profile" ? <p className="mt-3 text-xs font-semibold text-[#ef6d5a]">Could not save profile.</p> : null}
+              <button className="accent-fill mt-4 h-11 rounded-full px-6 text-sm font-extrabold">Save profile</button>
+            </form>
+
             <p className="eyebrow mb-2.5 px-0.5">Identification</p>
             <div className="surface mb-5 overflow-hidden rounded-[14px]">
-              <Row label="Username" value={username} />
               <Row label="Email" value={user?.email ?? "—"} border={false} />
             </div>
+
+            <p className="eyebrow mb-2.5 px-0.5">Import</p>
+            <Link href="/app/import" className="surface mb-5 flex items-center gap-3 rounded-[14px] p-4 transition hover:bg-white/[0.04]">
+              <FileUp className="size-5 text-white/50" />
+              <div>
+                <p className="text-sm font-bold text-white">Import from TV Time</p>
+                <p className="text-xs text-white/45">Bring over your shows, movies and watched episodes.</p>
+              </div>
+            </Link>
+
+            <p className="eyebrow mb-2.5 px-0.5">Change password</p>
+            <form action={changePasswordAction} className="surface mb-5 rounded-[14px] p-4">
+              <input
+                name="currentPassword"
+                type="password"
+                placeholder="Current password"
+                required
+                className="cask-focus h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
+              />
+              <input
+                name="newPassword"
+                type="password"
+                placeholder="New password (min 6)"
+                required
+                className="cask-focus mt-3 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
+              />
+              {saved === "password" ? <p className="mt-3 text-xs font-semibold text-[color:var(--accent-text)]">Password changed.</p> : null}
+              {error === "password" ? <p className="mt-3 text-xs font-semibold text-[#ef6d5a]">Current password is incorrect.</p> : null}
+              <button className="mt-4 h-11 rounded-full border border-white/12 px-6 text-sm font-bold text-white">Update password</button>
+            </form>
+
             <div className="flex gap-3">
               <form action={endSession} className="flex-1">
                 <button className="accent-fill h-[52px] w-full rounded-full text-sm font-extrabold">Log out</button>
               </form>
-              <button className="h-[52px] rounded-full border border-white/12 px-6 text-sm font-bold" style={{ color: "var(--accent-text)" }}>
-                Delete account
-              </button>
+              <form action={deleteAccountAction}>
+                <button className="h-[52px] rounded-full border border-white/12 px-6 text-sm font-bold" style={{ color: "var(--accent-text)" }}>
+                  Delete account
+                </button>
+              </form>
             </div>
           </>
         ) : null}

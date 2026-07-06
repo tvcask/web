@@ -2,9 +2,8 @@ import Link from "next/link";
 import { ChevronRight, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
-import { getCurrentUser, getUserId } from "@/lib/auth/session";
-import { getStats } from "@/lib/services/stats-service";
-import { getFavoriteTitles, getUserCollections, getUserList } from "@/lib/services/tracking-service";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getLibrary, getStats } from "@/lib/data";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -16,14 +15,8 @@ function duration(minutes: number) {
 }
 
 export default async function ProfilePage() {
-  const user = await getCurrentUser();
-  const userId = await getUserId();
-  const [stats, list, collections, favorites] = await Promise.all([
-    getStats(userId),
-    getUserList(userId),
-    getUserCollections(userId),
-    getFavoriteTitles(userId)
-  ]);
+  const [user, stats, list] = await Promise.all([getCurrentUser(), getStats(), getLibrary()]);
+  const favorites = list.filter((item) => item.favorite);
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
   const allShows = list.filter((item) => item.title.type !== "movie");
@@ -33,9 +26,9 @@ export default async function ProfilePage() {
   const movieCount = allMovies.length;
 
   const statTiles = [
-    { label: "TV time", value: duration(stats.episodesWatched * 42), accent: false },
+    { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
     { label: "Episodes", value: stats.episodesWatched.toLocaleString(), accent: false },
-    { label: "Movie time", value: duration(movieCount * 110), accent: false },
+    { label: "Movie time", value: duration(stats.movieTimeMinutes), accent: false },
     { label: "Completed", value: String(stats.completedTitles), accent: true }
   ];
 
@@ -85,29 +78,12 @@ export default async function ProfilePage() {
       {allMovies.length > 0 ? <Rail title="Movies" href="/app/movies" items={allMovies.map((i) => i.title)} /> : null}
       {favMovies.length > 0 ? <Rail title="Favorite movies" heart items={favMovies.map((i) => i.title)} /> : null}
 
-      {collections.length > 0 ? (
-        <section>
-          <h2 className="display mb-3 text-lg text-white">Lists</h2>
-          <div className="nos flex gap-3.5 overflow-x-auto pb-1">
-            {collections.map((collection) => (
-              <div
-                key={collection.id}
-                className="surface relative flex h-[130px] w-[240px] shrink-0 flex-col justify-end overflow-hidden rounded-[14px] p-3.5"
-              >
-                <span className="display text-[17px] text-white">{collection.name}</span>
-                <span className="mt-0.5 text-xs font-semibold text-white/60">{collection.items.length} titles</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
       {list.length === 0 ? (
         <div className="surface rounded-[16px] p-8">
           <h2 className="display text-xl text-white">Your profile is empty.</h2>
-          <p className="mt-2 max-w-md text-white/50">Import your TV Time history to fill in your stats and favorites.</p>
+          <p className="mt-2 max-w-md text-white/50">Track shows and movies to fill in your stats and favorites.</p>
           <Button asChild className="mt-5">
-            <Link href="/app/import">Import from TV Time</Link>
+            <Link href="/app/explore">Explore titles</Link>
           </Button>
         </div>
       ) : null}

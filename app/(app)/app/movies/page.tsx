@@ -1,16 +1,13 @@
 import Link from "next/link";
-import { FileUp, Search } from "lucide-react";
+import { Check, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
-import { Check } from "lucide-react";
 import { updateTitleStatusAction } from "@/app/actions";
 import { LibraryGrid } from "@/components/titles/library-grid";
 import { MediaRail } from "@/components/titles/media-rail";
 import { Poster } from "@/components/titles/poster";
-import { getUserId } from "@/lib/auth/session";
-import { getDiscoverSections } from "@/lib/services/metadata-service";
-import { getUserMovies } from "@/lib/services/tracking-service";
+import { getDiscover, getLibrary } from "@/lib/data";
 
 const tabs = [
   { value: "watchlist", label: "Watch list" },
@@ -18,12 +15,11 @@ const tabs = [
 ];
 
 export default async function MoviesPage({ searchParams }: { searchParams: Promise<{ tab?: string; view?: string }> }) {
-  const userId = await getUserId();
   const { tab, view } = await searchParams;
   const activeTab = tab === "watched" ? "watched" : "watchlist";
   const activeView = view === "list" ? "list" : "grid";
 
-  const movies = await getUserMovies(userId);
+  const movies = await getLibrary("movie");
   const visible =
     activeTab === "watched"
       ? movies.filter((item) => item.status === "completed")
@@ -89,26 +85,19 @@ export default async function MoviesPage({ searchParams }: { searchParams: Promi
 }
 
 async function EmptyMovies() {
-  const sections = await getDiscoverSections();
+  const sections = await getDiscover();
   const movies = sections.find((section) => section.items.some((item) => item.type === "movie"));
 
   return (
     <div className="space-y-8">
       <div className="surface rounded-[16px] p-8">
         <h2 className="display text-xl text-white">No movies yet.</h2>
-        <p className="mt-2 max-w-md text-white/50">Import your TV Time movies, or add some from Explore.</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/app/import">
-              <FileUp className="size-4" /> Import from TV Time
-            </Link>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/app/explore">
-              <Search className="size-4" /> Explore
-            </Link>
-          </Button>
-        </div>
+        <p className="mt-2 max-w-md text-white/50">Add movies from Explore to start tracking.</p>
+        <Button asChild className="mt-5">
+          <Link href="/app/explore">
+            <Search className="size-4" /> Explore
+          </Link>
+        </Button>
       </div>
       {movies ? (
         <MediaRail

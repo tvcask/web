@@ -54,7 +54,7 @@ export function UpNextCard({
       </div>
 
       <form action={markNextAction}>
-        <input type="hidden" name="userTitleId" value={item.id} />
+        <input type="hidden" name="titleId" value={item.title.id} />
         <input type="hidden" name="returnTo" value={returnTo} />
         <button
           className="cask-focus grid size-11 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)]"
