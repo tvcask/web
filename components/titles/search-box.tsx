@@ -5,7 +5,17 @@ import { useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
 import type { Title } from "@/lib/services/types";
 
-export function SearchBox({ initialQuery = "" }: { initialQuery?: string }) {
+export function SearchBox({
+  initialQuery = "",
+  size = "lg",
+  align = "left",
+  className
+}: {
+  initialQuery?: string;
+  size?: "md" | "lg";
+  align?: "left" | "right";
+  className?: string;
+}) {
   const router = useRouter();
   const [value, setValue] = useState(initialQuery);
   const [results, setResults] = useState<Title[]>([]);
@@ -57,8 +67,17 @@ export function SearchBox({ initialQuery = "" }: { initialQuery?: string }) {
     router.push(`/app/titles/${id}?returnTo=/app/explore`);
   }
 
+  const compact = size === "md";
+  const inputCls = compact
+    ? "h-10 pl-10 pr-9 text-[13px]"
+    : "h-12 pl-11 pr-10 text-sm";
+  const iconCls = compact ? "left-3.5 size-4" : "left-4 size-4";
+  const spinnerCls = compact ? "right-3" : "right-4";
+  const wrapperCls = className ?? (compact ? "w-[230px]" : "max-w-xl");
+  const dropdownCls = align === "right" ? "right-0 w-[min(380px,88vw)]" : "w-full";
+
   return (
-    <div ref={boxRef} className="relative max-w-xl">
+    <div ref={boxRef} className={`relative ${wrapperCls}`}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -66,20 +85,22 @@ export function SearchBox({ initialQuery = "" }: { initialQuery?: string }) {
           setOpen(false);
         }}
       >
-        <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-white/40" />
+        <Search className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-white/40 ${iconCls}`} />
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
           autoComplete="off"
-          placeholder="Search shows, movies, anime, K-dramas"
-          className="cask-focus h-12 w-full rounded-full bg-white/5 pl-11 pr-10 text-sm text-white outline-none placeholder:text-white/40"
+          placeholder={compact ? "Search" : "Search shows, movies, anime, K-dramas"}
+          className={`cask-focus w-full rounded-full bg-white/5 text-white outline-none placeholder:text-white/40 ${inputCls}`}
         />
-        {loading ? <Loader2 className="absolute right-4 top-1/2 size-4 -translate-y-1/2 animate-spin text-white/40" /> : null}
+        {loading ? (
+          <Loader2 className={`absolute top-1/2 size-4 -translate-y-1/2 animate-spin text-white/40 ${spinnerCls}`} />
+        ) : null}
       </form>
 
       {open && results.length > 0 ? (
-        <div className="absolute z-30 mt-2 w-full overflow-hidden rounded-[14px] border border-white/10 bg-[#14110d] shadow-2xl">
+        <div className={`absolute z-40 mt-2 overflow-hidden rounded-[14px] border border-white/10 bg-[#14110d] shadow-2xl ${dropdownCls}`}>
           <ul className="nos max-h-[380px] overflow-y-auto py-1.5">
             {results.slice(0, 8).map((t) => (
               <li key={t.id}>

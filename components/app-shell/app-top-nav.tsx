@@ -6,6 +6,7 @@ import { Bell, Search } from "lucide-react";
 import { AccountMenu } from "@/components/app-shell/account-menu";
 import { isNavActive, navItems } from "@/components/app-shell/nav-items";
 import { Logo } from "@/components/marketing/logo";
+import { SearchBox } from "@/components/titles/search-box";
 import { cn } from "@/lib/utils";
 
 export function AppTopNav({ user }: { user: { name?: string | null; email?: string | null; avatarUrl?: string | null } }) {
@@ -38,15 +39,9 @@ export function AppTopNav({ user }: { user: { name?: string | null; email?: stri
         </nav>
 
         <div className="ml-auto flex items-center gap-3.5">
-          <form action="/app/explore" className="hidden items-center rounded-[11px] bg-white/5 md:flex">
-            <Search className="ml-3.5 size-4 text-white/40" />
-            <input
-              name="q"
-              aria-label="Search shows and movies"
-              placeholder="Search"
-              className="h-[38px] w-[150px] rounded-[11px] bg-transparent px-3 text-[13px] text-white outline-none placeholder:text-white/40 xl:w-[190px]"
-            />
-          </form>
+          <div className="hidden md:block">
+            <SearchBox size="md" align="right" />
+          </div>
           <Link href="/app/explore" aria-label="Search" className="text-white/60 md:hidden">
             <Search className="size-5" />
           </Link>

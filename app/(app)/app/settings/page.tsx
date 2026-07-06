@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ChevronLeft, FileUp } from "lucide-react";
+import { ChevronDown, ChevronLeft, FileUp } from "lucide-react";
 import {
   changePasswordAction,
   deleteAccountAction,
-  endSession,
   logoutEverywhereAction,
   resendVerificationAction
 } from "@/app/actions";
@@ -95,23 +94,30 @@ export default async function SettingsPage({
         </form>
       </Section>
 
-      {/* Session + danger */}
-      <div className="mt-8 flex gap-3">
-        <form action={endSession} className="flex-1">
-          <button className="accent-fill h-[52px] w-full rounded-full text-sm font-extrabold">Log out</button>
-        </form>
-        <form action={deleteAccountAction}>
-          <ConfirmButton
-            message="Delete your account and all your tracking data? This cannot be undone."
-            className="h-[52px] rounded-full border border-white/12 px-6 text-sm font-bold"
-            style={{ color: "var(--accent-text)" }}
-          >
-            Delete account
-          </ConfirmButton>
-        </form>
-      </div>
+      {/* Danger zone */}
+      <Section title="Danger zone">
+        <details className="group surface overflow-hidden rounded-[14px]">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5">
+            <span className="text-sm font-bold text-[#ef6d5a]">Delete account</span>
+            <ChevronDown className="size-4 text-white/40 transition group-open:rotate-180" />
+          </summary>
+          <div className="border-t border-white/[0.06] px-4 py-4">
+            <p className="text-sm leading-6 text-white/50">
+              This permanently deletes your account and all your tracking data. This can&apos;t be undone.
+            </p>
+            <form action={deleteAccountAction} className="mt-4">
+              <ConfirmButton
+                message="Delete your account and all your tracking data? This cannot be undone."
+                className="h-11 rounded-full border border-[#ef6d5a]/40 px-6 text-sm font-bold text-[#ef6d5a] transition hover:bg-[#ef6d5a]/10"
+              >
+                Delete my account
+              </ConfirmButton>
+            </form>
+          </div>
+        </details>
+      </Section>
 
-      <p className="mt-8 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version {version}</p>
+      <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-white/35">Version {version}</p>
     </div>
   );
 }
