@@ -51,6 +51,27 @@ export async function endSession() {
   redirect("/");
 }
 
+export async function forgotPasswordAction(formData: FormData) {
+  const email = String(formData.get("email"));
+  try {
+    await api("/v1/auth/forgot-password", { method: "POST", body: { email }, auth: false });
+  } catch {
+    // ignore — the endpoint always succeeds; never leak whether the email exists
+  }
+  redirect("/forgot-password?sent=1");
+}
+
+export async function resetPasswordAction(formData: FormData) {
+  const token = String(formData.get("token"));
+  const newPassword = String(formData.get("newPassword"));
+  try {
+    await api("/v1/auth/reset-password", { method: "POST", body: { token, newPassword }, auth: false });
+  } catch {
+    redirect(`/reset-password?token=${encodeURIComponent(token)}&error=1`);
+  }
+  redirect("/login?reset=1");
+}
+
 function revalidateTracking(titleId?: string) {
   revalidatePath("/app/shows");
   revalidatePath("/app/movies");
@@ -164,8 +185,9 @@ export async function updateProfileAction(formData: FormData) {
 }
 
 export async function changePasswordAction(formData: FormData) {
+  let res: AuthResponse;
   try {
-    await api("/v1/me/password", {
+    res = await api<AuthResponse>("/v1/me/password", {
       method: "POST",
       body: {
         currentPassword: String(formData.get("currentPassword")),
@@ -175,6 +197,8 @@ export async function changePasswordAction(formData: FormData) {
   } catch {
     redirect("/app/settings?section=account&error=password");
   }
+  // The API bumps the token version (revoking other sessions), so refresh our cookie.
+  await setSession(res);
   redirect("/app/settings?section=account&saved=password");
 }
 
