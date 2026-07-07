@@ -31,6 +31,7 @@ export default async function ProfilePage() {
   const allMovies = moviesPage.items;
   const favShows = favorites.filter((item) => item.title.type !== "movie");
   const favMovies = favorites.filter((item) => item.title.type === "movie");
+  const showCount = showsPage.total;
   const movieCount = moviesPage.total;
   const hasLibrary = showsPage.total + moviesPage.total > 0;
 
@@ -59,8 +60,7 @@ export default async function ProfilePage() {
               <p className="display truncate text-[22px] leading-tight text-white sm:text-[26px]">{displayName}</p>
               {user?.username ? <p className="truncate text-sm font-semibold text-white/50">@{user.username}</p> : null}
               <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-semibold text-white/70">
-                <span><b className="text-white">0</b> Following</span>
-                <span><b className="text-white">0</b> Followers</span>
+                <span><b className="text-white">{showCount}</b> Shows</span>
                 <span><b className="text-white">{movieCount}</b> Movies</span>
               </div>
             </div>
