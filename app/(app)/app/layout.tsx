@@ -10,9 +10,8 @@ export default async function ProtectedLayout({
 }) {
   const user = await requireUser();
   return (
-    <AppShell user={user}>
+    <AppShell user={user} modal={modal}>
       {children}
-      {modal}
     </AppShell>
   );
 }
