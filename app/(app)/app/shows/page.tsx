@@ -27,11 +27,13 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="mx-auto max-w-[1300px]">
-      <header className="mb-6 flex items-center gap-4">
-        <h1 className="display text-2xl text-white">Shows</h1>
+      <header className="mb-6 flex items-center gap-2.5 sm:gap-4">
+        <h1 className="display shrink-0 text-xl text-white sm:text-2xl">Shows</h1>
         <TabsNav tabs={tabs} active={activeTab} base="/app/shows" />
         {activeTab === "watchlist" && total > 0 ? (
-          <ViewToggle view={activeView} listHref="/app/shows?tab=watchlist&view=list" gridHref="/app/shows?tab=watchlist&view=grid" />
+          <div className="ml-auto shrink-0">
+            <ViewToggle view={activeView} listHref="/app/shows?tab=watchlist&view=list" gridHref="/app/shows?tab=watchlist&view=grid" />
+          </div>
         ) : null}
       </header>
 
