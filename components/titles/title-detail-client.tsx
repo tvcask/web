@@ -294,7 +294,11 @@ export function TitleDetailClient({
                               <div
                                 className="h-[46px] w-[80px] shrink-0 overflow-hidden rounded-[7px]"
                                 style={{ background: "linear-gradient(140deg,#2a2f3a,#14110d)" }}
-                              />
+                              >
+                                {episode.stillUrl ? (
+                                  <img src={episode.stillUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                                ) : null}
+                              </div>
                               <div className="min-w-0 flex-1">
                                 <p className="truncate text-sm font-semibold text-white">
                                   E{pad(episode.episodeNumber)} · {episode.name ?? "TBA"}
