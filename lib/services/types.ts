@@ -29,6 +29,7 @@ export type Episode = {
   airDate?: string | null;
   runtimeMinutes?: number | null;
   network?: string | null;
+  stillUrl?: string | null;
 };
 
 export type UserTitle = {
