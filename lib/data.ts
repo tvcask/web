@@ -33,13 +33,14 @@ export type Settings = {
 export type TitleDetail = Title & { episodes: Episode[] };
 export type MyTitle = { tracked: boolean; userTitle?: UserTitle; watched: string[] };
 
-export type LibraryQuery = { type?: "show" | "movie"; status?: string; limit?: number; offset?: number };
+export type LibraryQuery = { type?: "show" | "movie"; status?: string; favorite?: boolean; limit?: number; offset?: number };
 export type LibraryPage = { items: UserTitleWithTitle[]; total: number; limit: number; offset: number };
 
-function libraryPath({ type, status, limit, offset }: LibraryQuery = {}): string {
+function libraryPath({ type, status, favorite, limit, offset }: LibraryQuery = {}): string {
   const p = new URLSearchParams();
   if (type) p.set("type", type);
   if (status) p.set("status", status);
+  if (favorite) p.set("favorite", "true");
   if (limit != null) p.set("limit", String(limit));
   if (offset != null) p.set("offset", String(offset));
   const qs = p.toString();
