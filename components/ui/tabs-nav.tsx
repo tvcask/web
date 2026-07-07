@@ -11,7 +11,7 @@ export function TabsNav({ tabs, active, base }: { tabs: Tab[]; active: string; b
           key={tab.value}
           href={`${base}?tab=${tab.value}`}
           className={cn(
-            "rounded-full px-[18px] py-2 text-[13px] font-bold transition",
+            "whitespace-nowrap rounded-full px-[18px] py-2 text-[13px] font-bold transition",
             active === tab.value ? "accent-fill" : "bg-white/5 text-white/70 hover:text-white"
           )}
         >

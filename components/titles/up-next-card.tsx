@@ -51,10 +51,10 @@ export function UpNextCard({
   }
 
   return (
-    <article className="flex items-center gap-5 rounded-[16px] border border-white/[0.08] p-4">
+    <article className="flex items-center gap-3 rounded-[16px] border border-white/[0.08] p-3 sm:gap-5 sm:p-4">
       <Link
         href={href}
-        className="relative h-[80px] w-[140px] shrink-0 overflow-hidden rounded-[10px] ring-1 ring-white/[0.07]"
+        className="relative h-[64px] w-[112px] shrink-0 overflow-hidden rounded-[10px] ring-1 ring-white/[0.07] sm:h-[80px] sm:w-[140px]"
         style={item.title.backdropUrl ? undefined : { background: seededGradient(item.title.title) }}
       >
         {item.title.backdropUrl ? <img src={item.title.backdropUrl} alt="" className="h-full w-full object-cover" /> : null}

@@ -12,7 +12,13 @@ export function TitleDrawer({ children }: { children: React.ReactNode }) {
       if (event.key === "Escape") router.back();
     }
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    // Lock the page behind the sheet so the body doesn't scroll on mobile.
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
   }, [router]);
 
   return (
@@ -23,12 +29,17 @@ export function TitleDrawer({ children }: { children: React.ReactNode }) {
         style={{ animation: "fadeIn 0.2s ease both" }}
       />
       <div
-        className="nos fixed right-0 top-0 z-50 h-screen w-full max-w-[560px] overflow-y-auto overscroll-contain border-l border-white/[0.08] bg-[#0a0a0c]"
-        style={{ animation: "drawerIn 0.28s cubic-bezier(0.2,0.8,0.2,1) both" }}
+        className="nos fixed z-50 flex flex-col overflow-y-auto overscroll-contain bg-[#0a0a0c] inset-x-0 bottom-0 max-h-[92dvh] w-full rounded-t-[22px] border-t border-white/[0.08] [animation:sheetIn_0.3s_cubic-bezier(0.2,0.8,0.2,1)_both] sm:inset-y-0 sm:left-auto sm:right-0 sm:h-dvh sm:max-h-none sm:w-full sm:max-w-[560px] sm:rounded-t-none sm:border-l sm:border-t-0 sm:[animation:drawerIn_0.28s_cubic-bezier(0.2,0.8,0.2,1)_both]"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
+        {/* Grab handle — mobile bottom sheet only. */}
+        <div className="pointer-events-none absolute inset-x-0 top-2.5 z-20 flex justify-center sm:hidden">
+          <span className="h-1 w-9 rounded-full bg-white/40" />
+        </div>
+
         <button
           onClick={() => router.back()}
-          className="absolute left-5 top-5 z-10 grid size-9 place-items-center rounded-full bg-black/50 text-white backdrop-blur transition hover:bg-black/70"
+          className="absolute left-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-black/50 text-white backdrop-blur transition hover:bg-black/70 sm:left-5 sm:top-5"
           aria-label="Close"
         >
           <X className="size-4" />

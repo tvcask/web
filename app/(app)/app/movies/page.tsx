@@ -23,15 +23,17 @@ export default async function MoviesPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="mx-auto max-w-[1300px]">
-      <header className="mb-6 flex items-center gap-4">
-        <h1 className="display text-2xl text-white">Movies</h1>
+      <header className="mb-6 flex items-center gap-2.5 sm:gap-4">
+        <h1 className="display shrink-0 text-xl text-white sm:text-2xl">Movies</h1>
         <TabsNav tabs={tabs} active={activeTab} base="/app/movies" />
         {total > 0 ? (
-          <ViewToggle
-            view={activeView}
-            listHref={`/app/movies?tab=${activeTab}&view=list`}
-            gridHref={`/app/movies?tab=${activeTab}&view=grid`}
-          />
+          <div className="ml-auto shrink-0">
+            <ViewToggle
+              view={activeView}
+              listHref={`/app/movies?tab=${activeTab}&view=list`}
+              gridHref={`/app/movies?tab=${activeTab}&view=grid`}
+            />
+          </div>
         ) : null}
       </header>
 

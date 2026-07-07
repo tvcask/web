@@ -43,27 +43,29 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
-      <section className="relative h-[184px] overflow-hidden rounded-[18px]" style={{ background: "linear-gradient(120deg,#2a2016,#14110d 52%,#3a2418)" }}>
+      <section className="relative overflow-hidden rounded-[18px]" style={{ background: "linear-gradient(120deg,#2a2016,#14110d 52%,#3a2418)" }}>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         <Link
           href="/app/settings"
           aria-label="Settings"
-          className="absolute right-4 top-4 grid size-9 place-items-center rounded-full bg-black/40 text-white"
+          className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-black/40 text-white"
         >
           <Settings className="size-[18px]" />
         </Link>
-        <div className="absolute inset-x-6 bottom-5 flex items-end gap-4">
-          <Avatar src={user?.avatarUrl} size={78} className="ring-[3px] ring-white/90" />
-          <div className="flex-1">
-            <p className="display text-[26px] leading-tight text-white">{displayName}</p>
-            {user?.username ? <p className="text-sm font-semibold text-white/50">@{user.username}</p> : null}
-            <div className="mt-1.5 flex gap-5 text-[13px] font-semibold text-white/70">
-              <span><b className="text-white">0</b> Following</span>
-              <span><b className="text-white">0</b> Followers</span>
-              <span><b className="text-white">{movieCount}</b> Movies</span>
+        <div className="relative flex flex-col gap-4 px-5 pb-5 pt-16 sm:flex-row sm:items-end sm:px-6 sm:pt-24">
+          <div className="flex min-w-0 flex-1 items-end gap-4">
+            <Avatar src={user?.avatarUrl} size={78} className="shrink-0 ring-[3px] ring-white/90" />
+            <div className="min-w-0 flex-1">
+              <p className="display truncate text-[22px] leading-tight text-white sm:text-[26px]">{displayName}</p>
+              {user?.username ? <p className="truncate text-sm font-semibold text-white/50">@{user.username}</p> : null}
+              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-semibold text-white/70">
+                <span><b className="text-white">0</b> Following</span>
+                <span><b className="text-white">0</b> Followers</span>
+                <span><b className="text-white">{movieCount}</b> Movies</span>
+              </div>
             </div>
           </div>
-          <Button asChild variant="secondary" className="border-white/50">
+          <Button asChild variant="secondary" className="w-full border-white/50 sm:w-auto sm:shrink-0">
             <Link href="/app/profile/edit">Edit profile</Link>
           </Button>
         </div>
