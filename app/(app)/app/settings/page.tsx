@@ -43,7 +43,7 @@ export default async function SettingsPage({
           {!user?.emailVerified ? (
             <form action={resendVerificationAction} className="mt-3">
               {verify === "sent" ? (
-                <Note tone="ok">Verification email sent — check your inbox.</Note>
+                <Note tone="ok">Verification email sent. Check your inbox.</Note>
               ) : (
                 <SubmitButton
                   pendingLabel="Sending…"

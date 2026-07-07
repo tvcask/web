@@ -94,7 +94,7 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
 
       {!done ? (
         <p className="mt-5 text-sm text-white/50">
-          Matching {rec.totalTitles} titles against TMDB. This runs in the background — you can keep using the app.
+          Matching {rec.totalTitles} titles against TMDB. This runs in the background. You can keep using the app.
         </p>
       ) : (
         <div className="mt-6 flex flex-wrap gap-3">

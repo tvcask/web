@@ -19,7 +19,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </>
       }
     >
-      {reset ? <Banner tone="ok">Password updated — log in with your new one.</Banner> : null}
+      {reset ? <Banner tone="ok">Password updated. Log in with your new one.</Banner> : null}
       {error ? <Banner tone="err">Invalid email or password.</Banner> : null}
       <form action={loginAction} className="space-y-4">
         <Field label="Email">

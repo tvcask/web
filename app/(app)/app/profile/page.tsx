@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, Settings } from "lucide-react";
+import { ChevronRight, Heart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -114,11 +114,7 @@ function Rail({
   return (
     <section>
       <div className="mb-3 flex items-center gap-2">
-        {heart ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--accent-text)" aria-hidden>
-            <path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 16.5 12 21 12 21z" />
-          </svg>
-        ) : null}
+        {heart ? <Heart className="size-4 fill-current" style={{ color: "var(--accent-text)" }} aria-hidden /> : null}
         <h2 className="display text-lg text-white">{title}</h2>
         {href ? (
           <Link href={href} className="ml-auto text-white/40 transition hover:text-white" aria-label={`All ${title}`}>
