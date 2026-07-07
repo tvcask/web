@@ -1,7 +1,9 @@
-// Minimal service worker: makes the app installable and gives a basic offline
-// fallback. Network-first so users always get fresh content when online; the
-// cache only kicks in when the network fails. The API is never cached.
-const CACHE = "tvcask-v1";
+// Minimal service worker: makes the app installable and speeds up repeat loads
+// of immutable build assets. It deliberately does NOT touch navigations, RSC
+// payloads, or API calls — caching those broke the intercepting-route detail
+// modal on mobile (the overlay showed but the content payload was stale or
+// mismatched, so nothing rendered). Anything dynamic always hits the network.
+const CACHE = "tvcask-v2";
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -14,19 +16,28 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+const STATIC = /\.(?:css|js|woff2?|png|jpg|jpeg|gif|svg|ico|webp)$/;
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
+  if (req.method !== "GET") return;
   const url = new URL(req.url);
-  if (req.method !== "GET" || url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith("/api")) return; // never cache authenticated API calls
+  if (url.origin !== self.location.origin) return;
+
+  // Only immutable build assets are cache-first. Everything else (documents,
+  // RSC payloads, /api) is left for the browser to fetch normally.
+  const isStatic = url.pathname.startsWith("/_next/static/") || STATIC.test(url.pathname);
+  if (!isStatic) return;
 
   event.respondWith(
-    fetch(req)
-      .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-        return res;
-      })
-      .catch(() => caches.match(req))
+    caches.match(req).then(
+      (hit) =>
+        hit ||
+        fetch(req).then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+    )
   );
 });

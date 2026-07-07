@@ -8,8 +8,8 @@ export function Logo() {
         alt=""
         className="size-[30px] rounded-[8px] object-cover"
       />
-      <span className="display whitespace-nowrap text-[17px] text-white uppercase">
-        {site.name}
+      <span className="display whitespace-nowrap text-[17px] text-white">
+        TVCask
       </span>
     </div>
   );
