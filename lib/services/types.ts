@@ -48,6 +48,12 @@ export type UserTitle = {
 export type UserTitleWithTitle = UserTitle & {
   title: Title;
   episodeCount: number;
+  // First unwatched episode, computed by the API against real catalog data.
+  // Null when the show has no episodes left to watch.
+  nextSeason?: number | null;
+  nextEpisode?: number | null;
+  // Unwatched episodes remaining, including the next one.
+  remaining: number;
 };
 
 export type UserCollectionKind = "custom" | "watchlist" | "favorites" | "completed" | "watching";

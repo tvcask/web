@@ -25,29 +25,40 @@ export function UpNextCard({
   returnTo?: string;
   onComplete?: (id: string) => void;
 }) {
-  const season = item.currentSeason ?? 1;
-  const episodeCount = item.episodeCount;
-  const [current, setCurrent] = useState(item.currentEpisode ?? 0);
+  const [season, setSeason] = useState(item.nextSeason ?? 1);
+  const [next, setNext] = useState(item.nextEpisode ?? 1);
+  const [remaining, setRemaining] = useState(item.remaining);
   const [marking, setMarking] = useState(false);
 
-  const next = current + 1;
-  const remaining = Math.max(0, episodeCount - next);
+  // Episodes left after the one shown, for the "+N" badge.
+  const rest = Math.max(0, remaining - 1);
   const href = `/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`;
+
+  type NextResponse = {
+    nextSeason?: number | null;
+    nextEpisode?: number | null;
+    remaining?: number;
+    completed?: boolean;
+  };
 
   function markNext() {
     if (marking) return;
     setMarking(true);
-    fetch(`/api/v1/me/titles/${item.title.id}/next`, { method: "POST" }).catch(() => {});
-    const isLast = episodeCount > 0 && next >= episodeCount;
-    setTimeout(() => {
-      if (isLast) {
+    const done = fetch(`/api/v1/me/titles/${item.title.id}/next`, { method: "POST" })
+      .then((res) => res.json() as Promise<NextResponse>)
+      .catch(() => null);
+    const wait = new Promise((resolve) => setTimeout(resolve, 420));
+    Promise.all([done, wait]).then(([res]) => {
+      if (!res || res.completed || res.nextEpisode == null) {
         celebrate(item.title.title);
         onComplete?.(item.id);
-      } else {
-        setCurrent(next);
-        setMarking(false);
+        return;
       }
-    }, 420);
+      setSeason(res.nextSeason ?? season);
+      setNext(res.nextEpisode);
+      setRemaining(res.remaining ?? 0);
+      setMarking(false);
+    });
   }
 
   return (
@@ -86,7 +97,7 @@ export function UpNextCard({
               </AnimatePresence>
             </span>
           </span>
-          {remaining > 0 ? <span className="text-sm font-semibold text-white/40">+{remaining}</span> : null}
+          {rest > 0 ? <span className="text-sm font-semibold text-white/40">+{rest}</span> : null}
         </div>
       </div>
 
