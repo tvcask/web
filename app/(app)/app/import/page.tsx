@@ -60,7 +60,7 @@ export default async function ImportPage({
               </li>
               <li>
                 <span className="font-semibold text-white/80">4.</span> It saves a <b className="text-white/80">.zip</b> to
-                your downloads — upload that file below.
+                your downloads. Upload that file below.
               </li>
               <li className="border-t border-white/[0.06] pt-3 text-xs text-white/40">
                 TV Time shuts down on July 15, 2026 and deletes all data, so export before then.

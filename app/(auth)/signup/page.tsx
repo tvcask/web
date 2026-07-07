@@ -19,7 +19,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
         </>
       }
     >
-      {error ? <Banner tone="err">Could not create account — try another email.</Banner> : null}
+      {error ? <Banner tone="err">Could not create account. Try another email.</Banner> : null}
       <form action={signupAction} className="space-y-4">
         <Field label="Name">
           <Input name="name" type="text" placeholder="Your name" />

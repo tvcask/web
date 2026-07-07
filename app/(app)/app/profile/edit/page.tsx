@@ -47,12 +47,12 @@ export default async function EditProfilePage({
             name="username"
             defaultValue={user?.username ?? ""}
             pattern="[a-zA-Z0-9_]{3,20}"
-            title="3–20 characters: letters, numbers, or underscore"
+            title="3 to 20 characters: letters, numbers, or underscore"
             className="h-11 w-full rounded-r-[10px] bg-transparent pl-1 pr-3.5 text-sm text-white outline-none"
           />
         </div>
         <p className="mt-1.5 text-xs text-white/35">
-          3–20 characters: letters, numbers, underscore. This is your public handle.
+          3 to 20 characters: letters, numbers, underscore. This is your public handle.
         </p>
         {error === "username" ? <p className="mt-2 text-xs font-semibold text-[#ef6d5a]">That username is taken.</p> : null}
 
