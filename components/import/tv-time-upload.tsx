@@ -77,10 +77,13 @@ export function TvTimeUpload({ apiBase, token }: { apiBase: string; token: strin
     <form onSubmit={onSubmit} className="mt-6 space-y-4">
       <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[12px] border border-dashed border-white/20 px-4 py-8 text-center transition hover:border-white/40">
         <FileUp className="size-6 text-white/50" />
-        <span className="text-sm font-semibold text-white">
+        <span className="max-w-full truncate text-sm font-semibold text-white">
           {fileName ?? "Choose your TV Time export"}
         </span>
         <span className="text-xs text-white/40">.zip file</span>
+        <span className="mt-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white">
+          {fileName ? "Change file" : "Browse files"}
+        </span>
         <input
           ref={inputRef}
           type="file"
@@ -92,7 +95,7 @@ export function TvTimeUpload({ apiBase, token }: { apiBase: string; token: strin
             setFileName(e.target.files?.[0]?.name ?? null);
             if (phase === "error") setPhase("idle");
           }}
-          className="mt-2 text-xs text-white/60 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-white"
+          className="sr-only"
         />
       </label>
 
