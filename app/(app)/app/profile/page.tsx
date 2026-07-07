@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
-import { getLibrary, getStats } from "@/lib/data";
+import { getLibrary, getLibraryPage, getStats } from "@/lib/data";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -16,15 +16,23 @@ function duration(minutes: number) {
 }
 
 export default async function ProfilePage() {
-  const [user, stats, list] = await Promise.all([getCurrentUser(), getStats(), getLibrary({ limit: 100 })]);
-  const favorites = list.filter((item) => item.favorite);
+  // Fetch shows and movies separately so neither type is starved by a shared
+  // page cap, and pull favorites directly instead of filtering a capped list.
+  const [user, stats, showsPage, moviesPage, favorites] = await Promise.all([
+    getCurrentUser(),
+    getStats(),
+    getLibraryPage({ type: "show", limit: 40 }),
+    getLibraryPage({ type: "movie", limit: 40 }),
+    getLibrary({ favorite: true, limit: 40 })
+  ]);
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
-  const allShows = list.filter((item) => item.title.type !== "movie");
-  const allMovies = list.filter((item) => item.title.type === "movie");
+  const allShows = showsPage.items;
+  const allMovies = moviesPage.items;
   const favShows = favorites.filter((item) => item.title.type !== "movie");
   const favMovies = favorites.filter((item) => item.title.type === "movie");
-  const movieCount = allMovies.length;
+  const movieCount = moviesPage.total;
+  const hasLibrary = showsPage.total + moviesPage.total > 0;
 
   const statTiles = [
     { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
@@ -77,7 +85,7 @@ export default async function ProfilePage() {
       {allMovies.length > 0 ? <Rail title="Movies" href="/app/movies" items={allMovies.map((i) => i.title)} /> : null}
       {favMovies.length > 0 ? <Rail title="Favorite movies" heart items={favMovies.map((i) => i.title)} /> : null}
 
-      {list.length === 0 ? (
+      {!hasLibrary ? (
         <div className="surface rounded-[16px] p-8">
           <h2 className="display text-xl text-white">Your profile is empty.</h2>
           <p className="mt-2 max-w-md text-white/50">Track shows and movies to fill in your stats and favorites.</p>
