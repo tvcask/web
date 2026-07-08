@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { addTitleAction } from "@/app/actions";
 import { MediaRail } from "@/components/titles/media-rail";
 import { Poster } from "@/components/titles/poster";
+import { SearchBox } from "@/components/titles/search-box";
 import { getDiscover, getLibrary, searchTitles } from "@/lib/data";
 
 export default async function ExplorePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -19,6 +20,9 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
+      <div className="md:hidden">
+        <SearchBox initialQuery={query} size="md" className="w-full" />
+      </div>
       {!query ? (
         sections.some((s) => s.items.length > 0) ? (
           <div className="space-y-7">
