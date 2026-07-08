@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
@@ -8,6 +8,7 @@ import { Poster } from "@/components/titles/poster";
 import { UpNextCard } from "@/components/titles/up-next-card";
 import { mutate } from "@/lib/mutate";
 import { toast } from "@/lib/toast";
+import { useInfiniteScroll } from "@/lib/use-infinite-scroll";
 import type { UserTitleWithTitle } from "@/lib/services/types";
 
 const PAGE = 40;
@@ -27,48 +28,26 @@ export function InfiniteLibrary({
   total: number;
   returnTo: string;
 }) {
-  const [items, setItems] = useState(initial);
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(initial.length >= total);
-  const sentinel = useRef<HTMLDivElement>(null);
-
-  const loadMore = useCallback(async () => {
-    if (loading || done) {
-      return;
-    }
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({ type, limit: String(PAGE), offset: String(items.length) });
+  const fetchPage = useCallback(
+    async ({ loaded }: { loaded: UserTitleWithTitle[] }) => {
+      const params = new URLSearchParams({ type, limit: String(PAGE), offset: String(loaded.length) });
       if (status) {
         params.set("status", status);
       }
       const res = await fetch(`/api/library?${params}`);
       const data = (await res.json()) as { items: UserTitleWithTitle[]; total: number };
       const next = data.items ?? [];
-      setItems((prev) => {
-        const merged = [...prev, ...next];
-        if (next.length === 0 || merged.length >= (data.total ?? total)) {
-          setDone(true);
-        }
-        return merged;
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, done, items.length, type, status, total]);
+      const done = next.length === 0 || loaded.length + next.length >= (data.total ?? total);
+      return { items: next, done };
+    },
+    [type, status, total]
+  );
 
-  useEffect(() => {
-    const el = sentinel.current;
-    if (!el) {
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => entries[0].isIntersecting && loadMore(),
-      { rootMargin: "700px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [loadMore]);
+  const { items, setItems, loading, done, sentinelRef } = useInfiniteScroll({
+    initial,
+    initialDone: initial.length >= total,
+    fetchPage
+  });
 
   return (
     <>
@@ -123,7 +102,7 @@ export function InfiniteLibrary({
         </div>
       )}
 
-      {!done ? <div ref={sentinel} className="h-12" /> : null}
+      {!done ? <div ref={sentinelRef} className="h-12" /> : null}
       {loading ? (
         <div className="mt-4 flex justify-center">
           <Loader2 className="size-5 animate-spin text-white/40" />
