@@ -44,7 +44,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Promi
           <EmptyMovies />
         )
       ) : (
-        <InfiniteLibrary type="movie" view={activeView} status={status} initial={items} total={total} returnTo={returnTo} />
+        <InfiniteLibrary key={status} type="movie" view={activeView} status={status} initial={items} total={total} returnTo={returnTo} />
       )}
     </div>
   );

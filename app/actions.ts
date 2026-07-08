@@ -116,14 +116,6 @@ export async function markNextAction(formData: FormData) {
   maybeReturn(formData);
 }
 
-export async function updateTitleStatusAction(formData: FormData) {
-  const titleId = String(formData.get("titleId"));
-  const status = String(formData.get("status"));
-  await api(`/v1/me/titles/${titleId}`, { method: "PATCH", body: { status } });
-  revalidateTracking(titleId);
-  maybeReturn(formData);
-}
-
 export async function toggleFavoriteAction(formData: FormData) {
   const titleId = String(formData.get("titleId"));
   const favorite = String(formData.get("favorite")) !== "true";

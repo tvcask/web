@@ -4,9 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
-import { updateTitleStatusAction } from "@/app/actions";
 import { Poster } from "@/components/titles/poster";
 import { UpNextCard } from "@/components/titles/up-next-card";
+import { mutate } from "@/lib/mutate";
+import { toast } from "@/lib/toast";
 import type { UserTitleWithTitle } from "@/lib/services/types";
 
 const PAGE = 40;
@@ -104,9 +105,21 @@ export function InfiniteLibrary({
         </div>
       ) : (
         <div className="grid gap-x-6 gap-y-2.5 md:grid-cols-2">
-          {items.map((item) => (
-            <MovieRow key={item.id} item={item} returnTo={returnTo} />
-          ))}
+          <AnimatePresence mode="popLayout" initial={false}>
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
+                exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.28, ease: [0.2, 0.8, 0.2, 1] } }}
+              >
+                <MovieRow
+                  item={item}
+                  returnTo={returnTo}
+                  onComplete={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
 
@@ -120,8 +133,31 @@ export function InfiniteLibrary({
   );
 }
 
-function MovieRow({ item, returnTo }: { item: UserTitleWithTitle; returnTo: string }) {
+function MovieRow({
+  item,
+  returnTo,
+  onComplete
+}: {
+  item: UserTitleWithTitle;
+  returnTo: string;
+  onComplete?: (id: string) => void;
+}) {
   const href = `/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`;
+  const [saving, setSaving] = useState(false);
+
+  function markWatched() {
+    if (saving) {
+      return;
+    }
+    setSaving(true);
+    mutate(`me/titles/${item.title.id}`, "PATCH", { status: "completed" })
+      .then(() => onComplete?.(item.id))
+      .catch(() => {
+        setSaving(false);
+        toast("Couldn't save your change. Try again.");
+      });
+  }
+
   return (
     <div className="surface flex items-center gap-3.5 rounded-[14px] p-3">
       <Link href={href} className="w-12 shrink-0 overflow-hidden rounded-[8px]">
@@ -136,18 +172,15 @@ function MovieRow({ item, returnTo }: { item: UserTitleWithTitle; returnTo: stri
           <Check className="size-4" />
         </span>
       ) : (
-        <form action={updateTitleStatusAction}>
-          <input type="hidden" name="titleId" value={item.title.id} />
-          <input type="hidden" name="status" value="completed" />
-          <input type="hidden" name="returnTo" value={returnTo} />
-          <button
-            className="cask-focus grid size-8 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)]"
-            style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
-            aria-label={`Mark ${item.title.title} watched`}
-          >
-            <Check className="size-4" />
-          </button>
-        </form>
+        <button
+          onClick={markWatched}
+          disabled={saving}
+          className="cask-focus grid size-8 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)] disabled:opacity-50"
+          style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
+          aria-label={`Mark ${item.title.title} watched`}
+        >
+          {saving ? <Loader2 className="size-4 animate-spin text-white/60" /> : <Check className="size-4" />}
+        </button>
       )}
     </div>
   );

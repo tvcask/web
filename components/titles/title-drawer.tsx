@@ -20,9 +20,14 @@ export function TitleDrawer({ children }: { children: React.ReactNode }) {
     const sync = () => setMobile(mq.matches);
     sync();
     mq.addEventListener("change", sync);
-    // Open on mount so the enter animation plays.
-    setOpen(true);
-    return () => mq.removeEventListener("change", sync);
+    // Open on the next frame so the closed state paints first. Flipping open in
+    // the effect body sometimes lands in the same commit as the mount, so vaul
+    // skips the slide and the sheet pops in.
+    const raf = requestAnimationFrame(() => setOpen(true));
+    return () => {
+      cancelAnimationFrame(raf);
+      mq.removeEventListener("change", sync);
+    };
   }, []);
 
   return (

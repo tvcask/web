@@ -42,7 +42,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
       ) : total === 0 ? (
         <EmptyShows />
       ) : (
-        <InfiniteLibrary type="show" view={activeView} status={status} initial={items} total={total} returnTo={returnTo} />
+        <InfiniteLibrary key={status} type="show" view={activeView} status={status} initial={items} total={total} returnTo={returnTo} />
       )}
     </div>
   );

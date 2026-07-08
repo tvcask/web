@@ -4,20 +4,19 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Heart, Plus, Share2, X } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
+import { mutate } from "@/lib/mutate";
+import { toast } from "@/lib/toast";
 import type { Episode, Title } from "@/lib/services/types";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
 
-async function mutate(path: string, method: string, body?: unknown) {
-  const res = await fetch(`/api/v1/${path}`, {
-    method,
-    headers: body !== undefined ? { "Content-Type": "application/json" } : undefined,
-    body: body !== undefined ? JSON.stringify(body) : undefined
-  });
-  if (!res.ok) {
-    throw new Error(await res.text().catch(() => "error"));
-  }
+// Roll back an optimistic change and tell the user it didn't stick.
+function onSaveError(revert: () => void) {
+  return () => {
+    revert();
+    toast("Couldn't save your change. Try again.");
+  };
 }
 
 export type TitleTracking = { tracked: boolean; status: string; favorite: boolean; watched: string[] };
@@ -78,10 +77,10 @@ export function TitleDetailClient({
       episode: ep.episodeNumber,
       episodeId: ep.id,
       watched: willWatch
-    }).catch(() => {
+    }).catch(onSaveError(() => {
       setWatched(prev.watched);
       setTracked(prev.tracked);
-    });
+    }));
   }
 
   function toggleSeason(seasonNumber: number, seasonEpisodes: Episode[], allWatched: boolean) {
@@ -99,10 +98,10 @@ export function TitleDetailClient({
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
 
-    mutate(`me/titles/${title.id}/seasons/${seasonNumber}`, "POST", { watched: willWatch }).catch(() => {
+    mutate(`me/titles/${title.id}/seasons/${seasonNumber}`, "POST", { watched: willWatch }).catch(onSaveError(() => {
       setWatched(prev.watched);
       setTracked(prev.tracked);
-    });
+    }));
   }
 
   function changeStatus(next: string) {
@@ -115,11 +114,11 @@ export function TitleDetailClient({
     }
     scheduleRefresh();
 
-    mutate(`me/titles/${title.id}`, "PATCH", { status: next }).catch(() => {
+    mutate(`me/titles/${title.id}`, "PATCH", { status: next }).catch(onSaveError(() => {
       setStatus(prev.status);
       setWatched(prev.watched);
       setTracked(prev.tracked);
-    });
+    }));
   }
 
   function toggleFavorite() {
@@ -127,17 +126,17 @@ export function TitleDetailClient({
     setFavorite(!favorite);
     setTracked(true);
     scheduleRefresh();
-    mutate(`me/titles/${title.id}`, "PATCH", { favorite: !favorite }).catch(() => {
+    mutate(`me/titles/${title.id}`, "PATCH", { favorite: !favorite }).catch(onSaveError(() => {
       setFavorite(prev.favorite);
       setTracked(prev.tracked);
-    });
+    }));
   }
 
   function track() {
     const prev = tracked;
     setTracked(true);
     scheduleRefresh();
-    mutate(`me/titles`, "POST", { titleId: title.id, status }).catch(() => setTracked(prev));
+    mutate(`me/titles`, "POST", { titleId: title.id, status }).catch(onSaveError(() => setTracked(prev)));
   }
 
   function untrack() {
@@ -146,11 +145,11 @@ export function TitleDetailClient({
     setFavorite(false);
     setWatched(new Set());
     scheduleRefresh();
-    mutate(`me/titles/${title.id}`, "DELETE").catch(() => {
+    mutate(`me/titles/${title.id}`, "DELETE").catch(onSaveError(() => {
       setTracked(prev.tracked);
       setFavorite(prev.favorite);
       setWatched(prev.watched);
-    });
+    }));
   }
 
   function share() {
