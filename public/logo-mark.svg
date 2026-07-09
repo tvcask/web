@@ -1,0 +1,10 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <mask id="cask" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48">
+    <rect width="48" height="48" fill="black"/>
+    <path d="M14 7 L34 7 Q43 8 43 24 Q43 40 34 41 L14 41 Q5 40 5 24 Q5 8 14 7 Z" fill="white"/>
+    <rect x="4" y="12.4" width="40" height="2" fill="black"/>
+    <rect x="4" y="33.6" width="40" height="2" fill="black"/>
+    <path d="M20 16.5 L20 31.5 L31.5 24 Z" fill="black"/>
+  </mask>
+  <rect width="48" height="48" fill="currentColor" mask="url(#cask)"/>
+</svg>
