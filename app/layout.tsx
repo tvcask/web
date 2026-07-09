@@ -15,6 +15,10 @@ export const metadata: Metadata = {
   title: `${site.displayName} — ${site.tagline}`,
   description: site.description,
   applicationName: site.displayName,
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png"
+  },
   openGraph: {
     title: `${site.displayName} — ${site.tagline}`,
     description: site.description,
@@ -24,8 +28,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og.png",
-        width: 1731,
-        height: 909,
+        width: 1200,
+        height: 630,
         alt: "tvcask watch history and TV Time import preview"
       }
     ]
