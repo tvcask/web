@@ -6,6 +6,6 @@ export const site = {
   tagline: "Save your watch history",
   description: "Import your TV Time export, keep every episode you tracked, and continue watching.",
   logo: "/logo-horizontal.png",
-  icon: "/logo-mark.png",
+  icon: "/logo-vertical.png",
   github: "https://github.com/tvcask"
 } as const;
