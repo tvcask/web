@@ -4,11 +4,11 @@ import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
 import { TmdbAttribution } from "@/components/tmdb-attribution";
 
-const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites"];
+const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites", "Lists"];
 
 const steps = [
-  { n: "01", title: "Upload your export", copy: "Drop in your TV Time file. JSON and CSV are parsed on the spot." },
-  { n: "02", title: "Preview the match", copy: "Every title matched to real metadata before a single row is saved." },
+  { n: "01", title: "Upload your export", copy: "Drop in your TV Time ZIP export and keep the files intact." },
+  { n: "02", title: "Match your history", copy: "Shows, movies, episodes, favorites, and lists are matched to real metadata." },
   { n: "03", title: "Keep watching", copy: "Confirm, and pick up the next episode right where you left off." }
 ];
 
@@ -39,7 +39,7 @@ export default function HomePage() {
                 </Link>
               </Button>
               <Button asChild variant="secondary" className="h-12 px-6 text-[15px]">
-                <Link href="/login">Log in</Link>
+                <Link href="/import-tv-time">Import TV Time</Link>
               </Button>
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
@@ -74,6 +74,23 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 pb-10">
+          <Link href="/import-tv-time" className="surface flex flex-col gap-4 rounded-[16px] p-5 transition hover:bg-white/[0.04] sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+                TV Time import
+              </p>
+              <h2 className="display mt-2 text-2xl text-white">Move your TV Time history, episodes, favorites, and custom lists.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
+                A focused import flow for people searching for a TV Time alternative.
+              </p>
+            </div>
+            <span className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white">
+              Learn more <ArrowRight className="ml-2 size-4" />
+            </span>
+          </Link>
         </section>
 
         <section className="mx-auto max-w-6xl px-5 pb-24">
