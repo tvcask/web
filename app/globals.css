@@ -2,8 +2,12 @@
 
 :root {
   --bg: #08080a;
-  --accent: oklch(0.72 0.09 68);
-  --accent-text: oklch(0.8 0.07 72);
+  /* Matched to the barrel logo's copper-amber for brand consistency.
+     Previous yellow/gold accent (to switch back):
+       --accent: oklch(0.72 0.09 68);
+       --accent-text: oklch(0.8 0.07 72); */
+  --accent: oklch(0.72 0.11 58);
+  --accent-text: oklch(0.79 0.09 60);
   --on-accent: #1a130a;
 }
 
@@ -111,7 +115,7 @@ button:disabled {
   outline: none;
 }
 .cask-focus:focus-visible {
-  box-shadow: 0 0 0 3px oklch(0.72 0.09 68 / 0.35);
+  box-shadow: 0 0 0 3px oklch(0.72 0.11 58 / 0.35);
 }
 
 .soft-enter {
