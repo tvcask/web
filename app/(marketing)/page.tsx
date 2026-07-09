@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { MarketingHeader } from "@/components/marketing/header";
+import { HeroProductPreview, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { Button } from "@/components/ui/button";
 import { TmdbAttribution } from "@/components/tmdb-attribution";
 
@@ -10,12 +11,6 @@ const steps = [
   { n: "01", title: "Upload your export", copy: "Drop in your TV Time ZIP export and keep the files intact." },
   { n: "02", title: "Match your history", copy: "Shows, movies, episodes, favorites, and lists are matched to real metadata." },
   { n: "03", title: "Keep watching", copy: "Confirm, and pick up the next episode right where you left off." }
-];
-
-const upNext = [
-  { title: "Jujutsu Kaisen", tag: "S03 · E06", from: "#3b1d54", to: "#0e0b1a" },
-  { title: "Severance", tag: "S02 · E03", from: "#123a52", to: "#0b1116" },
-  { title: "The Bear", tag: "S03 · E05", from: "#5a2f1a", to: "#140d09" }
 ];
 
 export default function HomePage() {
@@ -51,30 +46,10 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="surface rounded-[18px] p-4">
-            <p className="eyebrow mb-3 px-1">Up next</p>
-            <div className="space-y-2.5">
-              {upNext.map((show) => (
-                <div key={show.title} className="flex items-center gap-3.5 rounded-[12px] bg-white/[0.03] p-2.5">
-                  <div
-                    className="h-14 w-24 shrink-0 rounded-[8px]"
-                    style={{ background: `linear-gradient(140deg, ${show.from}, ${show.to})` }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="display truncate text-[15px] text-white">{show.title}</p>
-                    <p className="mt-0.5 text-[13px] text-white/45">{show.tag}</p>
-                  </div>
-                  <span
-                    className="grid size-9 shrink-0 place-items-center rounded-full"
-                    style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.2)", color: "var(--accent-text)" }}
-                  >
-                    <Check className="size-4" />
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <HeroProductPreview />
         </section>
+
+        <TrendingCatalogBand />
 
         <section className="mx-auto max-w-6xl px-5 pb-10">
           <Link href="/import-tv-time" className="surface flex flex-col gap-4 rounded-[16px] p-5 transition hover:bg-white/[0.04] sm:flex-row sm:items-center">
