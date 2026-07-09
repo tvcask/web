@@ -17,10 +17,10 @@ export function MarketingHeader() {
           <Link href="/import-tv-time" className="hidden px-3 text-sm font-bold text-white/55 transition hover:text-white sm:inline-flex">
             TV Time import
           </Link>
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" className="hidden sm:inline-flex">
             <Link href="/login">Log in</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="h-10 px-4 text-sm sm:h-11 sm:px-5">
             <Link href="/signup">Create account</Link>
           </Button>
         </div>

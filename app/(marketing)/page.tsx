@@ -33,12 +33,12 @@ export default function HomePage() {
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,0.95fr)]">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-12 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,0.95fr)]">
           <div className="space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               For people leaving TV Time
             </span>
-            <h1 className="display max-w-[680px] text-5xl leading-[1.05] md:text-[58px] xl:text-[64px]">
+            <h1 className="display max-w-[680px] text-4xl leading-[1.05] sm:text-5xl md:text-[58px] xl:text-[64px]">
               Your watch history has a new home.
             </h1>
             <p className="max-w-lg text-lg leading-8 text-white/55">

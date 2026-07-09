@@ -12,6 +12,28 @@ export const metadata: Metadata = {
     "TV Cask was built to help TV Time users preserve their watch history, then grow into a tracker with mobile and social features.",
   alternates: {
     canonical: "/about"
+  },
+  openGraph: {
+    title: "Why TV Cask Exists | TV Cask",
+    description:
+      "TV Cask was built to help TV Time users preserve their watch history, then grow into a tracker with mobile and social features.",
+    type: "website",
+    url: "/about",
+    images: [
+      {
+        url: "/og.png",
+        width: 1731,
+        height: 909,
+        alt: "TV Cask watch history and TV Time import preview"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Why TV Cask Exists | TV Cask",
+    description:
+      "TV Cask was built to help TV Time users preserve their watch history, then grow into a tracker with mobile and social features.",
+    images: ["/og.png"]
   }
 };
 
@@ -28,17 +50,17 @@ export default function AboutPage() {
   return (
     <>
       <MarketingHeader />
-      <main className="mx-auto max-w-6xl px-5 pb-20 pt-16">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_390px] lg:items-start">
+      <main className="mx-auto max-w-6xl px-5 pb-16 pt-12 sm:pb-20 sm:pt-16">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_390px] lg:items-start xl:gap-12">
           <article>
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
               Why TV Cask exists
             </p>
-            <h1 className="display mt-5 max-w-3xl text-5xl leading-[1.05] text-white md:text-6xl">
+            <h1 className="display mt-4 max-w-3xl text-4xl leading-[1.05] text-white sm:text-5xl md:text-6xl">
               Watch history should not vanish because an app does.
             </h1>
 
-            <div className="mt-9 space-y-7 text-[17px] leading-8 text-white/64">
+            <div className="mt-7 space-y-5 text-base leading-8 text-white/64 sm:mt-9 sm:space-y-7 sm:text-[17px]">
               <p>
                 TV Cask started with a very practical problem: <strong className="font-extrabold text-white">TV Time users had years of history</strong> stored in one place, and suddenly needed a way to move it somewhere durable.
               </p>
@@ -53,7 +75,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="mt-11 space-y-7">
+            <div className="mt-9 space-y-5 sm:mt-11 sm:space-y-7">
               {milestones.map(([title, copy]) => (
                 <div key={title} className="grid gap-2 border-t border-white/[0.08] pt-5 sm:grid-cols-[150px_1fr]">
                   <p className="text-sm font-extrabold text-white">{title}</p>
@@ -62,7 +84,7 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <div className="mt-12 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-10 flex flex-col gap-3 sm:mt-12 sm:flex-row">
               <Link href="/import-tv-time" className="inline-flex h-12 items-center justify-center rounded-full px-6 text-[15px] font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
                 Import TV Time <ArrowRight className="ml-2 size-4" />
               </Link>
@@ -77,11 +99,11 @@ export default function AboutPage() {
               <div className="rounded-[16px] border border-white/[0.08] bg-[#11100e] p-4">
                 <p className="eyebrow">Migration proof</p>
                 <p className="display mt-2 text-2xl text-white">A library worth saving.</p>
-                <div className="mt-5 grid grid-cols-2 gap-3">
+                <div className="mt-5 grid grid-cols-4 gap-2 lg:grid-cols-2 lg:gap-3">
                   {visualPosters.map((poster) => (
                     <div key={poster.title} className="overflow-hidden rounded-[12px]">
                       <div className="relative aspect-[2/3]">
-                        <Image src={poster.poster} alt="" fill sizes="160px" className="object-cover" />
+                        <Image src={poster.poster} alt="" fill sizes="(max-width: 1024px) 22vw, 160px" className="object-cover" />
                       </div>
                     </div>
                   ))}
