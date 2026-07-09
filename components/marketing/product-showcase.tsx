@@ -36,7 +36,7 @@ const catalogPosters = [...trendingShows.slice(0, 5), ...moviePosters.slice(0, 5
 
 export function HeroProductPreview() {
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <div className="surface overflow-hidden rounded-[20px] p-3 shadow-2xl shadow-black/30">
         <div className="rounded-[16px] border border-white/[0.08] bg-[#11100e] p-3">
           <div className="flex items-start justify-between gap-4 px-1 pb-3">
