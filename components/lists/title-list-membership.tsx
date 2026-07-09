@@ -30,7 +30,13 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
       try {
         const res = await fetch(`/api/v1/me/titles/${titleId}/lists`);
         const data = (await res.json()) as { lists?: TitleList[] };
-        if (alive) setLists(data.lists ?? []);
+        if (alive) {
+          setLists(
+            (data.lists ?? [])
+              .filter((list) => list.id && list.name)
+              .map((list) => ({ ...list, itemCount: Number(list.itemCount ?? 0) }))
+          );
+        }
       } catch {
         if (alive) setLists([]);
       } finally {
@@ -44,6 +50,10 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
   }, [titleId]);
 
   const selected = useMemo(() => lists.filter((list) => list.containsTitle), [lists]);
+  const orderedLists = useMemo(
+    () => [...lists].sort((a, b) => Number(b.containsTitle) - Number(a.containsTitle)),
+    [lists]
+  );
 
   async function toggle(list: TitleList) {
     const nextContains = !list.containsTitle;
@@ -116,7 +126,7 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
             {loading
               ? "Loading..."
               : selected.length > 0
-                ? selected.map((list) => list.name).join(", ")
+                ? `In ${selected.map((list) => list.name).join(", ")}`
                 : lists.length > 0
                   ? "Add this title to a list"
                   : "Create your first list"}
@@ -133,7 +143,7 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
             </div>
           ) : lists.length > 0 ? (
             <div className="max-h-[230px] space-y-1 overflow-y-auto pr-1 sm:max-h-[280px]">
-              {lists.map((list) => (
+              {orderedLists.map((list) => (
                 <button
                   key={list.id}
                   type="button"
