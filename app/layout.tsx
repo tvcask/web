@@ -11,6 +11,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://tvcask.com"),
   title: `${site.displayName} — ${site.tagline}`,
   description: site.description,
   applicationName: site.displayName,
