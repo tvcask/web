@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { Check, Loader2, Plus } from "lucide-react";
 import { Poster } from "@/components/titles/poster";
+import { useInfiniteScroll } from "@/lib/use-infinite-scroll";
 import type { Title } from "@/lib/services/types";
 
 export function InfiniteCatalog({
@@ -17,45 +18,25 @@ export function InfiniteCatalog({
   hasMore: boolean;
   trackedIds: string[];
 }) {
-  const [items, setItems] = useState(initial);
-  const [page, setPage] = useState(1);
-  const [done, setDone] = useState(!hasMore);
-  const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState<Set<string>>(() => new Set(trackedIds));
-  const sentinel = useRef<HTMLDivElement>(null);
   const returnTo = `/app/browse/${kind}`;
 
-  const loadMore = useCallback(async () => {
-    if (loading || done) {
-      return;
-    }
-    setLoading(true);
-    try {
+  const fetchPage = useCallback(
+    async ({ loaded, page }: { loaded: Title[]; page: number }) => {
       const res = await fetch(`/api/v1/titles/collection?kind=${encodeURIComponent(kind)}&page=${page + 1}`);
       const data = (await res.json()) as { items: Title[]; hasMore: boolean };
       const next = data.items ?? [];
-      setItems((prev) => {
-        const seen = new Set(prev.map((t) => t.id));
-        return [...prev, ...next.filter((t) => !seen.has(t.id))];
-      });
-      setPage((p) => p + 1);
-      if (!data.hasMore || next.length === 0) {
-        setDone(true);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [loading, done, kind, page]);
+      const seen = new Set(loaded.map((t) => t.id));
+      return { items: next.filter((t) => !seen.has(t.id)), done: !data.hasMore || next.length === 0 };
+    },
+    [kind]
+  );
 
-  useEffect(() => {
-    const el = sentinel.current;
-    if (!el) {
-      return;
-    }
-    const io = new IntersectionObserver((entries) => entries[0].isIntersecting && loadMore(), { rootMargin: "700px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [loadMore]);
+  const { items, loading, done, sentinelRef } = useInfiniteScroll({
+    initial,
+    initialDone: !hasMore,
+    fetchPage
+  });
 
   function add(title: Title) {
     setAdded((s) => new Set(s).add(title.id));
@@ -98,7 +79,7 @@ export function InfiniteCatalog({
           );
         })}
       </div>
-      {!done ? <div ref={sentinel} className="h-12" /> : null}
+      {!done ? <div ref={sentinelRef} className="h-12" /> : null}
       {loading ? (
         <div className="mt-4 flex justify-center">
           <Loader2 className="size-5 animate-spin text-white/40" />
