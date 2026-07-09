@@ -1,11 +1,26 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check, Circle } from "lucide-react";
 import { MarketingHeader } from "@/components/marketing/header";
 import { HeroProductPreview, MobileComingSoonBanner, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter } from "@/components/marketing/footer";
 
 const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites", "Lists"];
+
+const worksToday = [
+  "Track shows and movies episode by episode",
+  "Favorites and unlimited custom lists",
+  "Watch next and unwatched sections",
+  "Upcoming release calendar",
+  "Full TV Time import"
+];
+
+const comingNext = [
+  "Native iOS and Android apps",
+  "Social feed, groups, and friend activity",
+  "Public profiles and following",
+  "Episode reactions, comments, and sharing"
+];
 
 const steps = [
   { n: "01", title: "Upload your export", copy: "Drop in your TV Time ZIP export and keep the files intact." },
@@ -47,6 +62,56 @@ export default function HomePage() {
           </div>
 
           <HeroProductPreview />
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 pb-16">
+          <div className="mb-7 max-w-2xl">
+            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+              Why TV Cask
+            </p>
+            <h2 className="display mt-3 text-3xl leading-tight text-white md:text-4xl">
+              Built to replace TV Time, not to reinvent it.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-white/52">
+              This is a focused replacement for keeping your watch history alive first. The social and mobile layers come after the library foundation is solid.
+            </p>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="surface rounded-[16px] p-5 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-full bg-emerald-500/12 text-emerald-300">
+                  <Check className="size-4" />
+                </span>
+                <h3 className="display text-lg text-white">Works today</h3>
+              </div>
+              <div className="space-y-3">
+                {worksToday.map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
+                    <Check className="size-4 shrink-0 text-emerald-300" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="surface rounded-[16px] p-5 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-full" style={{ background: "rgba(211,158,94,0.12)", color: "var(--accent-text)" }}>
+                  <Circle className="size-3.5" />
+                </span>
+                <h3 className="display text-lg text-white">Coming next</h3>
+              </div>
+              <div className="space-y-3">
+                {comingNext.map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/50">
+                    <Circle className="size-3.5 shrink-0 text-white/28" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
 
         <TrendingCatalogBand />

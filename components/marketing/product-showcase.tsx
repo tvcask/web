@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Bell, Check, ListChecks, Smartphone, Upload } from "lucide-react";
+import { ArrowRight, Check, ListChecks, Plus, Smartphone, Upload } from "lucide-react";
 
 type Poster = {
   title: string;
@@ -108,14 +108,14 @@ export function TrendingCatalogBand() {
             <h2 className="display mt-2 text-3xl text-white">Track shows and movies visually.</h2>
           </div>
           <p className="max-w-md text-sm leading-6 text-white/48">
-            Browse a poster-first catalog, open a title, and add it to your watchlist or personal lists.
+            Browse a poster-first catalog with the same actions people use every day: track, favorite, and save titles to personal lists.
           </p>
         </div>
 
         <MovingPosterRail items={catalogPosters} />
 
         <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-semibold text-white/45">Every poster becomes a title drawer, progress tracker, and list item in the app.</p>
+          <p className="text-sm font-semibold text-white/45">Every poster opens the real title drawer in the app, with progress, favorites, and lists in one place.</p>
           <Link href="/signup" className="inline-flex h-10 shrink-0 items-center justify-center rounded-full px-4 text-sm font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
             Start tracking <ArrowRight className="ml-2 size-4" />
           </Link>
@@ -128,24 +128,35 @@ export function TrendingCatalogBand() {
 export function MobileComingSoonBanner() {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-10">
-      <div className="surface flex flex-col gap-4 rounded-[18px] p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-4">
-          <div className="grid size-11 shrink-0 place-items-center rounded-full bg-white/[0.06] text-white/70">
-            <Smartphone className="size-5" />
-          </div>
+      <div className="surface relative overflow-hidden rounded-[18px] p-5 sm:p-6">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(211,158,94,0.14),transparent_38%)]" aria-hidden />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              Mobile app coming soon
+              Coming next
             </p>
-            <h2 className="display mt-1 text-2xl text-white">Web import first. Mobile and social next.</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
-              TV Cask started with the web import flow so TV Time users could move their history first. Native mobile apps, richer social features, and sharing are planned after the migration foundation is stable.
+            <h2 className="display mt-2 max-w-2xl text-2xl leading-tight text-white md:text-3xl">
+              TV Cask for iPhone and Android is on the way.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
+              Web comes first because it is the fastest way to help TV Time users preserve their history. Native apps and social features follow after the import foundation is stable.
             </p>
+            <Link href="/about" className="mt-5 inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
+              Why I built this <ArrowRight className="ml-2 size-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:w-[250px]">
+            {["iOS soon", "Android soon"].map((label) => (
+              <div key={label} className="rounded-[16px] border border-white/[0.08] bg-black/18 p-4 text-center">
+                <div className="mx-auto grid size-12 place-items-center rounded-full bg-white/[0.06] text-white/70">
+                  <Smartphone className="size-5" />
+                </div>
+                <p className="mt-3 text-xs font-extrabold uppercase text-white/55">{label}</p>
+              </div>
+            ))}
           </div>
         </div>
-        <Link href="/about" className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
-          Why TV Cask <ArrowRight className="ml-2 size-4" />
-        </Link>
       </div>
     </section>
   );
@@ -198,7 +209,7 @@ function MovingPosterRail({ items }: { items: Poster[] }) {
 function PosterBadge({ checked }: { checked: boolean }) {
   return (
     <span className="absolute right-2 top-2 grid size-7 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur" aria-hidden>
-      {checked ? <Check className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <Bell className="size-3.5" />}
+      {checked ? <Check className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <Plus className="size-3.5" />}
     </span>
   );
 }
