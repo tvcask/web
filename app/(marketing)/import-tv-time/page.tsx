@@ -89,12 +89,12 @@ export default function ImportTvTimePage() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
-                <Link href="/signup">
+                <Link href="/signup?returnTo=%2Fapp%2Fimport">
                   Create account <ArrowRight className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="secondary" className="h-12 px-6 text-[15px]">
-                <Link href="/login">Import now</Link>
+                <Link href="/login?returnTo=%2Fapp%2Fimport">Import now</Link>
               </Button>
             </div>
             <div className="flex flex-wrap gap-2 pt-2">

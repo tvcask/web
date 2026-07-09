@@ -4,8 +4,9 @@ import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; reset?: string }> }) {
-  const { error, reset } = await searchParams;
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; reset?: string; returnTo?: string }> }) {
+  const { error, reset, returnTo } = await searchParams;
+  const safeReturnTo = typeof returnTo === "string" && returnTo.startsWith("/app/") ? returnTo : "";
   return (
     <AuthCard
       title="Welcome back"
@@ -13,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       footer={
         <>
           New to TV Cask?{" "}
-          <Link className="font-semibold text-[color:var(--accent-text)]" href="/signup">
+          <Link className="font-semibold text-[color:var(--accent-text)]" href={`/signup${safeReturnTo ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ""}`}>
             Create an account
           </Link>
         </>
@@ -22,6 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       {reset ? <Banner tone="ok">Password updated. Log in with your new one.</Banner> : null}
       {error ? <Banner tone="err">Invalid email or password.</Banner> : null}
       <form action={loginAction} className="space-y-4">
+        {safeReturnTo ? <input type="hidden" name="returnTo" value={safeReturnTo} /> : null}
         <Field label="Email">
           <Input name="email" type="email" placeholder="you@example.com" required />
         </Field>
