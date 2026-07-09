@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1731,
         height: 909,
-        alt: "TV Cask watch history and TV Time import preview"
+        alt: "tvcask watch history and TV Time import preview"
       }
     ]
   },

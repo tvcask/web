@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center px-5 py-5">
-        <Link href="/" aria-label="TV Cask home">
+        <Link href="/" aria-label="tvcask home">
           <Logo />
         </Link>
       </header>

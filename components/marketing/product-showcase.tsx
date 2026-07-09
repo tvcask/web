@@ -36,15 +36,15 @@ const catalogPosters = [...trendingShows.slice(0, 5), ...moviePosters.slice(0, 5
 
 export function HeroProductPreview() {
   return (
-    <div className="relative min-w-0">
+    <div className="hero-glow relative min-w-0">
       <div className="surface overflow-hidden rounded-[20px] p-3 shadow-2xl shadow-black/30">
         <div className="rounded-[16px] border border-white/[0.08] bg-[#11100e] p-3">
           <div className="flex items-start justify-between gap-4 px-1 pb-3">
             <div>
-              <p className="eyebrow">Imported from TV Time</p>
+              <p className="eyebrow whitespace-nowrap">Imported from TV Time</p>
               <p className="display mt-1 text-xl text-white">Your library</p>
             </div>
-            <span className="rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: "rgba(211,158,94,0.14)", color: "var(--accent-text)" }}>
+            <span className="whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: "rgba(211,158,94,0.14)", color: "var(--accent-text)" }}>
               3,812 episodes
             </span>
           </div>
@@ -136,7 +136,7 @@ export function MobileComingSoonBanner() {
               Coming next
             </p>
             <h2 className="display mt-2 max-w-2xl text-2xl leading-tight text-white md:text-3xl">
-              TV Cask for iPhone is on the way.
+              tvcask for iPhone is on the way.
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
               Web comes first because it is the fastest way to help TV Time users preserve their history. The iOS app and social features follow after the import foundation is stable.

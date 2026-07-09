@@ -30,7 +30,7 @@ export default async function VerifyEmailPage({ searchParams }: { searchParams: 
             : "This verification link is invalid or has expired. You can request a new one from Settings."}
         </p>
         <Button asChild className="mt-6 h-11 w-full">
-          <Link href="/app/shows">Go to TV Cask</Link>
+          <Link href="/app/shows">Go to tvcask</Link>
         </Button>
       </div>
     </AuthCard>

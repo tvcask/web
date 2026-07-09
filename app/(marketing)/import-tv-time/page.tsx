@@ -5,12 +5,12 @@ import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
 
-const title = "Import your TV Time history into TV Cask";
+const title = "Import your TV Time history into tvcask";
 const description =
-  "Move your TV Time export to TV Cask with shows, movies, watched episodes, favorites, and custom lists preserved.";
+  "Move your TV Time export to tvcask with shows, movies, watched episodes, favorites, and custom lists preserved.";
 
 export const metadata: Metadata = {
-  title: "Import TV Time Data | TV Cask",
+  title: "Import TV Time Data | tvcask",
   description,
   alternates: {
     canonical: "/import-tv-time"
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
         url: "/og.png",
         width: 1731,
         height: 909,
-        alt: "TV Cask TV Time import preview"
+        alt: "tvcask TV Time import preview"
       }
     ]
   },
@@ -41,12 +41,12 @@ const features = [
   { icon: FileUp, title: "TV Time ZIP import", copy: "Upload the export file you downloaded from TV Time." },
   { icon: Check, title: "Watched episodes", copy: "Keep season and episode progress attached to your account." },
   { icon: ListChecks, title: "Custom lists", copy: "Bring over user lists and the titles inside them." },
-  { icon: CalendarDays, title: "Up next and calendar", copy: "Continue from your local TV Cask library after import." }
+  { icon: CalendarDays, title: "Up next and calendar", copy: "Continue from your local tvcask library after import." }
 ];
 
 const steps = [
   { n: "01", title: "Export from TV Time", copy: "Download your TV Time data export and keep the ZIP intact." },
-  { n: "02", title: "Upload to TV Cask", copy: "TV Cask reads shows, movies, episodes, favorites, and lists from the file." },
+  { n: "02", title: "Upload to tvcask", copy: "tvcask reads shows, movies, episodes, favorites, and lists from the file." },
   { n: "03", title: "Match real titles", copy: "TVDB and IMDb identifiers are resolved to TMDB catalog entries." },
   { n: "04", title: "Keep watching", copy: "Your imported library becomes your watchlist, progress, lists, and profile." }
 ];
@@ -54,23 +54,23 @@ const steps = [
 const faqs = [
   {
     q: "Can I import my TV Time custom lists?",
-    a: "Yes. TV Cask imports TV Time custom lists and the titles inside each list when they can be matched to the catalog."
+    a: "Yes. tvcask imports TV Time custom lists and the titles inside each list when they can be matched to the catalog."
   },
   {
     q: "Do watched episodes carry over from TV Time?",
-    a: "Yes. TV Cask imports watched episode progress for shows, including season and episode numbers from the export."
+    a: "Yes. tvcask imports watched episode progress for shows, including season and episode numbers from the export."
   },
   {
     q: "What file do I upload?",
-    a: "Upload the ZIP export you downloaded from TV Time. TV Cask reads the series, movies, and lists files inside it."
+    a: "Upload the ZIP export you downloaded from TV Time. tvcask reads the series, movies, and lists files inside it."
   },
   {
-    q: "Is TV Cask a TV Time alternative?",
-    a: "TV Cask is built as a watch history and tracking home for shows and movies, with TV Time import support for users moving over."
+    q: "Is tvcask a TV Time alternative?",
+    a: "tvcask is built as a watch history and tracking home for shows and movies, with TV Time import support for users moving over."
   },
   {
     q: "Is my TV Time data private?",
-    a: "Imports are attached to your TV Cask account. Your library and lists are not public unless you choose public list settings later."
+    a: "Imports are attached to your tvcask account. Your library and lists are not public unless you choose public list settings later."
   }
 ];
 
@@ -92,14 +92,14 @@ export default function ImportTvTimePage() {
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-12 sm:pb-16 sm:pt-14 lg:grid-cols-[1fr_0.95fr]">
+        <section className="hero-glow relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-12 sm:pb-16 sm:pt-14 lg:grid-cols-[1fr_0.95fr]">
           <div className="space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               TV Time import
             </span>
             <h1 className="display max-w-3xl text-4xl leading-[1.05] text-white sm:text-5xl md:text-6xl">{title}</h1>
             <p className="max-w-xl text-lg leading-8 text-white/58">
-              Move your watch history without starting over. TV Cask imports shows, movies, watched episodes, favorites, and custom lists from your TV Time export.
+              Move your watch history without starting over. tvcask imports shows, movies, watched episodes, favorites, and custom lists from your TV Time export.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
@@ -113,7 +113,7 @@ export default function ImportTvTimePage() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {["Shows", "Movies", "Episodes", "Favorites", "Custom lists"].map((item) => (
-                <span key={item} className="rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
+                <span key={item} className="whitespace-nowrap rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
                   {item}
                 </span>
               ))}
@@ -162,9 +162,11 @@ export default function ImportTvTimePage() {
               const Icon = feature.icon;
               return (
                 <div key={feature.title} className="surface rounded-[16px] p-5">
-                  <Icon className="size-5" style={{ color: "var(--accent-text)" }} />
+                  <span className="grid size-9 place-items-center rounded-full" style={{ background: "rgba(211,158,94,0.12)" }}>
+                    <Icon className="size-4" style={{ color: "var(--accent-text)" }} />
+                  </span>
                   <h2 className="display mt-4 text-lg text-white">{feature.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-white/50">{feature.copy}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/58">{feature.copy}</p>
                 </div>
               );
             })}
@@ -177,17 +179,17 @@ export default function ImportTvTimePage() {
               <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
                 How it works
               </span>
-              <h2 className="display mt-2 text-3xl text-white">From TV Time export to TV Cask library.</h2>
+              <h2 className="display mt-2 text-3xl text-white">From TV Time export to tvcask library.</h2>
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-4">
             {steps.map((step) => (
-              <div key={step.n} className="rounded-[16px] border border-white/[0.08] bg-white/[0.025] p-5">
+              <div key={step.n} className="card rounded-[16px] p-5">
                 <span className="display text-sm" style={{ color: "var(--accent-text)" }}>
                   {step.n}
                 </span>
                 <h3 className="display mt-4 text-lg text-white">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/50">{step.copy}</p>
+                <p className="mt-2 text-sm leading-6 text-white/58">{step.copy}</p>
               </div>
             ))}
           </div>
@@ -197,24 +199,24 @@ export default function ImportTvTimePage() {
           <div className="surface rounded-[16px] p-6">
             <Search className="size-5" style={{ color: "var(--accent-text)" }} />
             <h2 className="display mt-4 text-2xl text-white">A TV Time alternative built around your history.</h2>
-            <p className="mt-3 text-sm leading-7 text-white/55">
-              The import is not a one-time vanity metric. Your TV Time data becomes working TV Cask data: profile counts, progress, title detail, lists, and continued tracking.
+            <p className="mt-3 text-sm leading-7 text-white/62">
+              The import is not a one-time vanity metric. Your TV Time data becomes working tvcask data: profile counts, progress, title detail, lists, and continued tracking.
             </p>
-            <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-white/50">
-              <Lock className="size-4" /> Account-based import
+            <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-white/58">
+              <Lock className="size-4" style={{ color: "var(--accent-text)" }} /> Account-based import
             </div>
           </div>
 
           <div className="surface rounded-[16px] p-6">
             <h2 className="display text-2xl text-white">TV Time import FAQ</h2>
-            <div className="mt-4 divide-y divide-white/[0.06]">
+            <div className="mt-4 divide-y divide-white/[0.1]">
               {faqs.map((faq) => (
                 <details key={faq.q} className="group py-4">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
                     {faq.q}
-                    <span className="text-white/30 transition group-open:rotate-45">+</span>
+                    <span className="text-lg leading-none text-white/40 transition group-open:rotate-45" style={{ color: "var(--accent-text)" }}>+</span>
                   </summary>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">{faq.a}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/62">{faq.a}</p>
                 </details>
               ))}
             </div>

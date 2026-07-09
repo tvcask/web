@@ -56,7 +56,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {brings.map((item) => (
-                <span key={item} className="rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
+                <span key={item} className="whitespace-nowrap rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
                   {item}
                 </span>
               ))}
@@ -69,12 +69,12 @@ export default function HomePage() {
         <section className="mx-auto max-w-6xl px-5 pb-16">
           <div className="mb-7 max-w-2xl">
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              Why TV Cask
+              Why tvcask
             </p>
             <h2 className="display mt-3 text-3xl leading-tight text-white md:text-4xl">
               Built to replace TV Time, not to reinvent it.
             </h2>
-            <p className="mt-3 text-sm leading-6 text-white/52">
+            <p className="mt-3 text-sm leading-6 text-white/60">
               This is a focused replacement for keeping your watch history alive first. The social and mobile layers come after the library foundation is solid.
             </p>
           </div>
@@ -106,8 +106,8 @@ export default function HomePage() {
               </div>
               <div className="space-y-3">
                 {comingNext.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/50">
-                    <Circle className="size-3.5 shrink-0 text-white/28" />
+                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/60">
+                    <Circle className="size-3.5 shrink-0" style={{ color: "var(--accent-text)", opacity: 0.5 }} />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -144,7 +144,7 @@ export default function HomePage() {
                   {step.n}
                 </span>
                 <h3 className="display mt-3 text-lg text-white">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/50">{step.copy}</p>
+                <p className="mt-2 text-sm leading-6 text-white/60">{step.copy}</p>
               </div>
             ))}
           </div>
