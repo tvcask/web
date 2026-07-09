@@ -11,6 +11,9 @@ export function MarketingHeader() {
           <Logo />
         </Link>
         <div className="flex items-center gap-2">
+          <Link href="/about" className="hidden px-3 text-sm font-bold text-white/55 transition hover:text-white md:inline-flex">
+            About
+          </Link>
           <Link href="/import-tv-time" className="hidden px-3 text-sm font-bold text-white/55 transition hover:text-white sm:inline-flex">
             TV Time import
           </Link>

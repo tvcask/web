@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ListChecks, Plus, Upload } from "lucide-react";
+import { ArrowRight, Bell, Check, ListChecks, Smartphone, Upload } from "lucide-react";
 
 type Poster = {
   title: string;
@@ -31,6 +31,8 @@ const importedPosters = [
   moviePosters[3],
   moviePosters[4]
 ];
+
+const catalogPosters = [...trendingShows.slice(0, 5), ...moviePosters.slice(0, 5)];
 
 export function HeroProductPreview() {
   return (
@@ -110,7 +112,7 @@ export function TrendingCatalogBand() {
           </p>
         </div>
 
-        <CatalogRail title="Trending now" items={[...trendingShows.slice(0, 4), ...moviePosters.slice(0, 4)]} />
+        <MovingPosterRail items={catalogPosters} />
 
         <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-white/45">Every poster becomes a title drawer, progress tracker, and list item in the app.</p>
@@ -123,12 +125,29 @@ export function TrendingCatalogBand() {
   );
 }
 
-function CatalogRail({ title, items }: { title: string; items: Poster[] }) {
+export function MobileComingSoonBanner() {
   return (
-    <div>
-      <h3 className="display mb-3 text-lg text-white">{title}</h3>
-      <PosterRail items={items} size="catalog" interactive />
-    </div>
+    <section className="mx-auto max-w-6xl px-5 pb-10">
+      <div className="surface flex flex-col gap-4 rounded-[18px] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="grid size-11 shrink-0 place-items-center rounded-full bg-white/[0.06] text-white/70">
+            <Smartphone className="size-5" />
+          </div>
+          <div>
+            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+              Mobile app coming soon
+            </p>
+            <h2 className="display mt-1 text-2xl text-white">Web import first. Mobile and social next.</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
+              TV Cask started with the web import flow so TV Time users could move their history first. Native mobile apps, richer social features, and sharing are planned after the migration foundation is stable.
+            </p>
+          </div>
+        </div>
+        <Link href="/about" className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
+          Why TV Cask <ArrowRight className="ml-2 size-4" />
+        </Link>
+      </div>
+    </section>
   );
 }
 
@@ -141,17 +160,46 @@ function PosterRail({ items, size, interactive = false }: { items: Poster[]; siz
           className={size === "hero" ? "w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]" : "group relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]"}
         >
           <PosterImage item={item} sizes={size === "hero" ? "(max-width: 640px) 92px, 112px" : "(max-width: 640px) 118px, 148px"} />
-          {interactive ? (
-            <span
-              className="absolute right-2 top-2 grid size-7 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur"
-              aria-hidden
-            >
-              {index % 3 === 1 ? <Check className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <Plus className="size-3.5" />}
-            </span>
-          ) : null}
+          {interactive ? <PosterBadge checked={index % 3 === 1} /> : null}
         </div>
       ))}
     </div>
+  );
+}
+
+function MovingPosterRail({ items }: { items: Poster[] }) {
+  const loop = [...items, ...items];
+  return (
+    <div>
+      <h3 className="display mb-3 text-lg text-white">Trending now</h3>
+      <div className="relative overflow-hidden">
+        <div className="poster-marquee flex w-max gap-3 pb-1">
+          {loop.map((item, index) => (
+            <div key={`${item.title}-${index}`} className="relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]">
+              <PosterImage item={item} sizes="(max-width: 640px) 92px, 112px" />
+              <PosterBadge checked={index % 4 === 1} />
+            </div>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#11100e] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#11100e] to-transparent" />
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {["Poster-first browsing", "Title drawers", "Progress tracking", "Personal lists"].map((item) => (
+          <span key={item} className="rounded-full bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-white/52">
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PosterBadge({ checked }: { checked: boolean }) {
+  return (
+    <span className="absolute right-2 top-2 grid size-7 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur" aria-hidden>
+      {checked ? <Check className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <Bell className="size-3.5" />}
+    </span>
   );
 }
 

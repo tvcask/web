@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Check, FileUp, ListChecks, Lock, Search } from "lucide-react";
+import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
-import { TmdbAttribution } from "@/components/tmdb-attribution";
 
 const title = "Import your TV Time history into TV Cask";
 const description =
@@ -207,12 +207,7 @@ export default function ImportTvTimePage() {
           </div>
         </section>
       </main>
-      <footer className="mx-auto w-full max-w-6xl px-5 py-10">
-        <div className="flex flex-col gap-3 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} TV Cask</p>
-          <TmdbAttribution />
-        </div>
-      </footer>
+      <MarketingFooter />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

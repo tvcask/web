@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { MarketingHeader } from "@/components/marketing/header";
-import { HeroProductPreview, TrendingCatalogBand } from "@/components/marketing/product-showcase";
+import { HeroProductPreview, MobileComingSoonBanner, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { Button } from "@/components/ui/button";
-import { TmdbAttribution } from "@/components/tmdb-attribution";
+import { MarketingFooter } from "@/components/marketing/footer";
 
 const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites", "Lists"];
 
@@ -50,6 +50,7 @@ export default function HomePage() {
         </section>
 
         <TrendingCatalogBand />
+        <MobileComingSoonBanner />
 
         <section className="mx-auto max-w-6xl px-5 pb-10">
           <Link href="/import-tv-time" className="surface flex flex-col gap-4 rounded-[16px] p-5 transition hover:bg-white/[0.04] sm:flex-row sm:items-center">
@@ -82,12 +83,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="mx-auto w-full max-w-6xl px-5 py-10">
-        <div className="flex flex-col gap-3 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} TV Cask</p>
-          <TmdbAttribution />
-        </div>
-      </footer>
+      <MarketingFooter />
     </>
   );
 }
