@@ -16,7 +16,7 @@ const worksToday = [
 ];
 
 const comingNext = [
-  "Native iOS and Android apps",
+  "Native iOS app",
   "Social feed, groups, and friend activity",
   "Public profiles and following",
   "Episode reactions, comments, and sharing"
@@ -33,12 +33,14 @@ export default function HomePage() {
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               For people leaving TV Time
             </span>
-            <h1 className="display text-5xl leading-[1.05] md:text-6xl">Your watch history has a new home.</h1>
+            <h1 className="display max-w-[620px] text-5xl leading-[1.05] md:text-[64px]">
+              Your watch history has a new home.
+            </h1>
             <p className="max-w-lg text-lg leading-8 text-white/55">
               Track every show and movie, keep every episode, and continue where you left off.
             </p>

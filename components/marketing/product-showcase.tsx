@@ -39,7 +39,7 @@ export function HeroProductPreview() {
     <div className="relative">
       <div className="surface overflow-hidden rounded-[20px] p-3 shadow-2xl shadow-black/30">
         <div className="rounded-[16px] border border-white/[0.08] bg-[#11100e] p-3">
-          <div className="flex items-center justify-between px-1 pb-3">
+          <div className="flex items-start justify-between gap-4 px-1 pb-3">
             <div>
               <p className="eyebrow">Imported from TV Time</p>
               <p className="display mt-1 text-xl text-white">Your library</p>
@@ -136,25 +136,31 @@ export function MobileComingSoonBanner() {
               Coming next
             </p>
             <h2 className="display mt-2 max-w-2xl text-2xl leading-tight text-white md:text-3xl">
-              TV Cask for iPhone and Android is on the way.
+              TV Cask for iPhone is on the way.
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
-              Web comes first because it is the fastest way to help TV Time users preserve their history. Native apps and social features follow after the import foundation is stable.
+              Web comes first because it is the fastest way to help TV Time users preserve their history. The iOS app and social features follow after the import foundation is stable.
             </p>
             <Link href="/about" className="mt-5 inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
               Why I built this <ArrowRight className="ml-2 size-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:w-[250px]">
-            {["iOS soon", "Android soon"].map((label) => (
-              <div key={label} className="rounded-[16px] border border-white/[0.08] bg-black/18 p-4 text-center">
-                <div className="mx-auto grid size-12 place-items-center rounded-full bg-white/[0.06] text-white/70">
+          <div className="sm:w-[250px]">
+            <div className="rounded-[18px] border border-white/[0.08] bg-black/18 p-5">
+              <div className="flex items-center gap-3">
+                <div className="grid size-12 place-items-center rounded-full bg-white/[0.06] text-white/70">
                   <Smartphone className="size-5" />
                 </div>
-                <p className="mt-3 text-xs font-extrabold uppercase text-white/55">{label}</p>
+                <div>
+                  <p className="text-sm font-extrabold text-white">iOS app</p>
+                  <p className="text-xs font-bold uppercase text-white/45">Coming soon</p>
+                </div>
               </div>
-            ))}
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                <div className="h-full w-2/3 rounded-full" style={{ background: "var(--accent)" }} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -168,10 +174,15 @@ function PosterRail({ items, size, interactive = false }: { items: Poster[]; siz
       {items.map((item, index) => (
         <div
           key={item.title}
-          className={size === "hero" ? "w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]" : "group relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]"}
+          className={size === "hero" ? "relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]" : "group relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]"}
         >
           <PosterImage item={item} sizes={size === "hero" ? "(max-width: 640px) 92px, 112px" : "(max-width: 640px) 118px, 148px"} />
           {interactive ? <PosterBadge checked={index % 3 === 1} /> : null}
+          {size === "hero" ? (
+            <p className="absolute inset-x-2 bottom-2 line-clamp-2 text-[9px] font-extrabold uppercase leading-[1.05] text-white drop-shadow-lg">
+              {item.title}
+            </p>
+          ) : null}
         </div>
       ))}
     </div>
