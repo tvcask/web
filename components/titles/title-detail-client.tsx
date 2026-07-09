@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Heart, Plus, Share2, X } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
+import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { toast } from "@/lib/toast";
 import type { Episode, Title } from "@/lib/services/types";
@@ -219,6 +220,8 @@ export function TitleDetailClient({
             <Share2 className="size-5" />
           </button>
         </div>
+
+        <TitleListMembership titleId={title.id} />
 
         {tracked ? (
           <div className="flex flex-wrap gap-2">
