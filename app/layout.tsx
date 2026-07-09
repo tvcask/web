@@ -7,14 +7,23 @@ import "./globals.css";
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["400", "500", "600", "700", "800"]
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://tvcask.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://tvcask.com",
+  ),
   title: `${site.displayName} — ${site.tagline}`,
   description: site.description,
   applicationName: site.displayName,
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: `${site.displayName} — ${site.tagline}`,
     description: site.description,
@@ -23,31 +32,33 @@ export const metadata: Metadata = {
     siteName: site.displayName,
     images: [
       {
-        url: "/og.png",
-        width: 1731,
-        height: 909,
-        alt: "tvcask watch history and TV Time import preview"
-      }
-    ]
+        url: "/og-h.png",
+        width: 1200,
+        height: 630,
+        alt: "tvcask watch history and TV Time import preview",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.displayName} — ${site.tagline}`,
     description: site.description,
-    images: ["/og.png"]
+    images: ["/og-h.png"],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: site.displayName
-  }
+    title: site.displayName,
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d0c0b"
+  themeColor: "#0d0c0b",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={jakarta.variable}>
       <body>
