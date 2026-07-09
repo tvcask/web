@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-// Server-side client for the TV Cask Go API. All app data flows through here.
+// Server-side client for the tvcask Go API. All app data flows through here.
 export const API_URL = process.env.API_URL ?? "http://localhost:8080";
 export const TOKEN_COOKIE = "tvcask_token";
 

@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       subtitle="Log in to pick up where you left off."
       footer={
         <>
-          New to TV Cask?{" "}
+          New to tvcask?{" "}
           <Link className="font-semibold text-[color:var(--accent-text)]" href={`/signup${safeReturnTo ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ""}`}>
             Create an account
           </Link>

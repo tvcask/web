@@ -30,13 +30,13 @@ export function MarketingFooter() {
           <nav className="space-y-3 text-sm">
             <p className="eyebrow">Company</p>
             <Link href="/about" className="block font-bold text-white/55 transition hover:text-white">
-              About TV Cask
+              About tvcask
             </Link>
           </nav>
         </div>
 
         <div className="mt-10 flex flex-col gap-4 border-t border-white/[0.06] pt-6 text-xs font-semibold text-white/35 sm:flex-row sm:items-center sm:justify-between">
-          <p>Copyright {new Date().getFullYear()} TV Cask. Not affiliated with TV Time or Whip Media.</p>
+          <p>Copyright {new Date().getFullYear()} tvcask. Not affiliated with TV Time or Whip Media.</p>
           <Link href="/about" className="inline-flex items-center font-bold transition hover:text-white">
             Why I built this <ArrowRight className="ml-1.5 size-3.5" />
           </Link>

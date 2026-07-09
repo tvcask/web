@@ -69,7 +69,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-6xl px-5 pb-16">
           <div className="mb-7 max-w-2xl">
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              Why TV Cask
+              Why tvcask
             </p>
             <h2 className="display mt-3 text-3xl leading-tight text-white md:text-4xl">
               Built to replace TV Time, not to reinvent it.

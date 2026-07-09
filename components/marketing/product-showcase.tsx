@@ -136,7 +136,7 @@ export function MobileComingSoonBanner() {
               Coming next
             </p>
             <h2 className="display mt-2 max-w-2xl text-2xl leading-tight text-white md:text-3xl">
-              TV Cask for iPhone is on the way.
+              tvcask for iPhone is on the way.
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
               Web comes first because it is the fastest way to help TV Time users preserve their history. The iOS app and social features follow after the import foundation is stable.
