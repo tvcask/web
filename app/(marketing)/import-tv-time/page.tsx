@@ -19,7 +19,21 @@ export const metadata: Metadata = {
     title,
     description,
     type: "website",
-    url: "/import-tv-time"
+    url: "/import-tv-time",
+    images: [
+      {
+        url: "/og.png",
+        width: 1731,
+        height: 909,
+        alt: "TV Cask TV Time import preview"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/og.png"]
   }
 };
 
@@ -78,12 +92,12 @@ export default function ImportTvTimePage() {
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-14 lg:grid-cols-[1fr_0.95fr]">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-12 sm:pb-16 sm:pt-14 lg:grid-cols-[1fr_0.95fr]">
           <div className="space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               TV Time import
             </span>
-            <h1 className="display max-w-3xl text-5xl leading-[1.05] text-white md:text-6xl">{title}</h1>
+            <h1 className="display max-w-3xl text-4xl leading-[1.05] text-white sm:text-5xl md:text-6xl">{title}</h1>
             <p className="max-w-xl text-lg leading-8 text-white/58">
               Move your watch history without starting over. TV Cask imports shows, movies, watched episodes, favorites, and custom lists from your TV Time export.
             </p>
@@ -131,7 +145,7 @@ export default function ImportTvTimePage() {
                 ))}
               </div>
             </div>
-            <div className="mt-3 grid grid-cols-3 gap-2">
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
               {["Watching", "Favorites", "Lists"].map((item) => (
                 <div key={item} className="rounded-[12px] bg-white/[0.04] px-3 py-3">
                   <Check className="size-4" style={{ color: "var(--accent-text)" }} />

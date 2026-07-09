@@ -10,7 +10,9 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { getCatalogStatus } from "@/lib/data";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { version } from "@/package.json";
+import packageJson from "@/package.json";
+
+const { version } = packageJson;
 
 export default async function SettingsPage({
   searchParams

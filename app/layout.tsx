@@ -15,6 +15,27 @@ export const metadata: Metadata = {
   title: `${site.displayName} — ${site.tagline}`,
   description: site.description,
   applicationName: site.displayName,
+  openGraph: {
+    title: `${site.displayName} — ${site.tagline}`,
+    description: site.description,
+    type: "website",
+    url: "/",
+    siteName: site.displayName,
+    images: [
+      {
+        url: "/og.png",
+        width: 1731,
+        height: 909,
+        alt: "TV Cask watch history and TV Time import preview"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${site.displayName} — ${site.tagline}`,
+    description: site.description,
+    images: ["/og.png"]
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
