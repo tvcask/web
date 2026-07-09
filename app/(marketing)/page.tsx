@@ -1,10 +1,26 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Circle } from "lucide-react";
 import { MarketingHeader } from "@/components/marketing/header";
+import { HeroProductPreview, MobileComingSoonBanner, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { Button } from "@/components/ui/button";
-import { TmdbAttribution } from "@/components/tmdb-attribution";
+import { MarketingFooter } from "@/components/marketing/footer";
 
 const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites", "Lists"];
+
+const worksToday = [
+  "Track shows and movies episode by episode",
+  "Favorites and unlimited custom lists",
+  "Watch next and unwatched sections",
+  "Upcoming release calendar",
+  "Full TV Time import"
+];
+
+const comingNext = [
+  "Native iOS app",
+  "Social feed, groups, and friend activity",
+  "Public profiles and following",
+  "Episode reactions, comments, and sharing"
+];
 
 const steps = [
   { n: "01", title: "Upload your export", copy: "Drop in your TV Time ZIP export and keep the files intact." },
@@ -12,23 +28,19 @@ const steps = [
   { n: "03", title: "Keep watching", copy: "Confirm, and pick up the next episode right where you left off." }
 ];
 
-const upNext = [
-  { title: "Jujutsu Kaisen", tag: "S03 · E06", from: "#3b1d54", to: "#0e0b1a" },
-  { title: "Severance", tag: "S02 · E03", from: "#123a52", to: "#0b1116" },
-  { title: "The Bear", tag: "S03 · E05", from: "#5a2f1a", to: "#140d09" }
-];
-
 export default function HomePage() {
   return (
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,0.95fr)]">
           <div className="space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               For people leaving TV Time
             </span>
-            <h1 className="display text-5xl leading-[1.05] md:text-6xl">Your watch history has a new home.</h1>
+            <h1 className="display max-w-[680px] text-5xl leading-[1.05] md:text-[58px] xl:text-[64px]">
+              Your watch history has a new home.
+            </h1>
             <p className="max-w-lg text-lg leading-8 text-white/55">
               Track every show and movie, keep every episode, and continue where you left off.
             </p>
@@ -51,30 +63,61 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="surface rounded-[18px] p-4">
-            <p className="eyebrow mb-3 px-1">Up next</p>
-            <div className="space-y-2.5">
-              {upNext.map((show) => (
-                <div key={show.title} className="flex items-center gap-3.5 rounded-[12px] bg-white/[0.03] p-2.5">
-                  <div
-                    className="h-14 w-24 shrink-0 rounded-[8px]"
-                    style={{ background: `linear-gradient(140deg, ${show.from}, ${show.to})` }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="display truncate text-[15px] text-white">{show.title}</p>
-                    <p className="mt-0.5 text-[13px] text-white/45">{show.tag}</p>
+          <HeroProductPreview />
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 pb-16">
+          <div className="mb-7 max-w-2xl">
+            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+              Why TV Cask
+            </p>
+            <h2 className="display mt-3 text-3xl leading-tight text-white md:text-4xl">
+              Built to replace TV Time, not to reinvent it.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-white/52">
+              This is a focused replacement for keeping your watch history alive first. The social and mobile layers come after the library foundation is solid.
+            </p>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="surface rounded-[16px] p-5 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-full bg-emerald-500/12 text-emerald-300">
+                  <Check className="size-4" />
+                </span>
+                <h3 className="display text-lg text-white">Works today</h3>
+              </div>
+              <div className="space-y-3">
+                {worksToday.map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
+                    <Check className="size-4 shrink-0 text-emerald-300" />
+                    <span>{item}</span>
                   </div>
-                  <span
-                    className="grid size-9 shrink-0 place-items-center rounded-full"
-                    style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.2)", color: "var(--accent-text)" }}
-                  >
-                    <Check className="size-4" />
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            <div className="surface rounded-[16px] p-5 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-full" style={{ background: "rgba(211,158,94,0.12)", color: "var(--accent-text)" }}>
+                  <Circle className="size-3.5" />
+                </span>
+                <h3 className="display text-lg text-white">Coming next</h3>
+              </div>
+              <div className="space-y-3">
+                {comingNext.map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/50">
+                    <Circle className="size-3.5 shrink-0 text-white/28" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
+
+        <TrendingCatalogBand />
+        <MobileComingSoonBanner />
 
         <section className="mx-auto max-w-6xl px-5 pb-10">
           <Link href="/import-tv-time" className="surface flex flex-col gap-4 rounded-[16px] p-5 transition hover:bg-white/[0.04] sm:flex-row sm:items-center">
@@ -107,12 +150,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="mx-auto w-full max-w-6xl px-5 py-10">
-        <div className="flex flex-col gap-3 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} TV Cask</p>
-          <TmdbAttribution />
-        </div>
-      </footer>
+      <MarketingFooter />
     </>
   );
 }
