@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ListChecks, Plus, Search, Upload } from "lucide-react";
+import { ArrowRight, Check, ListChecks, Plus, Upload } from "lucide-react";
 
 type Poster = {
   title: string;
@@ -97,48 +97,26 @@ export function HeroProductPreview() {
 export function TrendingCatalogBand() {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-14">
-      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-            Browse what to watch next
+      <div className="surface overflow-hidden rounded-[18px] p-5 sm:p-6">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+              Browse what to watch next
+            </p>
+            <h2 className="display mt-2 text-3xl text-white">Track shows and movies visually.</h2>
+          </div>
+          <p className="max-w-md text-sm leading-6 text-white/48">
+            Browse a poster-first catalog, open a title, and add it to your watchlist or personal lists.
           </p>
-          <h2 className="display mt-2 text-3xl text-white">A catalog built for tracking.</h2>
-        </div>
-        <p className="max-w-md text-sm leading-6 text-white/48">
-          Search shows, movies, and anime, then add them to watchlists or custom lists without turning entertainment into admin.
-        </p>
-      </div>
-
-      <div className="surface overflow-hidden rounded-[18px] p-4">
-        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex h-11 w-full max-w-xl items-center gap-3 rounded-full border border-white/[0.08] bg-[#16130f] px-4 text-sm font-semibold text-white/38">
-            <Search className="size-4" />
-            Search shows, movies, anime...
-          </div>
-          <div className="flex gap-2">
-            {["Watchlist", "Favorites", "Lists"].map((item) => (
-              <span key={item} className="rounded-full bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-white/52">
-                {item}
-              </span>
-            ))}
-          </div>
         </div>
 
-        <div className="space-y-6">
-          <CatalogRail title="Trending shows" items={trendingShows} />
-          <CatalogRail title="Movies to track" items={moviePosters} />
-        </div>
+        <CatalogRail title="Trending now" items={[...trendingShows.slice(0, 4), ...moviePosters.slice(0, 4)]} />
 
         <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-white/45">Every poster becomes a title drawer, progress tracker, and list item in the app.</p>
-          <div className="flex gap-2">
-            <Link href="/signup" className="inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-              Start tracking
-            </Link>
-            <Link href="/import-tv-time" className="inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
-              Import TV Time <ArrowRight className="ml-2 size-4" />
-            </Link>
-          </div>
+          <Link href="/signup" className="inline-flex h-10 shrink-0 items-center justify-center rounded-full px-4 text-sm font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
+            Start tracking <ArrowRight className="ml-2 size-4" />
+          </Link>
         </div>
       </div>
     </section>
