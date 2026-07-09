@@ -19,7 +19,16 @@ async function setSession(res: AuthResponse) {
   });
 }
 
+function safeReturnTo(formData: FormData) {
+  const returnTo = formData.get("returnTo");
+  if (typeof returnTo === "string" && returnTo.startsWith("/app/")) {
+    return returnTo;
+  }
+  return "/app/shows";
+}
+
 export async function signupAction(formData: FormData) {
+  const returnTo = safeReturnTo(formData);
   const body = {
     email: String(formData.get("email")),
     password: String(formData.get("password")),
@@ -29,20 +38,21 @@ export async function signupAction(formData: FormData) {
     const res = await api<AuthResponse>("/v1/auth/signup", { method: "POST", body, auth: false });
     await setSession(res);
   } catch {
-    redirect("/signup?error=1");
+    redirect(`/signup?error=1&returnTo=${encodeURIComponent(returnTo)}`);
   }
-  redirect("/app/shows");
+  redirect(returnTo);
 }
 
 export async function loginAction(formData: FormData) {
+  const returnTo = safeReturnTo(formData);
   const body = { email: String(formData.get("email")), password: String(formData.get("password")) };
   try {
     const res = await api<AuthResponse>("/v1/auth/login", { method: "POST", body, auth: false });
     await setSession(res);
   } catch {
-    redirect("/login?error=1");
+    redirect(`/login?error=1&returnTo=${encodeURIComponent(returnTo)}`);
   }
-  redirect("/app/shows");
+  redirect(returnTo);
 }
 
 export async function endSession() {

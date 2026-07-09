@@ -4,8 +4,9 @@ import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string; returnTo?: string }> }) {
+  const { error, returnTo } = await searchParams;
+  const safeReturnTo = typeof returnTo === "string" && returnTo.startsWith("/app/") ? returnTo : "";
   return (
     <AuthCard
       title="Start your cask"
@@ -13,7 +14,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
       footer={
         <>
           Already have an account?{" "}
-          <Link className="font-semibold text-[color:var(--accent-text)]" href="/login">
+          <Link className="font-semibold text-[color:var(--accent-text)]" href={`/login${safeReturnTo ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ""}`}>
             Log in
           </Link>
         </>
@@ -21,6 +22,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
     >
       {error ? <Banner tone="err">Could not create account. Try another email.</Banner> : null}
       <form action={signupAction} className="space-y-4">
+        {safeReturnTo ? <input type="hidden" name="returnTo" value={safeReturnTo} /> : null}
         <Field label="Name">
           <Input name="name" type="text" placeholder="Your name" />
         </Field>
