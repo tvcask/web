@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Trash2 } from "lucide-react";
 import { deleteListAction, removeListItemAction, updateListAction } from "@/app/actions";
+import { AddTitleToList } from "@/components/lists/add-title-to-list";
 import { Poster } from "@/components/titles/poster";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/input";
@@ -76,7 +77,10 @@ export default async function ListPage({
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="display text-lg text-white">Titles</h2>
-          <span className="text-xs font-bold text-white/40">Ordered from TV Time</span>
+          <span className="text-xs font-bold text-white/40">Custom order</span>
+        </div>
+        <div className="mb-5">
+          <AddTitleToList listId={list.id} existingTitleIds={list.items.map((item) => item.titleId)} />
         </div>
         {list.items.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
