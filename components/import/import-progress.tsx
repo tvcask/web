@@ -31,7 +31,7 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
     if (announced.current) return;
     if (rec.status === "completed") {
       announced.current = true;
-      celebrate(`${rec.matchedTitles} titles from TV Time`);
+      celebrate(`${rec.matchedTitles} titles and ${rec.importedLists} lists from TV Time`);
     } else if (rec.status === "failed") {
       announced.current = true;
       toast(rec.errorMessage ?? "Import failed. Please try again.");
@@ -89,8 +89,14 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
       <div className="mt-5 grid grid-cols-3 gap-4">
         <Stat label="Matched" value={rec.matchedTitles} accent />
         <Stat label="Episodes" value={rec.watchedEpisodes} />
-        <Stat label="Skipped" value={rec.unmatchedTitles} />
+        <Stat label="Lists" value={rec.importedLists} />
       </div>
+      {rec.importedLists > 0 || rec.unmatchedListItems > 0 ? (
+        <p className="mt-4 text-sm text-white/50">
+          Imported {rec.importedListItems.toLocaleString()} list items
+          {rec.unmatchedListItems > 0 ? `, skipped ${rec.unmatchedListItems.toLocaleString()} unmatched list items` : ""}.
+        </p>
+      ) : null}
 
       {!done ? (
         <p className="mt-5 text-sm text-white/50">

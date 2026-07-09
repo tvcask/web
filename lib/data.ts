@@ -35,6 +35,26 @@ export type MyTitle = { tracked: boolean; userTitle?: UserTitle; watched: string
 
 export type LibraryQuery = { type?: "show" | "movie"; status?: string; favorite?: boolean; limit?: number; offset?: number };
 export type LibraryPage = { items: UserTitleWithTitle[]; total: number; limit: number; offset: number };
+export type UserList = {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  isPublic: boolean;
+  importedFrom?: string | null;
+  externalId?: string | null;
+  itemCount?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+export type UserListItem = {
+  id: string;
+  listId: string;
+  titleId: string;
+  position: number;
+  title: Title;
+};
+export type UserListDetail = UserList & { items: UserListItem[] };
 
 function libraryPath({ type, status, favorite, limit, offset }: LibraryQuery = {}): string {
   const p = new URLSearchParams();
@@ -54,6 +74,19 @@ export async function getLibraryPage(q: LibraryQuery = {}): Promise<LibraryPage>
 
 export async function getLibrary(q: LibraryQuery = {}): Promise<UserTitleWithTitle[]> {
   return (await getLibraryPage(q)).items;
+}
+
+export async function getLists(): Promise<UserList[]> {
+  const res = await api<{ lists: UserList[] }>("/v1/me/lists");
+  return res.lists ?? [];
+}
+
+export async function getList(id: string): Promise<UserListDetail | null> {
+  try {
+    return await api<UserListDetail>(`/v1/me/lists/${id}`);
+  } catch {
+    return null;
+  }
 }
 
 export async function getCalendar(): Promise<Calendar> {
@@ -108,6 +141,9 @@ export type ImportRecord = {
   matchedTitles: number;
   unmatchedTitles: number;
   watchedEpisodes: number;
+  importedLists: number;
+  importedListItems: number;
+  unmatchedListItems: number;
   errorMessage?: string;
 };
 
