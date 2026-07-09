@@ -92,7 +92,7 @@ export default function ImportTvTimePage() {
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-12 sm:pb-16 sm:pt-14 lg:grid-cols-[1fr_0.95fr]">
+        <section className="hero-glow relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-12 sm:pb-16 sm:pt-14 lg:grid-cols-[1fr_0.95fr]">
           <div className="space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               TV Time import
@@ -113,7 +113,7 @@ export default function ImportTvTimePage() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {["Shows", "Movies", "Episodes", "Favorites", "Custom lists"].map((item) => (
-                <span key={item} className="rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
+                <span key={item} className="whitespace-nowrap rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
                   {item}
                 </span>
               ))}
@@ -162,9 +162,11 @@ export default function ImportTvTimePage() {
               const Icon = feature.icon;
               return (
                 <div key={feature.title} className="surface rounded-[16px] p-5">
-                  <Icon className="size-5" style={{ color: "var(--accent-text)" }} />
+                  <span className="grid size-9 place-items-center rounded-full" style={{ background: "rgba(211,158,94,0.12)" }}>
+                    <Icon className="size-4" style={{ color: "var(--accent-text)" }} />
+                  </span>
                   <h2 className="display mt-4 text-lg text-white">{feature.title}</h2>
-                  <p className="mt-2 text-sm leading-6 text-white/50">{feature.copy}</p>
+                  <p className="mt-2 text-sm leading-6 text-white/58">{feature.copy}</p>
                 </div>
               );
             })}
@@ -182,12 +184,12 @@ export default function ImportTvTimePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-4">
             {steps.map((step) => (
-              <div key={step.n} className="rounded-[16px] border border-white/[0.08] bg-white/[0.025] p-5">
+              <div key={step.n} className="card rounded-[16px] p-5">
                 <span className="display text-sm" style={{ color: "var(--accent-text)" }}>
                   {step.n}
                 </span>
                 <h3 className="display mt-4 text-lg text-white">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/50">{step.copy}</p>
+                <p className="mt-2 text-sm leading-6 text-white/58">{step.copy}</p>
               </div>
             ))}
           </div>
@@ -197,24 +199,24 @@ export default function ImportTvTimePage() {
           <div className="surface rounded-[16px] p-6">
             <Search className="size-5" style={{ color: "var(--accent-text)" }} />
             <h2 className="display mt-4 text-2xl text-white">A TV Time alternative built around your history.</h2>
-            <p className="mt-3 text-sm leading-7 text-white/55">
+            <p className="mt-3 text-sm leading-7 text-white/62">
               The import is not a one-time vanity metric. Your TV Time data becomes working TV Cask data: profile counts, progress, title detail, lists, and continued tracking.
             </p>
-            <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-white/50">
-              <Lock className="size-4" /> Account-based import
+            <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-white/58">
+              <Lock className="size-4" style={{ color: "var(--accent-text)" }} /> Account-based import
             </div>
           </div>
 
           <div className="surface rounded-[16px] p-6">
             <h2 className="display text-2xl text-white">TV Time import FAQ</h2>
-            <div className="mt-4 divide-y divide-white/[0.06]">
+            <div className="mt-4 divide-y divide-white/[0.1]">
               {faqs.map((faq) => (
                 <details key={faq.q} className="group py-4">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
                     {faq.q}
-                    <span className="text-white/30 transition group-open:rotate-45">+</span>
+                    <span className="text-lg leading-none text-white/40 transition group-open:rotate-45" style={{ color: "var(--accent-text)" }}>+</span>
                   </summary>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">{faq.a}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/62">{faq.a}</p>
                 </details>
               ))}
             </div>
