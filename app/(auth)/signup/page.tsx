@@ -3,6 +3,7 @@ import { signupAction } from "@/app/actions";
 import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string; returnTo?: string }> }) {
   const { error, returnTo } = await searchParams;
@@ -30,7 +31,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
           <Input name="email" type="email" placeholder="you@example.com" required />
         </Field>
         <Field label="Password">
-          <Input name="password" type="password" placeholder="At least 6 characters" required />
+          <PasswordInput name="password" placeholder="At least 6 characters" required />
         </Field>
         <Button className="h-11 w-full">Create account</Button>
       </form>

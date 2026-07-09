@@ -9,6 +9,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { getCatalogStatus } from "@/lib/data";
 import { ConfirmButton } from "@/components/ui/confirm-button";
+import { PasswordInput } from "@/components/ui/password-input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import packageJson from "@/package.json";
 
@@ -82,19 +83,18 @@ export default async function SettingsPage({
       {/* Security */}
       <Section title="Security">
         <form action={changePasswordAction} className="surface rounded-[14px] p-4">
-          <input
+          <PasswordInput
             name="currentPassword"
-            type="password"
             placeholder="Current password"
             required
-            className="cask-focus h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
+            inputClassName="rounded-[10px] border-0 bg-white/5 px-3.5 pr-11 text-white placeholder:text-white/30 focus:border-transparent"
           />
-          <input
+          <PasswordInput
             name="newPassword"
-            type="password"
             placeholder="New password (min 6)"
             required
-            className="cask-focus mt-3 h-11 w-full rounded-[10px] bg-white/5 px-3.5 text-sm text-white outline-none placeholder:text-white/30"
+            className="mt-3"
+            inputClassName="rounded-[10px] border-0 bg-white/5 px-3.5 pr-11 text-white placeholder:text-white/30 focus:border-transparent"
           />
           {saved === "password" ? <Note tone="ok">Password changed.</Note> : null}
           {error === "password" ? <Note tone="err">Current password is incorrect.</Note> : null}

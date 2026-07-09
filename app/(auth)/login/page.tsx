@@ -3,6 +3,7 @@ import { loginAction } from "@/app/actions";
 import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; reset?: string; returnTo?: string }> }) {
   const { error, reset, returnTo } = await searchParams;
@@ -35,7 +36,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             </Link>
           }
         >
-          <Input name="password" type="password" placeholder="••••••••" required />
+          <PasswordInput name="password" placeholder="••••••••" required />
         </Field>
         <Button className="h-11 w-full">Log in</Button>
       </form>
