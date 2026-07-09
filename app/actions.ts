@@ -216,3 +216,46 @@ export async function logoutEverywhereAction() {
 export async function getImportStatus(id: string): Promise<ImportRecord> {
   return api<ImportRecord>(`/v1/me/import/${id}`);
 }
+
+export async function createListAction(formData: FormData) {
+  const list = await api<{ id: string }>("/v1/me/lists", {
+    method: "POST",
+    body: {
+      name: String(formData.get("name") ?? ""),
+      description: String(formData.get("description") ?? ""),
+      isPublic: formData.get("isPublic") === "on"
+    }
+  });
+  revalidatePath("/app/profile");
+  redirect(`/app/lists/${list.id}`);
+}
+
+export async function updateListAction(formData: FormData) {
+  const id = String(formData.get("listId"));
+  await api(`/v1/me/lists/${id}`, {
+    method: "PATCH",
+    body: {
+      name: String(formData.get("name") ?? ""),
+      description: String(formData.get("description") ?? ""),
+      isPublic: formData.get("isPublic") === "on"
+    }
+  });
+  revalidatePath("/app/profile");
+  revalidatePath(`/app/lists/${id}`);
+  redirect(`/app/lists/${id}?saved=1`);
+}
+
+export async function deleteListAction(formData: FormData) {
+  const id = String(formData.get("listId"));
+  await api(`/v1/me/lists/${id}`, { method: "DELETE" });
+  revalidatePath("/app/profile");
+  redirect("/app/profile");
+}
+
+export async function removeListItemAction(formData: FormData) {
+  const listId = String(formData.get("listId"));
+  const titleId = String(formData.get("titleId"));
+  await api(`/v1/me/lists/${listId}/items/${titleId}`, { method: "DELETE" });
+  revalidatePath("/app/profile");
+  revalidatePath(`/app/lists/${listId}`);
+}

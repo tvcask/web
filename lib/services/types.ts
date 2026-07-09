@@ -126,6 +126,10 @@ export type ImportRecord = {
   totalEpisodes: number;
   matchedTitles: number;
   unmatchedTitles: number;
+  watchedEpisodes?: number;
+  importedLists?: number;
+  importedListItems?: number;
+  unmatchedListItems?: number;
   errorMessage?: string | null;
   rawPreview?: ParsedImport | null;
   items: ImportPreviewItem[];

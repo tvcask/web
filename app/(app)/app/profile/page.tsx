@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { ChevronRight, Heart, Settings } from "lucide-react";
+import { ChevronRight, Heart, Plus, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
-import { getLibrary, getLibraryPage, getStats } from "@/lib/data";
+import { getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -18,13 +18,15 @@ function duration(minutes: number) {
 export default async function ProfilePage() {
   // Fetch shows and movies separately so neither type is starved by a shared
   // page cap, and pull favorites directly instead of filtering a capped list.
-  const [user, stats, showsPage, moviesPage, favorites] = await Promise.all([
+  const [user, stats, showsPage, moviesPage, favorites, lists] = await Promise.all([
     getCurrentUser(),
     getStats(),
     getLibraryPage({ type: "show", limit: 40 }),
     getLibraryPage({ type: "movie", limit: 40 }),
-    getLibrary({ favorite: true, limit: 40 })
+    getLibrary({ favorite: true, limit: 40 }),
+    getLists()
   ]);
+  const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
   const allShows = showsPage.items;
@@ -86,6 +88,7 @@ export default async function ProfilePage() {
       {favShows.length > 0 ? <Rail title="Favorite shows" heart items={favShows.map((i) => i.title)} /> : null}
       {allMovies.length > 0 ? <Rail title="Movies" href="/app/movies" items={allMovies.map((i) => i.title)} /> : null}
       {favMovies.length > 0 ? <Rail title="Favorite movies" heart items={favMovies.map((i) => i.title)} /> : null}
+      <ListsSection lists={listDetails} total={lists.length} />
 
       {!hasLibrary ? (
         <div className="surface rounded-[16px] p-8">
@@ -97,6 +100,58 @@ export default async function ProfilePage() {
         </div>
       ) : null}
     </div>
+  );
+}
+
+function ListsSection({ lists, total }: { lists: UserListDetail[]; total: number }) {
+  return (
+    <section>
+      <div className="mb-3 flex items-center gap-2">
+        <h2 className="display text-lg text-white">Lists</h2>
+        <span className="rounded-full bg-white/8 px-2 py-0.5 text-[11px] font-bold text-white/45">{total}</span>
+        <Link
+          href="/app/lists/new"
+          className="ml-auto grid size-8 place-items-center rounded-full border border-white/12 text-white/70 transition hover:bg-white/5 hover:text-white"
+          aria-label="Create list"
+        >
+          <Plus className="size-4" />
+        </Link>
+      </div>
+
+      {lists.length > 0 ? (
+        <div className="grid gap-3 md:grid-cols-2">
+          {lists.map((list) => (
+            <Link key={list.id} href={`/app/lists/${list.id}`} className="surface rounded-[14px] p-4 transition hover:bg-white/[0.04]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-white">{list.name}</p>
+                  <p className="mt-1 text-xs font-semibold text-white/40">{(list.itemCount ?? list.items.length).toLocaleString()} titles</p>
+                </div>
+                <ChevronRight className="mt-0.5 size-5 shrink-0 text-white/30" />
+              </div>
+              {list.items.length > 0 ? (
+                <div className="mt-3 flex -space-x-3">
+                  {list.items.slice(0, 5).map((item) => (
+                    <div key={item.id} className="w-[46px] overflow-hidden rounded-[8px] ring-2 ring-[#11100e]">
+                      <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[8px]" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-white/45">No titles yet.</p>
+              )}
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="surface rounded-[14px] p-5">
+          <p className="text-sm text-white/55">Create custom lists for themes, rankings, or watch plans.</p>
+          <Button asChild className="mt-4">
+            <Link href="/app/lists/new">Create list</Link>
+          </Button>
+        </div>
+      )}
+    </section>
   );
 }
 
