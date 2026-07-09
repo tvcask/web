@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Check, ListChecks, Upload } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, ListChecks, Plus, Search, Upload } from "lucide-react";
 
 type Poster = {
   title: string;
@@ -99,17 +100,46 @@ export function TrendingCatalogBand() {
       <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-            Live-feeling catalog
+            Browse what to watch next
           </p>
-          <h2 className="display mt-2 text-3xl text-white">A visual library that feels alive.</h2>
+          <h2 className="display mt-2 text-3xl text-white">A catalog built for tracking.</h2>
         </div>
         <p className="max-w-md text-sm leading-6 text-white/48">
-          Browse posters, track progress, and keep personal lists without turning entertainment into admin.
+          Search shows, movies, and anime, then add them to watchlists or custom lists without turning entertainment into admin.
         </p>
       </div>
-      <div className="space-y-7">
-        <CatalogRail title="Trending shows" items={trendingShows} />
-        <CatalogRail title="Movies to track" items={moviePosters} />
+
+      <div className="surface overflow-hidden rounded-[18px] p-4">
+        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex h-11 w-full max-w-xl items-center gap-3 rounded-full border border-white/[0.08] bg-[#16130f] px-4 text-sm font-semibold text-white/38">
+            <Search className="size-4" />
+            Search shows, movies, anime...
+          </div>
+          <div className="flex gap-2">
+            {["Watchlist", "Favorites", "Lists"].map((item) => (
+              <span key={item} className="rounded-full bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-white/52">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <CatalogRail title="Trending shows" items={trendingShows} />
+          <CatalogRail title="Movies to track" items={moviePosters} />
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-semibold text-white/45">Every poster becomes a title drawer, progress tracker, and list item in the app.</p>
+          <div className="flex gap-2">
+            <Link href="/signup" className="inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
+              Start tracking
+            </Link>
+            <Link href="/import-tv-time" className="inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
+              Import TV Time <ArrowRight className="ml-2 size-4" />
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -119,20 +149,28 @@ function CatalogRail({ title, items }: { title: string; items: Poster[] }) {
   return (
     <div>
       <h3 className="display mb-3 text-lg text-white">{title}</h3>
-      <PosterRail items={items} size="catalog" />
+      <PosterRail items={items} size="catalog" interactive />
     </div>
   );
 }
 
-function PosterRail({ items, size }: { items: Poster[]; size: "hero" | "catalog" }) {
+function PosterRail({ items, size, interactive = false }: { items: Poster[]; size: "hero" | "catalog"; interactive?: boolean }) {
   return (
     <div className="nos flex gap-3 overflow-x-auto pb-1">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <div
           key={item.title}
-          className={size === "hero" ? "w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]" : "w-[118px] shrink-0 overflow-hidden rounded-[14px] sm:w-[148px]"}
+          className={size === "hero" ? "w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]" : "group relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]"}
         >
           <PosterImage item={item} sizes={size === "hero" ? "(max-width: 640px) 92px, 112px" : "(max-width: 640px) 118px, 148px"} />
+          {interactive ? (
+            <span
+              className="absolute right-2 top-2 grid size-7 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur"
+              aria-hidden
+            >
+              {index % 3 === 1 ? <Check className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <Plus className="size-3.5" />}
+            </span>
+          ) : null}
         </div>
       ))}
     </div>
