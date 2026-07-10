@@ -7,12 +7,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Warm cask glow — light through whisky. */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div
-          className="absolute left-1/2 top-[-12%] h-[520px] w-[860px] -translate-x-1/2 rounded-full opacity-25 blur-[130px]"
+          className="absolute left-1/2 top-[-12%] h-[520px] w-[860px] -translate-x-1/2 rounded-full opacity-40 blur-[130px]"
           style={{ background: "radial-gradient(circle, oklch(0.72 0.15 68), transparent 70%)" }}
         />
         <div
           className="absolute inset-0"
-          style={{ background: "radial-gradient(1100px 560px at 50% -10%, rgba(224,169,96,0.06), transparent 60%)" }}
+          style={{ background: "radial-gradient(1100px 560px at 50% -10%, rgba(224,169,96,0.1), transparent 60%)" }}
         />
       </div>
 
