@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   const q: LibraryQuery = {
     type: typeParam === "show" || typeParam === "movie" ? typeParam : undefined,
     status: sp.get("status") || undefined,
+    favorite: sp.get("favorite") === "true" || undefined,
     limit: Number(sp.get("limit")) || 40,
     offset: Number(sp.get("offset")) || 0
   };
