@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Heart, Plus, Share2, X } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
 import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
+import { useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
 import type { Episode, Title } from "@/lib/services/types";
 
@@ -33,8 +34,19 @@ export function TitleDetailClient({
   initial: TitleTracking;
 }) {
   const queryClient = useQueryClient();
+  const syncTracked = useSetTracked();
   const isMovie = title.type === "movie";
-  const [tracked, setTracked] = useState(initial.tracked);
+  const [tracked, setTrackedState] = useState(initial.tracked);
+
+  // Every tracked change also updates the shared library-ids Set, so poster
+  // buttons for this title stay in sync. Done in the setter, not an effect.
+  const setTracked = useCallback(
+    (value: boolean) => {
+      setTrackedState(value);
+      syncTracked(title.id, value);
+    },
+    [syncTracked, title.id]
+  );
   const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
   const [favorite, setFavorite] = useState(initial.favorite);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
