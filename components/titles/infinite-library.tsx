@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
@@ -49,6 +49,21 @@ export function InfiniteLibrary({
     fetchPage
   });
 
+  // Optimistically drop a movie from the list; re-insert at its spot on failure.
+  function markComplete(item: UserTitleWithTitle) {
+    const index = items.findIndex((i) => i.id === item.id);
+    setItems((prev) => prev.filter((i) => i.id !== item.id));
+    mutate(`me/titles/${item.title.id}`, "PATCH", { status: "completed" }).catch(() => {
+      setItems((prev) => {
+        if (prev.some((i) => i.id === item.id)) return prev;
+        const copy = [...prev];
+        copy.splice(index < 0 ? prev.length : index, 0, item);
+        return copy;
+      });
+      toast("Couldn't save your change. Try again.");
+    });
+  }
+
   return (
     <>
       {view === "grid" ? (
@@ -91,11 +106,7 @@ export function InfiniteLibrary({
                 layout
                 exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.28, ease: [0.2, 0.8, 0.2, 1] } }}
               >
-                <MovieRow
-                  item={item}
-                  returnTo={returnTo}
-                  onComplete={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
-                />
+                <MovieRow item={item} returnTo={returnTo} onMarkComplete={markComplete} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -115,27 +126,13 @@ export function InfiniteLibrary({
 function MovieRow({
   item,
   returnTo,
-  onComplete
+  onMarkComplete
 }: {
   item: UserTitleWithTitle;
   returnTo: string;
-  onComplete?: (id: string) => void;
+  onMarkComplete: (item: UserTitleWithTitle) => void;
 }) {
   const href = `/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`;
-  const [saving, setSaving] = useState(false);
-
-  function markWatched() {
-    if (saving) {
-      return;
-    }
-    setSaving(true);
-    mutate(`me/titles/${item.title.id}`, "PATCH", { status: "completed" })
-      .then(() => onComplete?.(item.id))
-      .catch(() => {
-        setSaving(false);
-        toast("Couldn't save your change. Try again.");
-      });
-  }
 
   return (
     <div className="surface flex items-center gap-3.5 rounded-[14px] p-3">
@@ -152,13 +149,12 @@ function MovieRow({
         </span>
       ) : (
         <button
-          onClick={markWatched}
-          disabled={saving}
-          className="cask-focus grid size-8 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)] disabled:opacity-50"
+          onClick={() => onMarkComplete(item)}
+          className="cask-focus grid size-8 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)]"
           style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
           aria-label={`Mark ${item.title.title} watched`}
         >
-          {saving ? <Loader2 className="size-4 animate-spin text-white/60" /> : <Check className="size-4" />}
+          <Check className="size-4" />
         </button>
       )}
     </div>
