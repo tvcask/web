@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Loader2, Plus } from "lucide-react";
 import { mutate } from "@/lib/mutate";
+import { LIBRARY_IDS_KEY, useIsTracked, useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
 
-// Optimistic "add to library" badge on posters (rails, search results). Flips to
-// a check immediately, then refreshes the library cache; rolls back on failure.
+// Optimistic "add to library" badge on posters (rails, search, browse). Derives
+// tracked state from the shared library-ids Set, so untracking anywhere flips it.
 export function AddToLibraryButton({
   titleId,
   title,
@@ -18,16 +18,23 @@ export function AddToLibraryButton({
   tracked: boolean;
 }) {
   const queryClient = useQueryClient();
-  const [tracked, setTracked] = useState(initialTracked);
+  const tracked = useIsTracked(titleId, initialTracked);
+  const setTracked = useSetTracked();
 
   const add = useMutation({
     mutationFn: () => mutate("me/titles", "POST", { titleId, status: "watchlist" }),
-    onMutate: () => setTracked(true),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: LIBRARY_IDS_KEY });
+      setTracked(titleId, true);
+    },
     onError: () => {
-      setTracked(false);
+      setTracked(titleId, false);
       toast("Couldn't add to your library. Try again.");
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["library"] })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: LIBRARY_IDS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["library"] });
+    }
   });
 
   const badge = "cask-focus grid size-[30px] place-items-center rounded-[9px] bg-black/45";
