@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { api, ApiError, TOKEN_COOKIE } from "@/lib/api";
 import type { ImportRecord } from "@/lib/data";
+import { isWatchRegion } from "@/lib/regions";
 
 type AuthResponse = { token: string; expiresAt: string };
 
@@ -144,6 +145,21 @@ export async function logoutEverywhereAction() {
   const store = await cookies();
   store.delete(TOKEN_COOKIE);
   redirect("/login");
+}
+
+export async function updateWatchRegionAction(formData: FormData) {
+  const watchRegion = String(formData.get("watchRegion") ?? "").toUpperCase();
+  if (!isWatchRegion(watchRegion)) {
+    redirect("/app/settings?error=region");
+  }
+  try {
+    await api("/v1/me/settings", { method: "PATCH", body: { watchRegion } });
+  } catch {
+    redirect("/app/settings?error=region");
+  }
+  revalidatePath("/app/settings");
+  revalidatePath("/app/titles/[id]", "page");
+  redirect("/app/settings?saved=region");
 }
 
 export async function getImportStatus(id: string): Promise<ImportRecord> {

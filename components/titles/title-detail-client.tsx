@@ -9,7 +9,8 @@ import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
-import type { Episode, Title } from "@/lib/services/types";
+import type { TitleDetail } from "@/lib/data";
+import type { Episode } from "@/lib/services/types";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
@@ -29,7 +30,7 @@ export function TitleDetailClient({
   episodes,
   initial
 }: {
-  title: Title;
+  title: TitleDetail;
   episodes: Episode[];
   initial: TitleTracking;
 }) {
@@ -63,6 +64,8 @@ export function TitleDetailClient({
   const pct = episodes.length > 0 ? Math.min(100, Math.round((watchedCount / episodes.length) * 100)) : 0;
   const seasons = groupSeasons(episodes);
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
+  const hasRating = typeof title.rating === "number" && title.rating > 0;
+  const providers = title.watchProviders ?? [];
 
   const statuses = [
     { value: "watchlist", label: "Watch list" },
@@ -236,6 +239,53 @@ export function TitleDetailClient({
 
         <TitleListMembership titleId={title.id} />
 
+        {hasRating || providers.length > 0 ? (
+          <div className="surface flex flex-col gap-4 rounded-[14px] p-4 sm:flex-row sm:items-center">
+            {hasRating ? (
+              <div className="shrink-0 sm:min-w-24">
+                <p className="display text-3xl text-white">{title.rating!.toFixed(1)}</p>
+                <p className="mt-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/40">
+                  Rating{title.ratingCount ? ` · ${formatVotes(title.ratingCount)}` : ""}
+                </p>
+              </div>
+            ) : null}
+            {hasRating && providers.length > 0 ? <div className="hidden h-12 w-px bg-white/10 sm:block" /> : null}
+            {providers.length > 0 ? (
+              <div className="min-w-0 flex-1">
+                <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white/45">Where to watch</p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {providers.map((provider) => {
+                    const chip = (
+                      <>
+                        {provider.logoUrl ? (
+                          <Image src={provider.logoUrl} alt="" width={24} height={24} className="size-6 rounded-[5px] object-cover" />
+                        ) : null}
+                        <span className="whitespace-nowrap text-xs font-bold text-white/80">{provider.name}</span>
+                      </>
+                    );
+                    return title.watchProviderLink ? (
+                      <a
+                        key={provider.id}
+                        href={title.watchProviderLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex shrink-0 items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-1.5 pr-3 transition hover:bg-white/10"
+                      >
+                        {chip}
+                      </a>
+                    ) : (
+                      <span key={provider.id} className="flex shrink-0 items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-1.5 pr-3">
+                        {chip}
+                      </span>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[10px] text-white/30">{title.watchProviderAttribution || "Powered by JustWatch"}</p>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
         {tracked ? (
           <div className="flex flex-wrap gap-2">
             {statuses.map((s) => (
@@ -272,6 +322,29 @@ export function TitleDetailClient({
           <div>
             <h2 className="display mb-2 text-base text-white">About</h2>
             <p className="text-[15px] leading-7 text-white/70">{title.overview}</p>
+          </div>
+        ) : null}
+
+        {title.cast?.length ? (
+          <div>
+            <h2 className="display mb-3 text-base text-white">Cast</h2>
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              {title.cast.map((person) => (
+                <div key={person.id} className="w-[82px] shrink-0 text-center">
+                  <div className="relative mx-auto size-16 overflow-hidden rounded-full bg-white/[0.06] ring-1 ring-white/10">
+                    {person.profileUrl ? (
+                      <Image src={person.profileUrl} alt="" fill sizes="64px" className="object-cover" />
+                    ) : (
+                      <div className="grid h-full place-items-center text-lg font-extrabold text-white/45">
+                        {(person.name.trim()[0] ?? "?").toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <p className="mt-2 truncate text-xs font-bold text-white/80">{person.name}</p>
+                  {person.character ? <p className="mt-0.5 truncate text-[11px] text-white/40">{person.character}</p> : null}
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
 
@@ -373,4 +446,10 @@ function seededGradient(title: string) {
   for (let i = 0; i < title.length; i += 1) hash = (hash * 31 + title.charCodeAt(i)) >>> 0;
   const hue = hash % 360;
   return `linear-gradient(140deg, hsl(${hue} 44% 34%), hsl(${(hue + 44) % 360} 46% 14%))`;
+}
+
+function formatVotes(value: number): string {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(value >= 10_000_000 ? 0 : 1)}M votes`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(value >= 10_000 ? 0 : 1)}K votes`;
+  return `${value} votes`;
 }

@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import type { Episode, Title, UserTitle, UserTitleWithTitle } from "@/lib/services/types";
+import type { CastMember, Episode, Title, UserTitle, UserTitleWithTitle, WatchProvider } from "@/lib/services/types";
 
 export type DiscoverSection = { title: string; kind: string; items: Title[] };
 export type CollectionPage = { items: Title[]; page: number; hasMore: boolean };
@@ -28,9 +28,17 @@ export type Settings = {
   newEpisodeAlerts: boolean;
   premiereReminders: boolean;
   weeklyDigest: boolean;
+  watchRegion: string;
 };
 
-export type TitleDetail = Title & { episodes: Episode[] };
+export type TitleDetail = Title & {
+  episodes: Episode[];
+  cast: CastMember[];
+  watchRegion: string;
+  watchProviders: WatchProvider[];
+  watchProviderLink?: string;
+  watchProviderAttribution: string;
+};
 export type MyTitle = { tracked: boolean; userTitle?: UserTitle; watched: string[] };
 
 export type LibraryQuery = { type?: "show" | "movie"; status?: string; favorite?: boolean; limit?: number; offset?: number };
@@ -126,9 +134,9 @@ export async function searchTitles(query: string): Promise<Title[]> {
   return res.results ?? [];
 }
 
-export async function getTitleDetail(id: string): Promise<TitleDetail | null> {
+export async function getTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
   try {
-    return await api<TitleDetail>(`/v1/titles/${id}`);
+    return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`);
   } catch {
     return null;
   }

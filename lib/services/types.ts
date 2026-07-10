@@ -17,6 +17,21 @@ export type Title = {
   backdropUrl?: string | null;
   year?: number | null;
   genres: string[];
+  rating?: number;
+  ratingCount?: number;
+};
+
+export type WatchProvider = {
+  id: number;
+  name: string;
+  logoUrl?: string;
+};
+
+export type CastMember = {
+  id: number;
+  name: string;
+  character?: string;
+  profileUrl?: string;
 };
 
 export type Episode = {
