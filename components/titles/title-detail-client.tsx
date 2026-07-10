@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check, Heart, Plus, Share2, X } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
 import { TitleListMembership } from "@/components/lists/title-list-membership";
@@ -31,19 +31,19 @@ export function TitleDetailClient({
   episodes: Episode[];
   initial: TitleTracking;
 }) {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const isMovie = title.type === "movie";
   const [tracked, setTracked] = useState(initial.tracked);
   const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
   const [favorite, setFavorite] = useState(initial.favorite);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
 
-  // Keep the page behind the drawer in sync — debounced so rapid toggles
-  // trigger a single re-fetch of the underlying server components.
+  // Keep the cached library lists in sync with the drawer — debounced so rapid
+  // toggles trigger a single refetch.
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   function scheduleRefresh() {
     clearTimeout(refreshTimer.current);
-    refreshTimer.current = setTimeout(() => router.refresh(), 600);
+    refreshTimer.current = setTimeout(() => queryClient.invalidateQueries({ queryKey: ["library"] }), 600);
   }
 
   const watchedCount = episodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
