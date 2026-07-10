@@ -13,19 +13,23 @@ const PAGE = 40;
 type LibraryArgs = {
   type: "show" | "movie";
   status?: string;
+  favorite?: boolean;
   initial: UserTitleWithTitle[];
   total: number;
 };
 
 // Infinite library list, seeded from the server render so the first page is
 // instant and never refetched on mount.
-export function useLibrary({ type, status, initial, total }: LibraryArgs) {
+export function useLibrary({ type, status, favorite, initial, total }: LibraryArgs) {
   return useInfiniteQuery({
-    queryKey: queryKeys.library(type, status),
+    queryKey: queryKeys.library(type, status, favorite),
     queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams({ type, limit: String(PAGE), offset: String(pageParam) });
       if (status) {
         params.set("status", status);
+      }
+      if (favorite) {
+        params.set("favorite", "true");
       }
       return apiGet<LibraryPage>(`/api/library?${params}`);
     },
@@ -56,9 +60,9 @@ function withoutItem(data: InfiniteData<LibraryPage> | undefined, id: string) {
 
 // Optimistically drop a title from a library list; RQ restores the snapshot on
 // failure. Used both by "mark movie watched" and by the up-next completion.
-export function useCompleteFromLibrary(type: "show" | "movie", status?: string) {
+export function useCompleteFromLibrary(type: "show" | "movie", status?: string, favorite?: boolean) {
   const queryClient = useQueryClient();
-  const key = queryKeys.library(type, status);
+  const key = queryKeys.library(type, status, favorite);
 
   function removeLocally(id: string) {
     queryClient.setQueryData<InfiniteData<LibraryPage>>(key, (old) => withoutItem(old, id));

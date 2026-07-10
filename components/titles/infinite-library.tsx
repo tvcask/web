@@ -13,6 +13,7 @@ export function InfiniteLibrary({
   type,
   view,
   status,
+  favorite,
   initial,
   total,
   returnTo
@@ -20,12 +21,13 @@ export function InfiniteLibrary({
   type: "show" | "movie";
   view: "grid" | "list";
   status?: string;
+  favorite?: boolean;
   initial: UserTitleWithTitle[];
   total: number;
   returnTo: string;
 }) {
-  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useLibrary({ type, status, initial, total });
-  const { markComplete, removeLocally } = useCompleteFromLibrary(type, status);
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useLibrary({ type, status, favorite, initial, total });
+  const { markComplete, removeLocally } = useCompleteFromLibrary(type, status, favorite);
   const items = data.pages.flatMap((page) => page.items);
 
   // Same infinite-scroll UX as before: observe a sentinel, pull the next page.
