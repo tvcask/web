@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -103,11 +104,11 @@ function Upcoming({ calendar }: { calendar: Calendar | null }) {
               {items.map((episode) => (
                 <div key={episode.id} className="flex items-center gap-3.5">
                   <div
-                    className="surface h-[60px] w-[104px] shrink-0 overflow-hidden rounded-[9px]"
+                    className="surface relative h-[60px] w-[104px] shrink-0 overflow-hidden rounded-[9px]"
                     style={{ background: episode.title?.backdropUrl ? undefined : "linear-gradient(140deg,#2a2f3a,#14110d)" }}
                   >
                     {episode.title?.backdropUrl ? (
-                      <img src={episode.title.backdropUrl} alt="" className="h-full w-full object-cover" />
+                      <Image src={episode.title.backdropUrl} alt="" fill sizes="104px" className="object-cover" />
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1">

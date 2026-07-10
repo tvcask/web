@@ -1,17 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Loader2 } from "lucide-react";
 import { Poster } from "@/components/titles/poster";
 import { UpNextCard } from "@/components/titles/up-next-card";
-import { mutate } from "@/lib/mutate";
-import { toast } from "@/lib/toast";
-import { useInfiniteScroll } from "@/lib/use-infinite-scroll";
+import { useCompleteFromLibrary, useLibrary } from "@/lib/query/library";
 import type { UserTitleWithTitle } from "@/lib/services/types";
-
-const PAGE = 40;
 
 export function InfiniteLibrary({
   type,
@@ -28,26 +24,28 @@ export function InfiniteLibrary({
   total: number;
   returnTo: string;
 }) {
-  const fetchPage = useCallback(
-    async ({ loaded }: { loaded: UserTitleWithTitle[] }) => {
-      const params = new URLSearchParams({ type, limit: String(PAGE), offset: String(loaded.length) });
-      if (status) {
-        params.set("status", status);
-      }
-      const res = await fetch(`/api/library?${params}`);
-      const data = (await res.json()) as { items: UserTitleWithTitle[]; total: number };
-      const next = data.items ?? [];
-      const done = next.length === 0 || loaded.length + next.length >= (data.total ?? total);
-      return { items: next, done };
-    },
-    [type, status, total]
-  );
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useLibrary({ type, status, initial, total });
+  const { markComplete, removeLocally } = useCompleteFromLibrary(type, status);
+  const items = data.pages.flatMap((page) => page.items);
 
-  const { items, setItems, loading, done, sentinelRef } = useInfiniteScroll({
-    initial,
-    initialDone: initial.length >= total,
-    fetchPage
-  });
+  // Same infinite-scroll UX as before: observe a sentinel, pull the next page.
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) {
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "700px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <>
@@ -73,11 +71,7 @@ export function InfiniteLibrary({
                 exit={{ opacity: 0, height: 0, transition: { duration: 0.32, ease: [0.2, 0.8, 0.2, 1] } }}
                 style={{ overflow: "hidden" }}
               >
-                <UpNextCard
-                  item={item}
-                  returnTo={returnTo}
-                  onComplete={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
-                />
+                <UpNextCard item={item} returnTo={returnTo} onComplete={removeLocally} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -91,19 +85,15 @@ export function InfiniteLibrary({
                 layout
                 exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.28, ease: [0.2, 0.8, 0.2, 1] } }}
               >
-                <MovieRow
-                  item={item}
-                  returnTo={returnTo}
-                  onComplete={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
-                />
+                <MovieRow item={item} returnTo={returnTo} onMarkComplete={markComplete.mutate} />
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
       )}
 
-      {!done ? <div ref={sentinelRef} className="h-12" /> : null}
-      {loading ? (
+      {hasNextPage ? <div ref={sentinelRef} className="h-12" /> : null}
+      {isFetchingNextPage ? (
         <div className="mt-4 flex justify-center">
           <Loader2 className="size-5 animate-spin text-white/40" />
         </div>
@@ -115,27 +105,13 @@ export function InfiniteLibrary({
 function MovieRow({
   item,
   returnTo,
-  onComplete
+  onMarkComplete
 }: {
   item: UserTitleWithTitle;
   returnTo: string;
-  onComplete?: (id: string) => void;
+  onMarkComplete: (item: UserTitleWithTitle) => void;
 }) {
   const href = `/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`;
-  const [saving, setSaving] = useState(false);
-
-  function markWatched() {
-    if (saving) {
-      return;
-    }
-    setSaving(true);
-    mutate(`me/titles/${item.title.id}`, "PATCH", { status: "completed" })
-      .then(() => onComplete?.(item.id))
-      .catch(() => {
-        setSaving(false);
-        toast("Couldn't save your change. Try again.");
-      });
-  }
 
   return (
     <div className="surface flex items-center gap-3.5 rounded-[14px] p-3">
@@ -152,13 +128,12 @@ function MovieRow({
         </span>
       ) : (
         <button
-          onClick={markWatched}
-          disabled={saving}
-          className="cask-focus grid size-8 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)] disabled:opacity-50"
+          onClick={() => onMarkComplete(item)}
+          className="cask-focus grid size-8 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)]"
           style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
           aria-label={`Mark ${item.title.title} watched`}
         >
-          {saving ? <Loader2 className="size-4 animate-spin text-white/60" /> : <Check className="size-4" />}
+          <Check className="size-4" />
         </button>
       )}
     </div>

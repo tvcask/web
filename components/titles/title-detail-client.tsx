@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check, Heart, Plus, Share2, X } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
 import { TitleListMembership } from "@/components/lists/title-list-membership";
@@ -31,19 +32,19 @@ export function TitleDetailClient({
   episodes: Episode[];
   initial: TitleTracking;
 }) {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const isMovie = title.type === "movie";
   const [tracked, setTracked] = useState(initial.tracked);
   const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
   const [favorite, setFavorite] = useState(initial.favorite);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
 
-  // Keep the page behind the drawer in sync — debounced so rapid toggles
-  // trigger a single re-fetch of the underlying server components.
+  // Keep the cached library lists in sync with the drawer — debounced so rapid
+  // toggles trigger a single refetch.
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   function scheduleRefresh() {
     clearTimeout(refreshTimer.current);
-    refreshTimer.current = setTimeout(() => router.refresh(), 600);
+    refreshTimer.current = setTimeout(() => queryClient.invalidateQueries({ queryKey: ["library"] }), 600);
   }
 
   const watchedCount = episodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
@@ -163,15 +164,15 @@ export function TitleDetailClient({
     <div>
       <div className="relative h-[280px] px-6 pt-6 sm:px-8">
         {title.backdropUrl ? (
-          <img src={title.backdropUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 560px" className="object-cover" />
         ) : (
           <div className="absolute inset-0" style={{ background: seededGradient(title.title) }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#0a0a0c]/75 to-[#0a0a0c]" />
         <div className="relative flex h-full items-end gap-4">
-          <div className="h-[168px] w-[112px] shrink-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
+          <div className="relative h-[168px] w-[112px] shrink-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
             {title.posterUrl ? (
-              <img src={title.posterUrl} alt="" className="h-full w-full object-cover" />
+              <Image src={title.posterUrl} alt="" fill sizes="112px" className="object-cover" />
             ) : (
               <div className="h-full w-full" style={{ background: seededGradient(title.title) }} />
             )}
@@ -294,11 +295,11 @@ export function TitleDetailClient({
                           return (
                             <div key={episode.id} className="flex items-center gap-3.5 border-b border-white/[0.06] py-2.5">
                               <div
-                                className="h-[46px] w-[80px] shrink-0 overflow-hidden rounded-[7px]"
+                                className="relative h-[46px] w-[80px] shrink-0 overflow-hidden rounded-[7px]"
                                 style={{ background: "linear-gradient(140deg,#2a2f3a,#14110d)" }}
                               >
                                 {episode.stillUrl ? (
-                                  <img src={episode.stillUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                                  <Image src={episode.stillUrl} alt="" fill sizes="80px" className="object-cover" />
                                 ) : null}
                               </div>
                               <div className="min-w-0 flex-1">

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronRight } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
@@ -28,7 +30,6 @@ export function UpNextCard({
   const [season, setSeason] = useState(item.nextSeason ?? 1);
   const [next, setNext] = useState(item.nextEpisode ?? 1);
   const [remaining, setRemaining] = useState(item.remaining);
-  const [marking, setMarking] = useState(false);
 
   // Episodes left after the one shown, for the "+N" badge.
   const rest = Math.max(0, remaining - 1);
@@ -41,14 +42,18 @@ export function UpNextCard({
     completed?: boolean;
   };
 
-  function markNext() {
-    if (marking) return;
-    setMarking(true);
-    const done = fetch(`/api/v1/me/titles/${item.title.id}/next`, { method: "POST" })
-      .then((res) => res.json() as Promise<NextResponse>)
-      .catch(() => null);
-    const wait = new Promise((resolve) => setTimeout(resolve, 420));
-    Promise.all([done, wait]).then(([res]) => {
+  const advance = useMutation({
+    mutationFn: async () => {
+      // Wait alongside a short delay so the check animation always plays.
+      const [res] = await Promise.all([
+        fetch(`/api/v1/me/titles/${item.title.id}/next`, { method: "POST" })
+          .then((r) => r.json() as Promise<NextResponse>)
+          .catch(() => null),
+        new Promise((resolve) => setTimeout(resolve, 420))
+      ]);
+      return res;
+    },
+    onSuccess: (res) => {
       if (!res || res.completed || res.nextEpisode == null) {
         celebrate(item.title.title);
         onComplete?.(item.id);
@@ -57,9 +62,9 @@ export function UpNextCard({
       setSeason(res.nextSeason ?? season);
       setNext(res.nextEpisode);
       setRemaining(res.remaining ?? 0);
-      setMarking(false);
-    });
-  }
+    }
+  });
+  const marking = advance.isPending;
 
   return (
     <article className="flex items-center gap-3 rounded-[16px] border border-white/[0.08] p-3 sm:gap-5 sm:p-4">
@@ -68,7 +73,9 @@ export function UpNextCard({
         className="relative h-[64px] w-[112px] shrink-0 overflow-hidden rounded-[10px] ring-1 ring-white/[0.07] sm:h-[80px] sm:w-[140px]"
         style={item.title.backdropUrl ? undefined : { background: seededGradient(item.title.title) }}
       >
-        {item.title.backdropUrl ? <img src={item.title.backdropUrl} alt="" className="h-full w-full object-cover" /> : null}
+        {item.title.backdropUrl ? (
+          <Image src={item.title.backdropUrl} alt="" fill sizes="140px" className="object-cover" />
+        ) : null}
       </Link>
 
       <div className="min-w-0 flex-1">
@@ -102,7 +109,7 @@ export function UpNextCard({
       </div>
 
       <button
-        onClick={markNext}
+        onClick={() => !marking && advance.mutate()}
         className="cask-focus relative grid size-11 shrink-0 place-items-center rounded-full text-transparent transition hover:text-[color:var(--accent-text)]"
         style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
         aria-label={`Mark S${pad(season)}E${pad(next)} of ${item.title.title} watched`}
