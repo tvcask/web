@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
-import { addTitleAction } from "@/app/actions";
+import { AddToLibraryButton } from "@/components/titles/add-to-library-button";
 import { MediaRail } from "@/components/titles/media-rail";
 import { Poster } from "@/components/titles/poster";
 import { SearchBox } from "@/components/titles/search-box";
@@ -64,19 +63,9 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
                 <Link href={href} className="block overflow-hidden rounded-[12px] lift">
                   <Poster src={title.posterUrl} title={title.title} className="rounded-[12px]" />
                 </Link>
-                {tracked ? null : (
-                  <form action={addTitleAction} className="absolute right-2 top-2">
-                    <input type="hidden" name="payload" value={JSON.stringify({ title, status: "watchlist", favorite: false })} />
-                    <input type="hidden" name="returnTo" value={returnTo} />
-                    <button
-                      className="cask-focus grid size-[30px] place-items-center rounded-[9px] bg-black/45"
-                      style={{ color: "var(--accent-text)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
-                      aria-label={`Add ${title.title}`}
-                    >
-                      <Plus className="size-[15px]" />
-                    </button>
-                  </form>
-                )}
+                <div className="absolute right-2 top-2">
+                  <AddToLibraryButton titleId={title.id} title={title.title} tracked={tracked} />
+                </div>
               </div>
             );
           })}

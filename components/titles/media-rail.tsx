@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Check, Plus } from "lucide-react";
-import { addTitleAction } from "@/app/actions";
+import { AddToLibraryButton } from "@/components/titles/add-to-library-button";
 import { Poster } from "@/components/titles/poster";
 import type { Title } from "@/lib/services/types";
 
@@ -42,26 +41,9 @@ export function MediaRail({
               <Link href={href} className="block overflow-hidden rounded-[14px] lift">
                 <Poster src={item.posterUrl} title={item.title} className="rounded-[14px]" />
               </Link>
-              {tracked ? (
-                <span
-                  className="absolute right-2.5 top-2.5 grid size-[30px] place-items-center rounded-[9px] bg-black/45"
-                  style={{ color: "var(--accent-text)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
-                >
-                  <Check className="size-[15px]" />
-                </span>
-              ) : (
-                <form action={addTitleAction} className="absolute right-2.5 top-2.5">
-                  <input type="hidden" name="payload" value={JSON.stringify({ title: item, status: "watchlist", favorite: false })} />
-                  {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
-                  <button
-                    className="cask-focus grid size-[30px] place-items-center rounded-[9px] bg-black/45"
-                    style={{ color: "var(--accent-text)", boxShadow: "inset 0 0 0 1.5px var(--accent)" }}
-                    aria-label={`Add ${item.title}`}
-                  >
-                    <Plus className="size-[15px]" />
-                  </button>
-                </form>
-              )}
+              <div className="absolute right-2.5 top-2.5">
+                <AddToLibraryButton titleId={item.id} title={item.title} tracked={tracked} />
+              </div>
             </div>
           );
         })}
