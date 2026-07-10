@@ -6,7 +6,7 @@ export function MarketingFooter() {
   return (
     <footer className="border-t border-white/[0.06]">
       <div className="mx-auto w-full max-w-6xl px-5 py-11">
-        <div className="grid gap-8 md:grid-cols-[1.2fr_0.7fr_0.7fr]">
+        <div className="grid gap-8 md:grid-cols-[1.2fr_0.7fr_0.7fr_0.7fr]">
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-6 text-white/45">
@@ -31,6 +31,19 @@ export function MarketingFooter() {
             <p className="eyebrow">Company</p>
             <Link href="/about" className="block font-bold text-white/55 transition hover:text-white">
               About tvcask
+            </Link>
+          </nav>
+
+          <nav className="space-y-3 text-sm">
+            <p className="eyebrow">Legal</p>
+            <Link href="/privacy" className="block font-bold text-white/55 transition hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="block font-bold text-white/55 transition hover:text-white">
+              Terms of Service
+            </Link>
+            <Link href="/guidelines" className="block font-bold text-white/55 transition hover:text-white">
+              Community Guidelines
             </Link>
           </nav>
         </div>
