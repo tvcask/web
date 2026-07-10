@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2, Search } from "lucide-react";
+import { apiGet } from "@/lib/query/client";
 import type { Title } from "@/lib/services/types";
 
 export function SearchBox({
@@ -18,38 +21,31 @@ export function SearchBox({
 }) {
   const router = useRouter();
   const [value, setValue] = useState(initialQuery);
-  const [results, setResults] = useState<Title[]>([]);
+  const [debounced, setDebounced] = useState(initialQuery.trim());
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  // Debounced fetch. A ref guards against out-of-order responses.
-  const latest = useRef(0);
+  // Debounce the input; React Query handles dedup, caching and out-of-order.
   useEffect(() => {
-    const q = value.trim();
-    if (q.length < 2) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    const token = ++latest.current;
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-        const data = (await res.json()) as { results: Title[] };
-        if (token === latest.current) {
-          setResults(data.results ?? []);
-          setOpen(true);
-        }
-      } catch {
-        if (token === latest.current) setResults([]);
-      } finally {
-        if (token === latest.current) setLoading(false);
-      }
-    }, 250);
+    const timer = setTimeout(() => setDebounced(value.trim()), 250);
     return () => clearTimeout(timer);
   }, [value]);
+
+  const enabled = debounced.length >= 2;
+  const { data: results = [], isFetching: loading } = useQuery({
+    queryKey: ["search", debounced],
+    queryFn: () =>
+      apiGet<{ results: Title[] }>(`/api/search?q=${encodeURIComponent(debounced)}`).then((data) => data.results ?? []),
+    enabled,
+    staleTime: 60_000
+  });
+
+  // Reveal the dropdown once a fresh query settles with results.
+  useEffect(() => {
+    if (enabled && results.length > 0) {
+      setOpen(true);
+    }
+  }, [enabled, results]);
 
   // Close on outside click.
   useEffect(() => {
@@ -109,8 +105,8 @@ export function SearchBox({
                   onClick={() => goto(t.id)}
                   className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-white/[0.05]"
                 >
-                  <div className="h-[54px] w-[38px] shrink-0 overflow-hidden rounded-[6px] bg-white/5">
-                    {t.posterUrl ? <img src={t.posterUrl} alt="" className="h-full w-full object-cover" /> : null}
+                  <div className="relative h-[54px] w-[38px] shrink-0 overflow-hidden rounded-[6px] bg-white/5">
+                    {t.posterUrl ? <Image src={t.posterUrl} alt="" fill sizes="38px" className="object-cover" /> : null}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold text-white">{t.title}</p>
