@@ -84,10 +84,14 @@ export default async function ProfilePage() {
         ))}
       </section>
 
-      {allShows.length > 0 ? <Rail title="Shows" href="/app/shows" items={allShows.map((i) => i.title)} /> : null}
-      {favShows.length > 0 ? <Rail title="Favorite shows" heart items={favShows.map((i) => i.title)} /> : null}
-      {allMovies.length > 0 ? <Rail title="Movies" href="/app/movies" items={allMovies.map((i) => i.title)} /> : null}
-      {favMovies.length > 0 ? <Rail title="Favorite movies" heart items={favMovies.map((i) => i.title)} /> : null}
+      {allShows.length > 0 ? <Rail title="Shows" href="/app/library?type=show" items={allShows.map((i) => i.title)} /> : null}
+      {favShows.length > 0 ? (
+        <Rail title="Favorite shows" heart href="/app/library?type=show&favorite=true" items={favShows.map((i) => i.title)} />
+      ) : null}
+      {allMovies.length > 0 ? <Rail title="Movies" href="/app/library?type=movie" items={allMovies.map((i) => i.title)} /> : null}
+      {favMovies.length > 0 ? (
+        <Rail title="Favorite movies" heart href="/app/library?type=movie&favorite=true" items={favMovies.map((i) => i.title)} />
+      ) : null}
       <ListsSection lists={listDetails} total={lists.length} />
 
       {!hasLibrary ? (
