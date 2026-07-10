@@ -1,8 +1,9 @@
-import { getMyTitle, getTitleDetail } from "@/lib/data";
+import { getMyTitle, getSettings, getTitleDetail } from "@/lib/data";
 import { TitleDetailClient } from "@/components/titles/title-detail-client";
 
 export async function TitleDetail({ id }: { id: string }) {
-  const [detail, my] = await Promise.all([getTitleDetail(id), getMyTitle(id)]);
+  const [settings, my] = await Promise.all([getSettings(), getMyTitle(id)]);
+  const detail = await getTitleDetail(id, settings.watchRegion || "US");
   if (!detail) {
     return <p className="p-10 text-white/60">Title not found.</p>;
   }

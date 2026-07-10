@@ -4,10 +4,12 @@ import {
   changePasswordAction,
   deleteAccountAction,
   logoutEverywhereAction,
-  resendVerificationAction
+  resendVerificationAction,
+  updateWatchRegionAction
 } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth/session";
-import { getCatalogStatus } from "@/lib/data";
+import { getCatalogStatus, getSettings } from "@/lib/data";
+import { WATCH_REGIONS } from "@/lib/regions";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -20,7 +22,7 @@ export default async function SettingsPage({
 }: {
   searchParams: Promise<{ saved?: string; error?: string; verify?: string }>;
 }) {
-  const [user, catalog] = await Promise.all([getCurrentUser(), getCatalogStatus()]);
+  const [user, catalog, settings] = await Promise.all([getCurrentUser(), getCatalogStatus(), getSettings()]);
   const { saved, error, verify } = await searchParams;
 
   return (
@@ -58,6 +60,31 @@ export default async function SettingsPage({
             </form>
           ) : null}
         </div>
+      </Section>
+
+      {/* Preferences */}
+      <Section title="Preferences">
+        <form action={updateWatchRegionAction} className="surface rounded-[14px] p-4">
+          <label htmlFor="watchRegion" className="text-sm font-bold text-white">Watch region</label>
+          <p className="mt-1 text-xs leading-5 text-white/45">Controls which streaming services appear on title pages.</p>
+          <div className="mt-3 flex gap-3">
+            <select
+              id="watchRegion"
+              name="watchRegion"
+              defaultValue={settings.watchRegion || "US"}
+              className="h-11 min-w-0 flex-1 rounded-[10px] border border-white/10 bg-[#151518] px-3 text-sm font-semibold text-white"
+            >
+              {WATCH_REGIONS.map((region) => (
+                <option key={region.code} value={region.code}>{region.flag} {region.name}</option>
+              ))}
+            </select>
+            <SubmitButton pendingLabel="Saving…" className="h-11 rounded-full border border-white/12 px-5 text-sm font-bold text-white hover:bg-white/5">
+              Save
+            </SubmitButton>
+          </div>
+          {saved === "region" ? <Note tone="ok">Watch region updated.</Note> : null}
+          {error === "region" ? <Note tone="err">Could not update watch region.</Note> : null}
+        </form>
       </Section>
 
       {/* Import */}
