@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Loader2, Plus } from "lucide-react";
 import { mutate } from "@/lib/mutate";
 import { toast } from "@/lib/toast";
 
-// Optimistic "add to library" badge used on posters (rails, search results).
-// Flips to a check immediately, then syncs; rolls back if the write fails.
+// Optimistic "add to library" badge on posters (rails, search results). Flips to
+// a check immediately, then refreshes the library cache; rolls back on failure.
 export function AddToLibraryButton({
   titleId,
   title,
@@ -17,9 +17,18 @@ export function AddToLibraryButton({
   title: string;
   tracked: boolean;
 }) {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const [tracked, setTracked] = useState(initialTracked);
-  const [pending, setPending] = useState(false);
+
+  const add = useMutation({
+    mutationFn: () => mutate("me/titles", "POST", { titleId, status: "watchlist" }),
+    onMutate: () => setTracked(true),
+    onError: () => {
+      setTracked(false);
+      toast("Couldn't add to your library. Try again.");
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["library"] })
+  });
 
   const badge = "cask-focus grid size-[30px] place-items-center rounded-[9px] bg-black/45";
   const style = { color: "var(--accent-text)", boxShadow: "inset 0 0 0 1.5px var(--accent)" } as const;
@@ -27,26 +36,13 @@ export function AddToLibraryButton({
   if (tracked) {
     return (
       <span className={badge} style={style} aria-hidden>
-        {pending ? <Loader2 className="size-[15px] animate-spin" /> : <Check className="size-[15px]" />}
+        {add.isPending ? <Loader2 className="size-[15px] animate-spin" /> : <Check className="size-[15px]" />}
       </span>
     );
   }
 
-  function add() {
-    if (pending) return;
-    setTracked(true);
-    setPending(true);
-    mutate("me/titles", "POST", { titleId, status: "watchlist" })
-      .then(() => router.refresh())
-      .catch(() => {
-        setTracked(false);
-        toast("Couldn't add to your library. Try again.");
-      })
-      .finally(() => setPending(false));
-  }
-
   return (
-    <button onClick={add} className={badge} style={style} aria-label={`Add ${title}`}>
+    <button onClick={() => add.mutate()} className={badge} style={style} aria-label={`Add ${title}`}>
       <Plus className="size-[15px]" />
     </button>
   );
