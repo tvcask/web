@@ -13,7 +13,10 @@ export function AuthCard({
 }) {
   return (
     <div className="soft-enter w-full max-w-[400px]">
-      <div className="surface relative overflow-hidden rounded-[20px] p-7 sm:p-8">
+      <div
+        className="relative overflow-hidden rounded-[20px] bg-white/[0.045] p-7 sm:p-8"
+        style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1), 0 32px 80px -32px rgba(0,0,0,0.9)" }}
+      >
         <div
           aria-hidden
           className="absolute inset-x-0 top-0 h-px"
@@ -28,14 +31,29 @@ export function AuthCard({
   );
 }
 
-export function Field({ label, hint, children }: { label: string; hint?: ReactNode; children: ReactNode }) {
+export function Field({
+  label,
+  htmlFor,
+  hint,
+  note,
+  children
+}: {
+  label: string;
+  htmlFor: string;
+  hint?: ReactNode;
+  note?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-[13px] font-semibold text-white/70">{label}</span>
+        <label htmlFor={htmlFor} className="text-[13px] font-semibold text-white/70">
+          {label}
+        </label>
         {hint}
       </div>
       {children}
+      {note ? <p className="mt-1.5 px-4 text-xs text-white/40">{note}</p> : null}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { forgotPasswordAction } from "@/app/actions";
 import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/auth/submit-button";
 import { Input } from "@/components/ui/input";
 
 export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<{ sent?: string }> }) {
@@ -20,10 +20,10 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
         <Banner tone="ok">If an account exists for that email, a reset link is on its way. Check your inbox.</Banner>
       ) : (
         <form action={forgotPasswordAction} className="space-y-4">
-          <Field label="Email">
-            <Input name="email" type="email" placeholder="you@example.com" required />
+          <Field label="Email" htmlFor="email">
+            <Input id="email" name="email" type="email" placeholder="you@example.com" autoComplete="email" autoFocus required />
           </Field>
-          <Button className="h-11 w-full">Send reset link</Button>
+          <SubmitButton pendingLabel="Sending link">Send reset link</SubmitButton>
         </form>
       )}
     </AuthCard>

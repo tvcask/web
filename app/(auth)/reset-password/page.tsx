@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { resetPasswordAction } from "@/app/actions";
 import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/auth/submit-button";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export default async function ResetPasswordPage({
@@ -40,10 +40,18 @@ export default async function ResetPasswordPage({
       {error ? <Banner tone="err">This link is invalid or has expired.</Banner> : null}
       <form action={resetPasswordAction} className="space-y-4">
         <input type="hidden" name="token" value={token} />
-        <Field label="New password">
-          <PasswordInput name="newPassword" placeholder="At least 6 characters" required />
+        <Field label="New password" htmlFor="newPassword" note="At least 6 characters.">
+          <PasswordInput
+            id="newPassword"
+            name="newPassword"
+            placeholder="••••••••"
+            autoComplete="new-password"
+            minLength={6}
+            autoFocus
+            required
+          />
         </Field>
-        <Button className="h-11 w-full">Reset password</Button>
+        <SubmitButton pendingLabel="Resetting">Reset password</SubmitButton>
       </form>
     </AuthCard>
   );
