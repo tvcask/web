@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
-import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
+import { getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -18,10 +18,9 @@ function duration(minutes: number) {
 export default async function ProfilePage() {
   // Fetch shows and movies separately so neither type is starved by a shared
   // page cap, and pull favorites directly instead of filtering a capped list.
-  const [user, stats, badges, showsPage, moviesPage, favorites, lists] = await Promise.all([
+  const [user, stats, showsPage, moviesPage, favorites, lists] = await Promise.all([
     getCurrentUser(),
     getStats(),
-    getBadges(),
     getLibraryPage({ type: "show", limit: 40 }),
     getLibraryPage({ type: "movie", limit: 40 }),
     getLibrary({ favorite: true, limit: 40 }),
@@ -76,26 +75,20 @@ export default async function ProfilePage() {
 
       <Link
         href="/app/profile/stats"
-        className="group surface block rounded-[16px] p-6 transition-colors hover:border-white/[0.14]"
+        className="group surface block rounded-[16px] px-5 py-4 transition-colors hover:border-white/[0.14]"
       >
-        <div className="mb-5 flex justify-end">
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold"
-            style={{ backgroundColor: "rgba(202,154,101,0.14)", color: "var(--accent-text)" }}
-          >
-            {badges.earned} / {badges.total} badges
-            <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-          </span>
-        </div>
-        <div className="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0">
-          {statTiles.map((tile, i) => (
-            <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-6" : ""}>
-              <p className="eyebrow">{tile.label}</p>
-              <p className="display mt-2 text-2xl" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
-                {tile.value}
-              </p>
-            </div>
-          ))}
+        <div className="flex items-center gap-3">
+          <div className="grid min-w-0 flex-1 grid-cols-2 gap-y-4 sm:grid-cols-4 sm:gap-y-0">
+            {statTiles.map((tile, i) => (
+              <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5" : ""}>
+                <p className="eyebrow">{tile.label}</p>
+                <p className="display mt-1 text-xl" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
+                  {tile.value}
+                </p>
+              </div>
+            ))}
+          </div>
+          <ChevronRight className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-white/60" />
         </div>
       </Link>
 

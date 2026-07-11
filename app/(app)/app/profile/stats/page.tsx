@@ -18,7 +18,7 @@ export default async function StatsPage() {
   const tiles = [
     { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
     { label: "Episodes", value: stats.episodesWatched.toLocaleString(), accent: false },
-    { label: "Film time", value: duration(stats.movieTimeMinutes), accent: false },
+    { label: "Movie time", value: duration(stats.movieTimeMinutes), accent: false },
     { label: "Movies", value: stats.moviesWatched.toLocaleString(), accent: false },
     { label: "Completed", value: stats.completedTitles.toLocaleString(), accent: false },
     { label: "Favorites", value: stats.favorites.toLocaleString(), accent: true }
