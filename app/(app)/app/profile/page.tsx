@@ -5,7 +5,6 @@ import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
 import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
-import { BadgeMedallion } from "@/components/badges/badge-medallion";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -28,7 +27,6 @@ export default async function ProfilePage() {
     getLibrary({ favorite: true, limit: 40 }),
     getLists()
   ]);
-  const badgePreview = [...badges.badges].sort((a, b) => Number(b.earned) - Number(a.earned)).slice(0, 4);
   const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
@@ -76,29 +74,23 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <section className="surface grid grid-cols-2 items-center gap-4 rounded-[14px] px-5 py-4 sm:grid-cols-4">
-        {statTiles.map((tile) => (
-          <div key={tile.label}>
-            <p className="eyebrow">{tile.label}</p>
-            <p className="display mt-2 text-[22px]" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
-              {tile.value}
-            </p>
-          </div>
-        ))}
-      </section>
-
-      <Link href="/app/profile/badges" className="surface flex items-center justify-between rounded-[14px] px-5 py-4 lift">
-        <div>
-          <p className="eyebrow">Badges</p>
-          <p className="display mt-2 text-[22px] text-white">
-            {badges.earned} of {badges.total} earned
-          </p>
+      <Link href="/app/profile/stats" className="surface block rounded-[14px] px-5 py-4 lift">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="eyebrow">Stats</p>
+          <span className="flex items-center gap-2 text-[13px] font-semibold text-white/55">
+            {badges.earned} of {badges.total} badges
+            <ChevronRight className="size-4 text-white/40" />
+          </span>
         </div>
-        <div className="flex items-center gap-3">
-          {badgePreview.map((badge) => (
-            <BadgeMedallion key={badge.key} badge={badge} size={40} />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {statTiles.map((tile) => (
+            <div key={tile.label}>
+              <p className="eyebrow">{tile.label}</p>
+              <p className="display mt-2 text-[22px]" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
+                {tile.value}
+              </p>
+            </div>
           ))}
-          <ChevronRight className="size-4 text-white/40" />
         </div>
       </Link>
 
