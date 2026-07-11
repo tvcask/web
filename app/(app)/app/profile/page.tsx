@@ -68,13 +68,14 @@ export default async function ProfilePage() {
                 <span><b className="text-white">{movieCount}</b> Movies</span>
                 <Link
                   href="/app/profile/badges"
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[12px] font-bold transition hover:brightness-110"
-                  style={{ backgroundColor: "rgba(202,154,101,0.18)", color: "var(--accent-text)" }}
+                  aria-label={`Level ${badges.level}, see your progress`}
+                  className="relative inline-flex items-center gap-1 overflow-hidden rounded-full border px-3 py-1 text-[12px] font-bold transition hover:brightness-110"
+                  style={{ borderColor: "rgba(202,154,101,0.35)", backgroundColor: "rgba(255,255,255,0.05)", color: "var(--accent-text)" }}
                 >
-                  Level {badges.level}
-                  <span className="block h-1 w-10 overflow-hidden rounded-full bg-white/25">
-                    <span className="block h-1 rounded-full" style={{ width: `${levelPct}%`, background: "var(--accent)" }} />
-                  </span>
+                  {/* the pill itself is the XP bar: a soft amber fill sweeps to the level % */}
+                  <span className="absolute inset-y-0 left-0" style={{ width: `${levelPct}%`, backgroundColor: "rgba(202,154,101,0.22)" }} />
+                  <span className="relative">Level {badges.level}</span>
+                  <ChevronRight className="relative size-3" />
                 </Link>
               </div>
             </div>
