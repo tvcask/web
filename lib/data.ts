@@ -2,11 +2,11 @@ import { api } from "@/lib/api";
 import type { CastMember, Episode, Title, UserTitle, UserTitleWithTitle, WatchProvider } from "@/lib/services/types";
 
 export type DiscoverSection = { title: string; kind: string; items: Title[] };
-export type CollectionPage = { items: Title[]; page: number; hasMore: boolean };
+export type CollectionPage = { title: string; items: Title[]; page: number; hasMore: boolean };
 
 export async function getCollection(kind: string, page = 1): Promise<CollectionPage> {
   const res = await api<CollectionPage>(`/v1/titles/collection?kind=${encodeURIComponent(kind)}&page=${page}`);
-  return { items: res.items ?? [], page: res.page ?? page, hasMore: Boolean(res.hasMore) };
+  return { title: res.title ?? "", items: res.items ?? [], page: res.page ?? page, hasMore: Boolean(res.hasMore) };
 }
 export type CalendarEpisode = Episode & { title: Title | null };
 export type Calendar = { today: CalendarEpisode[]; thisWeek: CalendarEpisode[]; later: CalendarEpisode[] };
