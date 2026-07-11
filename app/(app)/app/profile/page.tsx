@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
-import { getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
+import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -18,14 +18,16 @@ function duration(minutes: number) {
 export default async function ProfilePage() {
   // Fetch shows and movies separately so neither type is starved by a shared
   // page cap, and pull favorites directly instead of filtering a capped list.
-  const [user, stats, showsPage, moviesPage, favorites, lists] = await Promise.all([
+  const [user, stats, badges, showsPage, moviesPage, favorites, lists] = await Promise.all([
     getCurrentUser(),
     getStats(),
+    getBadges(),
     getLibraryPage({ type: "show", limit: 40 }),
     getLibraryPage({ type: "movie", limit: 40 }),
     getLibrary({ favorite: true, limit: 40 }),
     getLists()
   ]);
+  const levelPct = badges.xpForNext > 0 ? Math.min((badges.xpIntoLevel / badges.xpForNext) * 100, 100) : 0;
   const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
@@ -61,9 +63,19 @@ export default async function ProfilePage() {
             <div className="min-w-0 flex-1">
               <p className="display truncate text-[22px] leading-tight text-white sm:text-[26px]">{displayName}</p>
               {user?.username ? <p className="truncate text-sm font-semibold text-white/50">@{user.username}</p> : null}
-              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-semibold text-white/70">
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-semibold text-white/70">
                 <span><b className="text-white">{showCount}</b> Shows</span>
                 <span><b className="text-white">{movieCount}</b> Movies</span>
+                <Link
+                  href="/app/profile/badges"
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[12px] font-bold transition hover:brightness-110"
+                  style={{ backgroundColor: "rgba(202,154,101,0.18)", color: "var(--accent-text)" }}
+                >
+                  Level {badges.level}
+                  <span className="block h-1 w-10 overflow-hidden rounded-full bg-white/25">
+                    <span className="block h-1 rounded-full" style={{ width: `${levelPct}%`, background: "var(--accent)" }} />
+                  </span>
+                </Link>
               </div>
             </div>
           </div>

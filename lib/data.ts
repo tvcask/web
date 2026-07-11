@@ -123,7 +123,16 @@ export type Badge = {
   progress: number;
   target: number;
 };
-export type BadgesResult = { earned: number; total: number; badges: Badge[] };
+export type BadgesResult = {
+  // Profile level from lifetime XP; xpIntoLevel/xpForNext drive the progress bar.
+  level: number;
+  xp: number;
+  xpIntoLevel: number;
+  xpForNext: number;
+  earned: number;
+  total: number;
+  badges: Badge[];
+};
 
 export async function getBadges(): Promise<BadgesResult> {
   return api<BadgesResult>("/v1/me/badges");

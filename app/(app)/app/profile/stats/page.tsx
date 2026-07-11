@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { BadgeGallery } from "@/components/badges/badge-gallery";
-import { getBadges, getStats } from "@/lib/data";
+import { getStats } from "@/lib/data";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -13,7 +12,7 @@ function duration(minutes: number) {
 }
 
 export default async function StatsPage() {
-  const [stats, badges] = await Promise.all([getStats(), getBadges()]);
+  const stats = await getStats();
 
   const tiles = [
     { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
@@ -23,11 +22,6 @@ export default async function StatsPage() {
     { label: "Completed", value: stats.completedTitles.toLocaleString(), accent: false },
     { label: "Favorites", value: stats.favorites.toLocaleString(), accent: true }
   ];
-
-  const closest = badges.badges
-    .filter((b) => !b.earned)
-    .sort((a, b) => b.progress / b.target - a.progress / a.target)[0];
-  const pct = badges.total > 0 ? (badges.earned / badges.total) * 100 : 0;
 
   return (
     <div className="mx-auto max-w-[900px] space-y-8">
@@ -44,21 +38,6 @@ export default async function StatsPage() {
             </p>
           </div>
         ))}
-      </section>
-
-      <section className="space-y-5">
-        <div className="flex items-center justify-between">
-          <h2 className="display text-lg text-white">Badges</h2>
-          <p className="text-sm font-bold" style={{ color: "var(--accent-text)" }}>
-            {badges.earned} of {badges.total} earned
-          </p>
-        </div>
-        <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
-          <div className="h-2 rounded-full" style={{ width: `${pct}%`, background: "var(--accent)" }} />
-        </div>
-        {closest ? <p className="text-[13px] font-medium text-white/55">Closest · {closest.name}</p> : null}
-
-        <BadgeGallery badges={badges.badges} />
       </section>
     </div>
   );
