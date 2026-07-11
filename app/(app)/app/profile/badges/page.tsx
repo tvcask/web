@@ -21,14 +21,14 @@ export default async function ProgressPage() {
         <div className="flex items-baseline justify-between">
           <h1 className="display text-2xl text-white">Level {badges.level}</h1>
           <p className="text-sm font-bold" style={{ color: "var(--accent-text)" }}>
-            {badges.xpIntoLevel.toLocaleString()} / {badges.xpForNext.toLocaleString()} XP
+            {badges.xpIntoLevel.toLocaleString()} / {badges.xpForNext.toLocaleString()} points
           </p>
         </div>
         <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/[0.06]">
           <div className="h-2.5 rounded-full" style={{ width: `${levelPct}%`, background: "var(--accent)" }} />
         </div>
         <p className="mt-3 text-[13px] font-medium text-white/55">
-          Earn XP by watching, finishing titles and building lists.
+          Earn points by watching shows and movies, completing them, and creating lists.
         </p>
       </section>
 

@@ -29,7 +29,7 @@ export function AccountMenu({ name, email, avatarUrl }: { name: string; email?: 
         aria-expanded={open}
         aria-label="Account"
         onClick={() => setOpen((value) => !value)}
-        className="cask-focus rounded-full"
+        className="cask-focus grid size-10 place-items-center rounded-full"
       >
         <Avatar src={avatarUrl} size={34} />
       </button>
