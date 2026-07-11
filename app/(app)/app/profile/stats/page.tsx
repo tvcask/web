@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { getStats } from "@/lib/data";
+import { StatsInsights } from "@/components/stats/stats-insights";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -39,6 +40,8 @@ export default async function StatsPage() {
           </div>
         ))}
       </section>
+
+      <StatsInsights stats={stats} />
     </div>
   );
 }
