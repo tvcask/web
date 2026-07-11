@@ -61,30 +61,30 @@ export default async function SettingsPage({
           ) : null}
           <SettingsLink href="/app/profile/edit" label="Edit profile" />
           <details className="group border-t border-white/[0.06]">
-            <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 transition hover:bg-white/[0.025]">
               <span className="text-sm font-bold text-white">Security</span>
               <ChevronDown className="size-4 text-white/35 transition group-open:rotate-180" />
             </summary>
-            <div className="border-t border-white/[0.06] p-4">
+            <div className="border-t border-white/[0.06] bg-white/[0.012] p-4">
               <form action={changePasswordAction}>
                 <PasswordInput
                   name="currentPassword"
                   placeholder="Current password"
                   required
-                  inputClassName="rounded-[10px] border-0 bg-white/5 px-3.5 pr-11 text-white placeholder:text-white/30 focus:border-transparent"
+                  inputClassName="h-10 rounded-[10px] border border-white/[0.06] bg-white/[0.04] px-3.5 pr-11 text-sm text-white placeholder:text-white/30 focus:border-white/15"
                 />
                 <PasswordInput
                   name="newPassword"
                   placeholder="New password (min 6)"
                   required
                   className="mt-3"
-                  inputClassName="rounded-[10px] border-0 bg-white/5 px-3.5 pr-11 text-white placeholder:text-white/30 focus:border-transparent"
+                  inputClassName="h-10 rounded-[10px] border border-white/[0.06] bg-white/[0.04] px-3.5 pr-11 text-sm text-white placeholder:text-white/30 focus:border-white/15"
                 />
                 {saved === "password" ? <Note tone="ok">Password changed.</Note> : null}
                 {error === "password" ? <Note tone="err">Current password is incorrect.</Note> : null}
-                <button className="mt-4 h-11 rounded-full border border-white/12 px-6 text-sm font-bold text-white">Update password</button>
+                <button className="mt-4 h-10 rounded-full border border-white/12 px-5 text-sm font-bold text-white transition hover:bg-white/[0.05]">Update password</button>
               </form>
-              <form action={logoutEverywhereAction} className="mt-4">
+              <form action={logoutEverywhereAction} className="mt-4 border-t border-white/[0.06] pt-3">
                 <ConfirmButton
                   message="Sign out of every device? You'll need to log in again."
                   className="text-sm font-semibold text-white/55 transition hover:text-white"
@@ -102,18 +102,21 @@ export default async function SettingsPage({
         <form action={updateWatchRegionAction} className="surface rounded-[14px] p-4">
           <label htmlFor="watchRegion" className="text-sm font-bold text-white">Watch region</label>
           <p className="mt-1 text-xs leading-5 text-white/45">Controls which streaming services appear on title pages.</p>
-          <div className="mt-3 flex gap-3">
-            <select
-              id="watchRegion"
-              name="watchRegion"
-              defaultValue={settings.watchRegion || "US"}
-              className="h-11 min-w-0 flex-1 rounded-[10px] border border-white/10 bg-[#151518] px-3 text-sm font-semibold text-white"
-            >
-              {WATCH_REGIONS.map((region) => (
-                <option key={region.code} value={region.code}>{region.flag} {region.name}</option>
-              ))}
-            </select>
-            <SubmitButton pendingLabel="Saving…" className="h-11 rounded-full border border-white/12 px-5 text-sm font-bold text-white hover:bg-white/5">
+          <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+            <div className="relative min-w-0 flex-1">
+              <select
+                id="watchRegion"
+                name="watchRegion"
+                defaultValue={settings.watchRegion || "US"}
+                className="h-11 w-full appearance-none rounded-[10px] border border-white/10 bg-[#151518] px-3 pr-10 text-sm font-semibold text-white outline-none transition focus:border-white/20"
+              >
+                {WATCH_REGIONS.map((region) => (
+                  <option key={region.code} value={region.code}>{region.flag} {region.name}</option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/45" />
+            </div>
+            <SubmitButton pendingLabel="Saving…" className="h-11 rounded-full border border-white/12 px-5 text-sm font-bold text-white hover:bg-white/5 sm:shrink-0">
               Save
             </SubmitButton>
           </div>
