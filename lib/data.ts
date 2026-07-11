@@ -110,6 +110,23 @@ export async function getStats(): Promise<Stats> {
   return api<Stats>("/v1/me/stats");
 }
 
+// Achievement badge, computed server-side. `icon` is a lucide name the client
+// maps to a component; `progress` is the current metric, capped at `target`.
+export type Badge = {
+  key: string;
+  name: string;
+  description: string;
+  icon: string;
+  earned: boolean;
+  progress: number;
+  target: number;
+};
+export type BadgesResult = { earned: number; total: number; badges: Badge[] };
+
+export async function getBadges(): Promise<BadgesResult> {
+  return api<BadgesResult>("/v1/me/badges");
+}
+
 export type CatalogStatus = {
   tmdbConfigured: boolean;
   titles: number;
