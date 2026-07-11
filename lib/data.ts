@@ -110,13 +110,15 @@ export async function getStats(): Promise<Stats> {
   return api<Stats>("/v1/me/stats");
 }
 
-// Achievement badge, computed server-side. `icon` is a lucide name the client
-// maps to a component; `progress` is the current metric, capped at `target`.
+// Achievement badge, computed server-side. `art` is a shared illustration motif
+// and `tier` (bronze|silver|gold|amber) tints the medallion; `progress` is the
+// current metric, capped at `target`.
 export type Badge = {
   key: string;
   name: string;
   description: string;
-  icon: string;
+  art: string;
+  tier: string;
   earned: boolean;
   progress: number;
   target: number;
