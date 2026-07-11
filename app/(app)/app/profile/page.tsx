@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
-import { getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
+import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
+import { BadgeMedallion } from "@/components/badges/badge-medallion";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -18,14 +19,16 @@ function duration(minutes: number) {
 export default async function ProfilePage() {
   // Fetch shows and movies separately so neither type is starved by a shared
   // page cap, and pull favorites directly instead of filtering a capped list.
-  const [user, stats, showsPage, moviesPage, favorites, lists] = await Promise.all([
+  const [user, stats, badges, showsPage, moviesPage, favorites, lists] = await Promise.all([
     getCurrentUser(),
     getStats(),
+    getBadges(),
     getLibraryPage({ type: "show", limit: 40 }),
     getLibraryPage({ type: "movie", limit: 40 }),
     getLibrary({ favorite: true, limit: 40 }),
     getLists()
   ]);
+  const badgePreview = [...badges.badges].sort((a, b) => Number(b.earned) - Number(a.earned)).slice(0, 4);
   const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
@@ -83,6 +86,21 @@ export default async function ProfilePage() {
           </div>
         ))}
       </section>
+
+      <Link href="/app/profile/badges" className="surface flex items-center justify-between rounded-[14px] px-5 py-4 lift">
+        <div>
+          <p className="eyebrow">Badges</p>
+          <p className="display mt-2 text-[22px] text-white">
+            {badges.earned} of {badges.total} earned
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {badgePreview.map((badge) => (
+            <BadgeMedallion key={badge.key} badge={badge} size={40} />
+          ))}
+          <ChevronRight className="size-4 text-white/40" />
+        </div>
+      </Link>
 
       {allShows.length > 0 ? <Rail title="Shows" href="/app/library?type=show" items={allShows.map((i) => i.title)} /> : null}
       {favShows.length > 0 ? (
