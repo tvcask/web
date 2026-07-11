@@ -119,10 +119,12 @@ export type Badge = {
   description: string;
   art: string;
   tier: string;
+  category?: BadgeCategory;
   earned: boolean;
   progress: number;
   target: number;
 };
+export type BadgeCategory = "getting-started" | "watching" | "collecting" | "curation-milestones";
 export type BadgesResult = {
   // Profile level from lifetime XP; xpIntoLevel/xpForNext drive the progress bar.
   level: number;

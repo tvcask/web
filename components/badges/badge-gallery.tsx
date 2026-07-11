@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import type { Badge } from "@/lib/data";
+import type { Badge, BadgeCategory } from "@/lib/data";
 import { BadgeMedallion } from "@/components/badges/badge-medallion";
 import {
   Drawer,
@@ -25,23 +25,31 @@ export function BadgeGallery({ badges }: { badges: Badge[] }) {
   }, []);
 
   const progress = selected ? Math.min(100, (selected.progress / selected.target) * 100) : 0;
+  const groups = groupBadges(badges);
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-x-4 gap-y-7 pt-2 sm:grid-cols-4">
-        {badges.map((badge) => (
-          <button
-            key={badge.key}
-            type="button"
-            onClick={() => setSelected(badge)}
-            className="cask-focus flex flex-col items-center rounded-[14px] py-2 text-center transition hover:bg-white/[0.03]"
-            aria-label={`${badge.name}. ${badge.earned ? "Earned" : "Locked"}. View badge details.`}
-          >
-            <BadgeMedallion badge={badge} size={72} />
-            <span className={`mt-2.5 text-[13px] font-bold ${badge.earned ? "text-white" : "text-white/55"}`}>
-              {badge.name}
-            </span>
-          </button>
+      <div className="space-y-9 pt-2">
+        {groups.map((group) => (
+          <section key={group.category}>
+            <h3 className="display mb-3 text-base text-white">{group.title}</h3>
+            <div className="grid grid-cols-3 gap-x-4 gap-y-7 sm:grid-cols-4">
+              {group.badges.map((badge) => (
+                <button
+                  key={badge.key}
+                  type="button"
+                  onClick={() => setSelected(badge)}
+                  className="cask-focus flex flex-col items-center rounded-[14px] py-2 text-center transition hover:bg-white/[0.03]"
+                  aria-label={`${badge.name}. ${badge.earned ? "Earned" : "Locked"}. View badge details.`}
+                >
+                  <BadgeMedallion badge={badge} size={72} />
+                  <span className={`mt-2.5 text-[13px] font-bold ${badge.earned ? "text-white" : "text-white/55"}`}>
+                    {badge.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
         ))}
       </div>
 
@@ -88,4 +96,30 @@ export function BadgeGallery({ badges }: { badges: Badge[] }) {
       </Drawer>
     </>
   );
+}
+
+const categoryOrder: { category: BadgeCategory; title: string }[] = [
+  { category: "getting-started", title: "Getting Started" },
+  { category: "watching", title: "Watching" },
+  { category: "collecting", title: "Collecting" },
+  { category: "curation-milestones", title: "Curation & Milestones" }
+];
+
+const tierOrder: Record<string, number> = { bronze: 0, silver: 1, gold: 2, amber: 3 };
+
+function groupBadges(badges: Badge[]) {
+  if (!badges.some((badge) => badge.category != null)) {
+    return [{ category: "all", title: "Badges", badges: sortByTier(badges) }];
+  }
+  return categoryOrder
+    .map(({ category, title }) => ({
+      category,
+      title,
+      badges: sortByTier(badges.filter((badge) => badge.category === category))
+    }))
+    .filter((group) => group.badges.length > 0);
+}
+
+function sortByTier(badges: Badge[]) {
+  return [...badges].sort((a, b) => (tierOrder[a.tier] ?? 99) - (tierOrder[b.tier] ?? 99));
 }
