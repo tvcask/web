@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { BadgeMedallion } from "@/components/badges/badge-medallion";
+import { BadgeGallery } from "@/components/badges/badge-gallery";
 import { getBadges, getStats } from "@/lib/data";
 
 function duration(minutes: number) {
@@ -58,20 +58,7 @@ export default async function StatsPage() {
         </div>
         {closest ? <p className="text-[13px] font-medium text-white/55">Closest · {closest.name}</p> : null}
 
-        <div className="grid grid-cols-3 gap-x-4 gap-y-7 pt-2 sm:grid-cols-4">
-          {badges.badges.map((badge) => (
-            <div
-              key={badge.key}
-              className="flex flex-col items-center text-center"
-              title={badge.earned ? `${badge.name} — earned` : `${badge.name} — ${badge.progress} / ${badge.target}`}
-            >
-              <BadgeMedallion badge={badge} size={72} />
-              <p className={`mt-2.5 text-[13px] font-bold ${badge.earned ? "text-white" : "text-white/55"}`}>
-                {badge.name}
-              </p>
-            </div>
-          ))}
-        </div>
+        <BadgeGallery badges={badges.badges} />
       </section>
     </div>
   );
