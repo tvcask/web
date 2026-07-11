@@ -74,19 +74,24 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <Link href="/app/profile/stats" className="surface block rounded-[14px] px-5 py-4 lift">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="eyebrow">Stats</p>
-          <span className="flex items-center gap-2 text-[13px] font-semibold text-white/55">
-            {badges.earned} of {badges.total} badges
-            <ChevronRight className="size-4 text-white/40" />
+      <Link
+        href="/app/profile/stats"
+        className="group surface block rounded-[16px] p-6 transition-colors hover:border-white/[0.14]"
+      >
+        <div className="mb-5 flex justify-end">
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold"
+            style={{ backgroundColor: "rgba(202,154,101,0.14)", color: "var(--accent-text)" }}
+          >
+            {badges.earned} / {badges.total} badges
+            <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {statTiles.map((tile) => (
-            <div key={tile.label}>
+        <div className="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0">
+          {statTiles.map((tile, i) => (
+            <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-6" : ""}>
               <p className="eyebrow">{tile.label}</p>
-              <p className="display mt-2 text-[22px]" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
+              <p className="display mt-2 text-2xl" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
                 {tile.value}
               </p>
             </div>
