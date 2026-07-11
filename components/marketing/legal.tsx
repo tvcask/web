@@ -54,4 +54,4 @@ export function LegalList({ items }: { items: React.ReactNode[] }) {
 }
 
 // A single place to change the contact address across all legal pages.
-export const LEGAL_CONTACT = "support@tvcask.com";
+export const LEGAL_CONTACT = "tvcask@protonmail.com";
