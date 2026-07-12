@@ -15,6 +15,10 @@ import type { Episode } from "@/lib/services/types";
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
 
+// An episode counts as aired if it has no date or its date is today or earlier
+// (UTC, matching the API). Unaired episodes can't be marked watched.
+const hasAired = (e: Episode) => !e.airDate || e.airDate <= new Date().toISOString().slice(0, 10);
+
 // Roll back an optimistic change and tell the user it didn't stick.
 function onSaveError(revert: () => void) {
   return () => {
@@ -60,8 +64,9 @@ export function TitleDetailClient({
     refreshTimer.current = setTimeout(() => queryClient.invalidateQueries({ queryKey: ["library"] }), 600);
   }
 
-  const watchedCount = episodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
-  const pct = episodes.length > 0 ? Math.min(100, Math.round((watchedCount / episodes.length) * 100)) : 0;
+  const airedEpisodes = episodes.filter(hasAired);
+  const watchedCount = airedEpisodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
+  const pct = airedEpisodes.length > 0 ? Math.min(100, Math.round((watchedCount / airedEpisodes.length) * 100)) : 0;
   const seasons = groupSeasons(episodes);
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
@@ -74,11 +79,12 @@ export function TitleDetailClient({
   ] as const;
 
   const isComplete = (set: Set<string>) =>
-    !isMovie && episodes.length > 0 && episodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
+    !isMovie && airedEpisodes.length > 0 && airedEpisodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
 
   function toggleEpisode(ep: Episode) {
     const k = key(ep.seasonNumber, ep.episodeNumber);
     const willWatch = !watched.has(k);
+    if (willWatch && !hasAired(ep)) return;
     const nextWatched = new Set(watched);
     if (willWatch) nextWatched.add(k);
     else nextWatched.delete(k);
@@ -126,7 +132,7 @@ export function TitleDetailClient({
     setStatus(next);
     setTracked(true);
     if (next === "completed") {
-      setWatched(new Set(episodes.map((e) => key(e.seasonNumber, e.episodeNumber))));
+      setWatched(new Set(airedEpisodes.map((e) => key(e.seasonNumber, e.episodeNumber))));
       if (prev.status !== "completed") celebrate(title.title);
     }
     scheduleRefresh();
@@ -356,19 +362,21 @@ export function TitleDetailClient({
             ) : (
               <div className="space-y-5">
                 {seasons.map(([seasonNumber, seasonEpisodes]) => {
-                  const seasonWatched = seasonEpisodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
-                  const allWatched = seasonWatched === seasonEpisodes.length;
+                  const airedSeason = seasonEpisodes.filter(hasAired);
+                  const seasonWatched = airedSeason.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
+                  const allWatched = airedSeason.length > 0 && seasonWatched === airedSeason.length;
                   return (
                     <div key={seasonNumber}>
                       <div className="mb-2 flex items-center justify-between">
                         <span className="text-sm font-bold text-white">Season {seasonNumber}</span>
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-white/45">
-                            {seasonWatched}/{seasonEpisodes.length}
+                            {seasonWatched}/{airedSeason.length}
                           </span>
                           <button
-                            onClick={() => toggleSeason(seasonNumber, seasonEpisodes, allWatched)}
-                            className="rounded-full bg-white/5 px-3 py-1 text-[11px] font-bold text-white/70 transition hover:text-white"
+                            onClick={() => toggleSeason(seasonNumber, airedSeason, allWatched)}
+                            disabled={airedSeason.length === 0}
+                            className="rounded-full bg-white/5 px-3 py-1 text-[11px] font-bold text-white/70 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
                           >
                             {allWatched ? "Clear season" : "Mark season"}
                           </button>
@@ -377,8 +385,9 @@ export function TitleDetailClient({
                       <div className="flex flex-col">
                         {seasonEpisodes.map((episode) => {
                           const isWatched = watched.has(key(episode.seasonNumber, episode.episodeNumber));
+                          const future = !hasAired(episode);
                           return (
-                            <div key={episode.id} className="flex items-center gap-3.5 border-b border-white/[0.06] py-2.5">
+                            <div key={episode.id} className={`flex items-center gap-3.5 border-b border-white/[0.06] py-2.5 ${future && !isWatched ? "opacity-55" : ""}`}>
                               <div
                                 className="relative h-[46px] w-[80px] shrink-0 overflow-hidden rounded-[7px]"
                                 style={{ background: "linear-gradient(140deg,#2a2f3a,#14110d)" }}
@@ -391,17 +400,18 @@ export function TitleDetailClient({
                                 <p className="truncate text-sm font-semibold text-white">
                                   E{pad(episode.episodeNumber)} · {episode.name ?? "TBA"}
                                 </p>
-                                <p className="mt-0.5 text-xs text-white/45">{episode.airDate ?? ""}</p>
+                                <p className="mt-0.5 text-xs text-white/45">{future ? "Airs " : ""}{episode.airDate ?? ""}</p>
                               </div>
                               <button
                                 onClick={() => toggleEpisode(episode)}
+                                disabled={future && !isWatched}
                                 className="grid size-7 shrink-0 place-items-center rounded-full transition"
                                 style={
                                   isWatched
                                     ? { background: "var(--accent)", color: "var(--on-accent)" }
                                     : { boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.22)", color: "transparent" }
                                 }
-                                aria-label={`Toggle S${pad(episode.seasonNumber)}E${pad(episode.episodeNumber)} watched`}
+                                aria-label={future ? `S${pad(episode.seasonNumber)}E${pad(episode.episodeNumber)} has not aired yet` : `Toggle S${pad(episode.seasonNumber)}E${pad(episode.episodeNumber)} watched`}
                               >
                                 <Check className="size-3.5" />
                               </button>
