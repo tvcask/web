@@ -19,6 +19,9 @@ export type Stats = {
   favorites: number;
   tvTimeMinutes: number;
   movieTimeMinutes: number;
+  topGenres: { name: string; count: number; shows: number; movies: number }[];
+  libraryStatus: { status: string; count: number }[];
+  releaseDecades: { decade: number; count: number }[];
 };
 
 export type Settings = {
