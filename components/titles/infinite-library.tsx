@@ -66,7 +66,10 @@ export function InfiniteLibrary({
       ) : type === "show" ? (
         <div className="flex flex-col gap-3">
           <AnimatePresence mode="popLayout" initial={false}>
-            {items.map((item) => (
+            {/* Caught-up shows (no aired episode left to watch) drop off the up-next list; they stay in the grid view. */}
+            {items
+              .filter((item) => item.nextEpisode != null)
+              .map((item) => (
               <motion.div
                 key={item.id}
                 layout
