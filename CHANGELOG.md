@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.3.0](https://github.com/tvcask/web/compare/tvcask-web-v0.2.0...tvcask-web-v0.3.0) (2026-07-12)
+
+
+### Features
+
+* add branded stats charts ([f210dde](https://github.com/tvcask/web/commit/f210ddeffd4b56c99058db3158a1003b399bb54e))
+* add privacy, terms, and community guidelines pages ([e40efc6](https://github.com/tvcask/web/commit/e40efc6e97c768b8e17a2d793541b589847507e1))
+* **auth:** add submit pending state, autocomplete, and stronger card ([115a2be](https://github.com/tvcask/web/commit/115a2be4a46f87de2da2f5bdf08a96177f358d7d))
+* **auth:** polish auth pages ([e11eeba](https://github.com/tvcask/web/commit/e11eeba615081b49decf543dda95406f95364497))
+* badges page and profile preview ([e8b57ee](https://github.com/tvcask/web/commit/e8b57ee147e9bba1ca4fff29b3057f9b658bcd08))
+* explore category labels from API ([8f9a1d8](https://github.com/tvcask/web/commit/8f9a1d87c3dad3be5bb6c2028c7a53d83dc290f5))
+* group badges by category ([636b002](https://github.com/tvcask/web/commit/636b0026df09193c4b3c76420642fe237f65f353))
+* illustrated badge medallions via shared SVG art ([b6bc06f](https://github.com/tvcask/web/commit/b6bc06fedfec14630cc5eccf91200f53e84256ee))
+* profile level chip and progress page ([31f7816](https://github.com/tvcask/web/commit/31f7816de233064d33f2e02de18511ae910e76e6))
+* refine profile and settings experience ([27fb36b](https://github.com/tvcask/web/commit/27fb36b010eef15309e2162c57ae8b09eb35cddc))
+
+
+### Bug Fixes
+
+* celebrate completion only when all episodes exist and are watched ([7b23f74](https://github.com/tvcask/web/commit/7b23f74a02bfc756fe5e2c72242edb969b32b687))
+* drop caught-up shows from the up-next list ([4035d4a](https://github.com/tvcask/web/commit/4035d4a043f3556a639b4ed0e753e98a5dd8dbf8))
+* hide and block unaired episodes in title detail ([a5d36f7](https://github.com/tvcask/web/commit/a5d36f7e12cddccc89c0c9e4f2db7d7248d68ff5))
+
 ## [0.2.0](https://github.com/tvcask/web/compare/tvcask-web-v0.1.0...tvcask-web-v0.2.0) (2026-07-10)
 
 
