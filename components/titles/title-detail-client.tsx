@@ -78,8 +78,9 @@ export function TitleDetailClient({
     { value: "completed", label: isMovie ? "Watched" : "Completed" }
   ] as const;
 
+  // Completion needs every episode, not just aired ones — a series still to air can't be finished.
   const isComplete = (set: Set<string>) =>
-    !isMovie && airedEpisodes.length > 0 && airedEpisodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
+    !isMovie && episodes.length > 0 && episodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
 
   function toggleEpisode(ep: Episode) {
     const k = key(ep.seasonNumber, ep.episodeNumber);
