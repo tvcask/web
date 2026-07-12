@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/marketing/logo";
+import { site } from "@/lib/site";
 
 export function MarketingFooter() {
   return (
@@ -32,6 +33,9 @@ export function MarketingFooter() {
             <Link href="/about" className="block font-bold text-white/55 transition hover:text-white">
               About tvcask
             </Link>
+            <a href={site.github} target="_blank" rel="noreferrer" className="block font-bold text-white/55 transition hover:text-white">
+              GitHub
+            </a>
           </nav>
 
           <nav className="space-y-3 text-sm">
