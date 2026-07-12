@@ -3,8 +3,8 @@
 export const site = {
   name: "tvcask",
   displayName: "tvcask",
-  tagline: "Save your watch history",
-  description: "Import your TV Time export, keep every episode you tracked, and continue watching.",
+  tagline: "Keep every watch. Find what’s next.",
+  description: "Bring your TV Time history with you, track every show and movie, and always know what to watch next.",
   logo: "/logo-horizontal.png",
   icon: "/logo-vertical.png",
   github: "https://github.com/tvcask"
