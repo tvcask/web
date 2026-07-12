@@ -139,7 +139,7 @@ export function MobileComingSoonBanner() {
               tvcask for iPhone is on the way.
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
-              Web comes first because it is the fastest way to help TV Time users preserve their history. The iOS app and social features follow after the import foundation is stable.
+              The same history, progress, favorites, and lists will move with you from the web to a native everyday tracking experience.
             </p>
             <Link href="/about" className="mt-5 inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
               Why I built this <ArrowRight className="ml-2 size-4" />

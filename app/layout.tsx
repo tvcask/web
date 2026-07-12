@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     siteName: site.displayName,
     images: [
       {
-        url: "/og-h.png",
+        url: "/og-brand.png",
         width: 1200,
         height: 630,
         alt: "tvcask watch history and TV Time import preview",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${site.displayName} — ${site.tagline}`,
     description: site.description,
-    images: ["/og-h.png"],
+    images: ["/og-brand.png"],
   },
   appleWebApp: {
     capable: true,

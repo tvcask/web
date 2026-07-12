@@ -1,12 +1,12 @@
 # tvcask
 
-> Keep every watch. Find what’s next.
+> Your watch history, kept.
 
 [tvcask](https://tvcask.com) is a watch tracker for shows, movies, anime, and K-dramas. It gives people leaving TV Time a reliable way to bring their history with them and keep tracking without starting over.
 
 This repository contains the public web application. The native mobile app and Go API are maintained in private repositories within the [tvcask organization](https://github.com/tvcask).
 
-![tvcask product preview](public/og-h.png)
+![tvcask brand preview](public/og-brand.png)
 
 ## What tvcask does
 
@@ -18,6 +18,8 @@ This repository contains the public web application. The native mobile app and G
 - Works as an installable web app, with a native iOS app in development
 
 The web app and upcoming mobile app share the same account and library through the tvcask API.
+
+The shared voice, positioning, and launch messaging for both products live in [docs/positioning.md](docs/positioning.md).
 
 ## Product status
 

@@ -12,19 +12,19 @@ import {
 export const metadata: Metadata = {
   title: "Why tvcask Exists | tvcask",
   description:
-    "tvcask was built by a solo developer and TV Time user to help people preserve their watch history before the July 15 shutdown.",
+    "tvcask was built by a solo developer and TV Time user to preserve watch history before the July 15, 2026 shutdown.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "Why tvcask Exists | tvcask",
     description:
-      "tvcask was built by a solo developer and TV Time user to help people preserve their watch history before the July 15 shutdown.",
+      "tvcask was built by a solo developer and TV Time user to preserve watch history before the July 15, 2026 shutdown.",
     type: "website",
     url: "/about",
     images: [
       {
-        url: "/og-h.png",
+        url: "/og-brand.png",
         width: 1200,
         height: 630,
         alt: "tvcask watch history and TV Time import preview",
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Why tvcask Exists | tvcask",
     description:
-      "tvcask was built by a solo developer and TV Time user to help people preserve their watch history before the July 15 shutdown.",
-    images: ["/og-h.png"],
+      "tvcask was built by a solo developer and TV Time user to preserve watch history before the July 15, 2026 shutdown.",
+    images: ["/og-brand.png"],
   },
 };
 
@@ -48,7 +48,7 @@ const milestones = [
 ];
 
 const timeline = [
-  ["July 15", "Shutdown announced", "TV Time confirms it is closing."],
+  ["July 15, 2026", "TV Time closes", "People need a safe home for years of history."],
   ["Days later", "tvcask built", "A solo, focused rebuild begins."],
   ["Today", "Web launch", "Accounts, import, and tracking live."],
   ["Next", "iOS and social", "Native app and community features."],
@@ -85,7 +85,7 @@ export default function AboutPage() {
             <div className="mt-7 space-y-5 text-base leading-8 text-white/64 sm:mt-8 sm:text-[17px]">
               <p>
                 I am a solo developer, and I used TV Time too. After the
-                announcement that TV Time would end on July 15, I built tvcask
+                announcement that TV Time would end on July 15, 2026, I built tvcask
                 so people could move their history instead of losing it.
               </p>
               <p>

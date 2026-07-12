@@ -36,13 +36,13 @@ export default function HomePage() {
         <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-12 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,0.95fr)]">
           <div className="min-w-0 space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              For people leaving TV Time
+              Your history. Your next episode.
             </span>
             <h1 className="display max-w-[680px] text-4xl leading-[1.05] sm:text-5xl md:text-[58px] xl:text-[64px]">
-              Your watch history has a new home.
+              Your watch history, kept.
             </h1>
             <p className="max-w-lg text-lg leading-8 text-white/55">
-              Track every show and movie, keep every episode, and continue where you left off.
+              Bring your TV Time history with you, track every show and movie, and pick up exactly where you left off.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
@@ -72,10 +72,10 @@ export default function HomePage() {
               Why tvcask
             </p>
             <h2 className="display mt-3 text-3xl leading-tight text-white md:text-4xl">
-              Built to replace TV Time, not to reinvent it.
+              Your history is the foundation.
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/60">
-              This is a focused replacement for keeping your watch history alive first. The social and mobile layers come after the library foundation is solid.
+              tvcask started with one promise: your years of tracking should move with you. The web app protects that history today, while native mobile and social experiences build on the same library.
             </p>
           </div>
 
@@ -127,7 +127,7 @@ export default function HomePage() {
               </p>
               <h2 className="display mt-2 text-2xl text-white">Move your TV Time history, episodes, favorites, and custom lists.</h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
-                A focused import flow for people searching for a TV Time alternative.
+                Preserve years of tracking and continue with one library across web and mobile.
               </p>
             </div>
             <span className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white">

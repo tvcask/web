@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     url: "/import-tv-time",
     images: [
       {
-        url: "/og-h.png",
+        url: "/og-brand.png",
         width: 1200,
         height: 630,
         alt: "tvcask TV Time import preview",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og-h.png"],
+    images: ["/og-brand.png"],
   },
 };
 

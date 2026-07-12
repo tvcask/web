@@ -10,7 +10,7 @@ export function MarketingFooter() {
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-6 text-white/45">
-              An independent watch tracker, built for people whose history needed a new home.
+              Your watch history, kept. One independent tracker for web and mobile.
             </p>
           </div>
 
