@@ -24,7 +24,10 @@ export default async function MoviesPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="mx-auto max-w-[1300px]">
-      <header className="mb-6 flex items-center gap-2.5 sm:gap-4">
+      {/* Pinned under the top nav so the filters stay reachable while the
+          infinite list scrolls. -mt/pt swallow main's top padding so cards
+          can't peek through the gap when stuck. */}
+      <header className="sticky top-16 z-20 -mx-5 -mt-8 mb-6 flex items-center gap-2.5 bg-[#0d0c0b]/90 px-5 pb-3 pt-6 backdrop-blur-xl sm:-mx-8 sm:gap-4 sm:px-8">
         {/* The nav pill already names the page; a visible title would repeat it. */}
         <h1 className="sr-only">Movies</h1>
         <TabsNav tabs={tabs} active={activeTab} base="/app/movies" />
