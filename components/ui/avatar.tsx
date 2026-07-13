@@ -32,18 +32,19 @@ export function Avatar({
       style={{
         width: size,
         height: size,
-        background: "linear-gradient(160deg, #3a2f2a, #c0956a)"
+        background: "rgba(211,158,94,0.1)",
+        boxShadow: "inset 0 0 0 1px rgba(211,158,94,0.45)"
       }}
     >
       {initial ? (
-        <span className="font-extrabold text-white" style={{ fontSize: size * 0.42 }}>
+        <span className="font-extrabold" style={{ fontSize: size * 0.4, color: "var(--accent-text)" }}>
           {initial}
         </span>
       ) : (
         <HugeiconsIcon
           icon={UserIcon}
-          strokeWidth={2.4}
-          style={{ width: size * 0.5, height: size * 0.5, color: "#fff" }}
+          strokeWidth={2.2}
+          style={{ width: size * 0.5, height: size * 0.5, color: "var(--accent-text)" }}
         />
       )}
     </span>

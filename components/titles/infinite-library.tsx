@@ -68,7 +68,7 @@ export function InfiniteLibrary({
       ) : type === "show" ? (
         <ShowList items={items} returnTo={returnTo} onComplete={removeLocally} />
       ) : (
-        <div className="mx-auto grid max-w-4xl gap-x-6 gap-y-3 md:grid-cols-2">
+        <div className="mx-auto flex max-w-2xl flex-col gap-3">
           <AnimatePresence mode="popLayout" initial={false}>
             {items.map((item) => (
               <motion.div
