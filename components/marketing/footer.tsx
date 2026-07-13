@@ -36,6 +36,9 @@ export function MarketingFooter() {
             <a href={site.github} target="_blank" rel="noreferrer" className="block font-bold text-white/55 transition hover:text-white">
               GitHub
             </a>
+            <a href={site.instagram} target="_blank" rel="noreferrer" className="block font-bold text-white/55 transition hover:text-white">
+              Instagram
+            </a>
           </nav>
 
           <nav className="space-y-3 text-sm">
