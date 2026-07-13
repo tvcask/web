@@ -1,6 +1,7 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight02Icon, CheckListIcon, PlusSignIcon, SmartPhone01Icon, Tick02Icon, Upload01Icon } from '@hugeicons/core-free-icons';
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ListChecks, Plus, Smartphone, Upload } from "lucide-react";
 
 type Poster = {
   title: string;
@@ -54,7 +55,7 @@ export function HeroProductPreview() {
         <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_0.86fr]">
           <div className="rounded-[16px] border border-white/[0.08] bg-white/[0.035] p-3">
             <div className="mb-3 flex items-center gap-2">
-              <ListChecks className="size-4" style={{ color: "var(--accent-text)" }} />
+              <HugeiconsIcon icon={CheckListIcon} className="size-4" style={{ color: "var(--accent-text)" }} />
               <p className="text-sm font-bold text-white">Animes</p>
               <span className="ml-auto text-xs font-semibold text-white/38">19 titles</span>
             </div>
@@ -69,7 +70,7 @@ export function HeroProductPreview() {
 
           <div className="rounded-[16px] border border-white/[0.08] bg-white/[0.035] p-3">
             <div className="flex items-center gap-2">
-              <Upload className="size-4" style={{ color: "var(--accent-text)" }} />
+              <HugeiconsIcon icon={Upload01Icon} className="size-4" style={{ color: "var(--accent-text)" }} />
               <p className="text-sm font-bold text-white">Import complete</p>
             </div>
             <div className="mt-3 space-y-2">
@@ -89,7 +90,7 @@ export function HeroProductPreview() {
       </div>
 
       <div className="pointer-events-none absolute -bottom-5 left-6 hidden rounded-full border border-white/[0.08] bg-[#15120f] px-4 py-2 text-sm font-bold text-white shadow-xl shadow-black/30 sm:flex">
-        <Check className="mr-2 size-4" style={{ color: "var(--accent-text)" }} />
+        <HugeiconsIcon icon={Tick02Icon} className="mr-2 size-4" style={{ color: "var(--accent-text)" }} />
         Progress restored
       </div>
     </div>
@@ -117,7 +118,7 @@ export function TrendingCatalogBand() {
         <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-white/45">Every poster opens the real title drawer in the app, with progress, favorites, and lists in one place.</p>
           <Link href="/signup" className="inline-flex h-10 shrink-0 items-center justify-center rounded-full px-4 text-sm font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-            Start tracking <ArrowRight className="ml-2 size-4" />
+            Start tracking <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
           </Link>
         </div>
       </div>
@@ -142,7 +143,7 @@ export function MobileComingSoonBanner() {
               The same history, progress, favorites, and lists will move with you from the web to a native everyday tracking experience.
             </p>
             <Link href="/about" className="mt-5 inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
-              Why I built this <ArrowRight className="ml-2 size-4" />
+              Why I built this <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
             </Link>
           </div>
 
@@ -150,7 +151,7 @@ export function MobileComingSoonBanner() {
             <div className="rounded-[18px] border border-white/[0.08] bg-black/18 p-5">
               <div className="flex items-center gap-3">
                 <div className="grid size-12 place-items-center rounded-full bg-white/[0.06] text-white/70">
-                  <Smartphone className="size-5" />
+                  <HugeiconsIcon icon={SmartPhone01Icon} className="size-5" />
                 </div>
                 <div>
                   <p className="text-sm font-extrabold text-white">iOS app</p>
@@ -220,7 +221,7 @@ function MovingPosterRail({ items }: { items: Poster[] }) {
 function PosterBadge({ checked }: { checked: boolean }) {
   return (
     <span className="absolute right-2 top-2 grid size-7 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur" aria-hidden>
-      {checked ? <Check className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <Plus className="size-3.5" />}
+      {checked ? <HugeiconsIcon icon={Tick02Icon} className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />}
     </span>
   );
 }

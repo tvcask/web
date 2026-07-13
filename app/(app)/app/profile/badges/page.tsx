@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { BadgeGallery } from "@/components/badges/badge-gallery";
 import { getBadges } from "@/lib/data";
 
@@ -14,7 +15,7 @@ export default async function ProgressPage() {
   return (
     <div className="mx-auto max-w-[900px] space-y-8">
       <Link href="/app/profile" className="inline-flex items-center gap-1 text-sm font-semibold text-white/60 hover:text-white">
-        <ChevronLeft className="size-4" /> Profile
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Profile
       </Link>
 
       <section className="surface rounded-[16px] p-6">

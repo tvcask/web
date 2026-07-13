@@ -1,7 +1,8 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getAdminUsers, type AdminUserFilters, type AdminUserList } from "@/lib/admin";
 import { ApiError } from "@/lib/api";
 
@@ -33,7 +34,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
     <div className="mx-auto max-w-[1100px] space-y-7">
       <div>
         <Link href="/app/admin" className="inline-flex items-center gap-1 text-sm font-semibold text-white/60 hover:text-white">
-          <ChevronLeft className="size-4" /> Admin
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Admin
         </Link>
         <div className="mt-5">
           <div>
@@ -86,7 +87,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 <td className="px-4 py-4 font-semibold text-white/55">{formatDate(user.createdAt)}</td>
                 <td className="px-4 py-4 font-bold text-white/75">{user.trackedTitles.toLocaleString()}</td>
                 <td className="px-4 py-4 text-white/55">{user.latestImportStatus ? <><span className="capitalize">{user.latestImportStatus}</span><span className="mt-1 block text-xs text-white/30">{user.latestImportAt ? formatDate(user.latestImportAt) : null}</span></> : "None"}</td>
-                <td className="px-4 py-4"><Link href={`/app/admin/users/${user.id}`} aria-label={`View ${user.name || user.email}`} className="grid size-8 place-items-center rounded-full text-white/35 hover:bg-white/5 hover:text-white"><ChevronRight className="size-4" /></Link></td>
+                <td className="px-4 py-4"><Link href={`/app/admin/users/${user.id}`} aria-label={`View ${user.name || user.email}`} className="grid size-8 place-items-center rounded-full text-white/35 hover:bg-white/5 hover:text-white"><HugeiconsIcon icon={ArrowRight01Icon} className="size-4" /></Link></td>
               </tr>
             ))}
             {result.users.length === 0 ? <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-white/40">No users match these filters.</td></tr> : null}

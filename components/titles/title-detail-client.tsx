@@ -1,9 +1,11 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, Heart, Plus, Share2, X } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
 import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
@@ -213,8 +215,8 @@ export function TitleDetailClient({
               onClick={untrack}
               className="accent-fill group flex h-[52px] flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold"
             >
-              <Check className="size-5 group-hover:hidden" />
-              <X className="hidden size-5 group-hover:block" />
+              <HugeiconsIcon icon={Tick02Icon} className="size-5 group-hover:hidden" />
+              <HugeiconsIcon icon={Cancel01Icon} className="hidden size-5 group-hover:block" />
               <span className="group-hover:hidden">Tracking</span>
               <span className="hidden group-hover:block">Untrack</span>
             </button>
@@ -223,7 +225,7 @@ export function TitleDetailClient({
               onClick={track}
               className="accent-fill flex h-[52px] flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold"
             >
-              <Plus className="size-5" /> {isMovie ? "Add to watchlist" : "Track show"}
+              <HugeiconsIcon icon={PlusSignIcon} className="size-5" /> {isMovie ? "Add to watchlist" : "Track show"}
             </button>
           )}
 
@@ -233,14 +235,14 @@ export function TitleDetailClient({
             style={favorite ? { color: "var(--accent-text)" } : undefined}
             aria-label="Favorite"
           >
-            <Heart className={favorite ? "size-5 fill-current" : "size-5"} />
+            <HugeiconsIcon icon={FavouriteIcon} className={favorite ? "size-5 fill-current" : "size-5"} />
           </button>
           <button
             onClick={share}
             className="grid size-[52px] shrink-0 place-items-center rounded-full border border-white/12 text-white/80 transition hover:bg-white/5"
             aria-label="Share"
           >
-            <Share2 className="size-5" />
+            <HugeiconsIcon icon={Share01Icon} className="size-5" />
           </button>
         </div>
 
@@ -414,7 +416,7 @@ export function TitleDetailClient({
                                 }
                                 aria-label={future ? `S${pad(episode.seasonNumber)}E${pad(episode.episodeNumber)} has not aired yet` : `Toggle S${pad(episode.seasonNumber)}E${pad(episode.episodeNumber)} watched`}
                               >
-                                <Check className="size-3.5" />
+                                <HugeiconsIcon icon={Tick02Icon} className="size-3.5" />
                               </button>
                             </div>
                           );

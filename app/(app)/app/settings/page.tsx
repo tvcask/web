@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowDown01Icon, ArrowLeft01Icon, ArrowRight01Icon, FileUploadIcon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight, FileUp } from "lucide-react";
 import {
   changePasswordAction,
   deleteAccountAction,
@@ -29,7 +30,7 @@ export default async function SettingsPage({
   return (
     <div className="mx-auto max-w-[600px]">
       <Link href="/app/profile" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
-        <ChevronLeft className="size-4" /> Profile
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Profile
       </Link>
       <h1 className="display mb-7 text-2xl text-white">Settings</h1>
 
@@ -63,7 +64,7 @@ export default async function SettingsPage({
           <details className="group border-t border-white/[0.06]">
             <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 transition hover:bg-white/[0.025]">
               <span className="text-sm font-bold text-white">Security</span>
-              <ChevronDown className="size-4 text-white/35 transition group-open:rotate-180" />
+              <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 text-white/35 transition group-open:rotate-180" />
             </summary>
             <div className="border-t border-white/[0.06] bg-white/[0.012] p-4">
               <form action={changePasswordAction}>
@@ -114,7 +115,7 @@ export default async function SettingsPage({
                   <option key={region.code} value={region.code}>{region.flag} {region.name}</option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/45" />
+              <HugeiconsIcon icon={ArrowDown01Icon} className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-white/45" />
             </div>
             <SubmitButton pendingLabel="Saving…" className="h-11 rounded-full border border-white/12 px-5 text-sm font-bold text-white hover:bg-white/5 sm:shrink-0">
               Save
@@ -128,7 +129,7 @@ export default async function SettingsPage({
       {/* Import */}
       <Section title="Import">
         <Link href="/app/import" className="surface flex items-center gap-3 rounded-[14px] p-4 transition hover:bg-white/[0.04]">
-          <FileUp className="size-5 text-white/50" />
+          <HugeiconsIcon icon={FileUploadIcon} className="size-5 text-white/50" />
           <div>
             <p className="text-sm font-bold text-white">Import from TV Time</p>
             <p className="text-xs text-white/45">Bring over your shows, movies and watched episodes.</p>
@@ -160,7 +161,7 @@ export default async function SettingsPage({
         <details className="group surface overflow-hidden rounded-[14px]">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5">
             <span className="text-sm font-bold text-[#ef6d5a]">Delete account</span>
-            <ChevronDown className="size-4 text-white/40 transition group-open:rotate-180" />
+            <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 text-white/40 transition group-open:rotate-180" />
           </summary>
           <div className="border-t border-white/[0.06] px-4 py-4">
             <p className="text-sm leading-6 text-white/50">
@@ -200,7 +201,7 @@ function SettingsLink({ href, label, border = false, external = false }: { href:
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
     >
       <span className="text-sm font-bold text-white">{label}</span>
-      <ChevronRight className="size-4 text-white/35" />
+      <HugeiconsIcon icon={ArrowRight01Icon} className="size-4 text-white/35" />
     </Link>
   );
 }

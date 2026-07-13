@@ -1,7 +1,9 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowDown01Icon, AddToListIcon, Loading03Icon, PlusSignIcon, Tick02Icon } from '@hugeicons/core-free-icons';
+
 import { useMemo, useState } from "react";
-import { Check, ChevronDown, ListPlus, Loader2, Plus } from "lucide-react";
 import { useCreateList, useTitleLists, useToggleListMembership, type TitleList } from "@/lib/query/lists";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +44,7 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
         aria-expanded={open}
       >
         <div className="grid size-9 shrink-0 place-items-center rounded-full bg-white/6 text-white/70">
-          <ListPlus className="size-4" />
+          <HugeiconsIcon icon={AddToListIcon} className="size-4" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-white">Lists</p>
@@ -56,14 +58,14 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
                   : "Create your first list"}
           </p>
         </div>
-        <ChevronDown className={cn("size-4 shrink-0 text-white/35 transition", open && "rotate-180")} />
+        <HugeiconsIcon icon={ArrowDown01Icon} className={cn("size-4 shrink-0 text-white/35 transition", open && "rotate-180")} />
       </button>
 
       {open ? (
         <div className="mt-3 space-y-3 border-t border-white/[0.06] pt-3">
           {isLoading ? (
             <div className="flex items-center gap-2 py-2 text-sm font-semibold text-white/45">
-              <Loader2 className="size-4 animate-spin" /> Loading lists
+              <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" /> Loading lists
             </div>
           ) : lists.length > 0 ? (
             <div className="max-h-[230px] space-y-1 overflow-y-auto pr-1 sm:max-h-[280px]">
@@ -81,7 +83,7 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
                       list.containsTitle ? "border-transparent accent-fill" : "border-white/20 text-transparent"
                     )}
                   >
-                    {savingId === list.id ? <Loader2 className="size-3 animate-spin" /> : <Check className="size-3" />}
+                    {savingId === list.id ? <HugeiconsIcon icon={Loading03Icon} className="size-3 animate-spin" /> : <HugeiconsIcon icon={Tick02Icon} className="size-3" />}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-bold text-white">{list.name}</span>
@@ -110,7 +112,7 @@ export function TitleListMembership({ titleId }: { titleId: string }) {
               className="grid size-10 shrink-0 place-items-center rounded-full border border-white/12 text-white/70 transition hover:bg-white/5 hover:text-white disabled:opacity-40"
               aria-label="Create list"
             >
-              {create.isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+              {create.isPending ? <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" /> : <HugeiconsIcon icon={PlusSignIcon} className="size-4" />}
             </button>
           </div>
         </div>

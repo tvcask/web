@@ -1,9 +1,11 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading03Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2 } from "lucide-react";
 import { Poster } from "@/components/titles/poster";
 import { UpNextCard } from "@/components/titles/up-next-card";
 import { useCompleteFromLibrary, useLibrary } from "@/lib/query/library";
@@ -64,25 +66,9 @@ export function InfiniteLibrary({
           ))}
         </div>
       ) : type === "show" ? (
-        <div className="flex flex-col gap-3">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {/* Caught-up shows (no aired episode left to watch) drop off the up-next list; they stay in the grid view. */}
-            {items
-              .filter((item) => item.nextEpisode != null)
-              .map((item) => (
-              <motion.div
-                key={item.id}
-                layout
-                exit={{ opacity: 0, height: 0, transition: { duration: 0.32, ease: [0.2, 0.8, 0.2, 1] } }}
-                style={{ overflow: "hidden" }}
-              >
-                <UpNextCard item={item} returnTo={returnTo} onComplete={removeLocally} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+        <ShowList items={items} returnTo={returnTo} onComplete={removeLocally} />
       ) : (
-        <div className="grid gap-x-6 gap-y-2.5 md:grid-cols-2">
+        <div className="mx-auto flex max-w-2xl flex-col gap-3">
           <AnimatePresence mode="popLayout" initial={false}>
             {items.map((item) => (
               <motion.div
@@ -100,10 +86,66 @@ export function InfiniteLibrary({
       {hasNextPage ? <div ref={sentinelRef} className="h-12" /> : null}
       {isFetchingNextPage ? (
         <div className="mt-4 flex justify-center">
-          <Loader2 className="size-5 animate-spin text-white/40" />
+          <HugeiconsIcon icon={Loading03Icon} className="size-5 animate-spin text-white/40" />
         </div>
       ) : null}
     </>
+  );
+}
+
+// The same split the app makes: the freshest shows with episodes left are
+// "watch next", the rest have gone stale. Caught-up shows (no aired episode
+// left) drop off the list entirely; they stay in the grid view.
+const WATCH_NEXT_COUNT = 3;
+
+function ShowList({
+  items,
+  returnTo,
+  onComplete
+}: {
+  items: UserTitleWithTitle[];
+  returnTo: string;
+  onComplete: (id: string) => void;
+}) {
+  const withNext = items.filter((item) => item.nextEpisode != null);
+  const upNext = withNext.slice(0, WATCH_NEXT_COUNT);
+  const stale = withNext.slice(WATCH_NEXT_COUNT);
+
+  const group = (groupItems: UserTitleWithTitle[]) => (
+    <AnimatePresence mode="popLayout" initial={false}>
+      {groupItems.map((item) => (
+        <motion.div
+          key={item.id}
+          layout
+          exit={{ opacity: 0, height: 0, transition: { duration: 0.32, ease: [0.2, 0.8, 0.2, 1] } }}
+          style={{ overflow: "hidden" }}
+        >
+          <UpNextCard item={item} returnTo={returnTo} onComplete={onComplete} />
+        </motion.div>
+      ))}
+    </AnimatePresence>
+  );
+
+  return (
+    <div className="mx-auto max-w-2xl">
+      {upNext.length > 0 ? (
+        <>
+          <div className="mb-4 text-center">
+            <span className="section-pill">Watch next</span>
+          </div>
+          <div className="flex flex-col gap-3">{group(upNext)}</div>
+        </>
+      ) : null}
+
+      {stale.length > 0 ? (
+        <>
+          <div className="mb-4 mt-7 text-center">
+            <span className="section-pill">Haven&apos;t watched for a while</span>
+          </div>
+          <div className="flex flex-col gap-3">{group(stale)}</div>
+        </>
+      ) : null}
+    </div>
   );
 }
 
@@ -119,17 +161,17 @@ function MovieRow({
   const href = `/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`;
 
   return (
-    <div className="surface flex items-center gap-3.5 rounded-[14px] p-3">
-      <Link href={href} className="w-12 shrink-0 overflow-hidden rounded-[8px]">
-        <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[8px]" />
+    <div className="flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4">
+      <Link href={href} className="w-[64px] shrink-0 self-stretch overflow-hidden">
+        <Poster src={item.title.posterUrl} title={item.title.title} className="h-full rounded-none" />
       </Link>
-      <Link href={href} className="min-w-0 flex-1">
-        <p className="truncate text-[15px] font-bold text-white">{item.title.title}</p>
-        <p className="mt-0.5 text-[12.5px] font-medium text-white/50">{item.title.year ?? "Movie"}</p>
+      <Link href={href} className="min-w-0 flex-1 py-3.5">
+        <p className="truncate text-[16px] font-extrabold text-white">{item.title.title}</p>
+        <p className="mt-0.5 text-[13px] font-medium text-white/50">{item.title.year ?? "Movie"}</p>
       </Link>
       {item.status === "completed" ? (
         <span className="grid size-8 shrink-0 place-items-center rounded-full" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-          <Check className="size-4" />
+          <HugeiconsIcon icon={Tick02Icon} className="size-4" />
         </span>
       ) : (
         <button
@@ -138,7 +180,7 @@ function MovieRow({
           style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
           aria-label={`Mark ${item.title.title} watched`}
         >
-          <Check className="size-4" />
+          <HugeiconsIcon icon={Tick02Icon} className="size-4" />
         </button>
       )}
     </div>

@@ -1,7 +1,9 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
 import type { Badge, BadgeCategory } from "@/lib/data";
 import { BadgeMedallion } from "@/components/badges/badge-medallion";
 import {
@@ -65,7 +67,7 @@ export function BadgeGallery({ badges }: { badges: Badge[] }) {
             className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-white/[0.06] text-white/70 transition hover:bg-white/10 hover:text-white"
             aria-label="Close badge details"
           >
-            <X className="size-4" />
+            <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
           </DrawerClose>
 
           {selected ? (

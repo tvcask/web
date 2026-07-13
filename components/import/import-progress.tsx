@@ -1,8 +1,10 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Alert02Icon, CheckmarkCircle02Icon, Loading03Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
 import { getImportStatus } from "@/app/actions";
 import { toast } from "@/lib/toast";
 import type { ImportRecord } from "@/lib/data";
@@ -69,7 +71,7 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
     return (
       <div className="surface rounded-[16px] p-7">
         <div className="flex items-center gap-3">
-          <AlertTriangle className="size-6 text-[#ef6d5a]" />
+          <HugeiconsIcon icon={Alert02Icon} className="size-6 text-[#ef6d5a]" />
           <h2 className="display text-xl text-white">Import failed</h2>
         </div>
         <p className="mt-4 text-sm text-white/60">
@@ -92,9 +94,9 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
     <div className="surface rounded-[16px] p-7">
       <div className="flex items-center gap-3">
         {done ? (
-          <CheckCircle2 className="size-6" style={{ color: "var(--accent-text)" }} />
+          <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-6" style={{ color: "var(--accent-text)" }} />
         ) : (
-          <Loader2 className="size-6 animate-spin text-white/60" />
+          <HugeiconsIcon icon={Loading03Icon} className="size-6 animate-spin text-white/60" />
         )}
         <h2 className="display text-xl text-white">
           {done ? "Import complete" : "Importing your history…"}

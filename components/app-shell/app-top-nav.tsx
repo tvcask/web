@@ -1,8 +1,10 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Search01Icon } from '@hugeicons/core-free-icons';
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
 import { AccountMenu } from "@/components/app-shell/account-menu";
 import { isNavActive, navItems } from "@/components/app-shell/nav-items";
 import { Logo } from "@/components/marketing/logo";
@@ -43,7 +45,7 @@ export function AppTopNav({ user }: { user: { name?: string | null; email?: stri
             <SearchBox size="md" align="right" />
           </div>
           <Link href="/app/explore" aria-label="Search" className="text-white/60 md:hidden">
-            <Search className="size-5" />
+            <HugeiconsIcon icon={Search01Icon} className="size-5" />
           </Link>
           <AccountMenu name={displayName} email={user.email} avatarUrl={user.avatarUrl} />
         </div>

@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { createListAction } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -8,7 +9,7 @@ export default function NewListPage() {
   return (
     <div className="mx-auto max-w-[620px]">
       <Link href="/app/profile" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
-        <ChevronLeft className="size-4" /> Profile
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Profile
       </Link>
       <h1 className="display mb-7 text-2xl text-white">New list</h1>
 

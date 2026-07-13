@@ -1,6 +1,7 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Search01Icon } from '@hugeicons/core-free-icons';
 import Image from "next/image";
 import Link from "next/link";
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
@@ -28,8 +29,12 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="mx-auto max-w-[1300px]">
-      <header className="mb-6 flex items-center gap-2.5 sm:gap-4">
-        <h1 className="display shrink-0 text-xl text-white sm:text-2xl">Shows</h1>
+      {/* Pinned under the top nav so the filters stay reachable while the
+          infinite list scrolls. -mt/pt swallow main's top padding so cards
+          can't peek through the gap when stuck. */}
+      <header className="sticky top-16 z-20 -mx-5 -mt-8 mb-6 flex items-center gap-2.5 border-b border-white/[0.06] bg-[#0d0c0b]/95 px-5 pb-3 pt-6 backdrop-blur-xl sm:-mx-8 sm:gap-4 sm:px-8">
+        {/* The nav pill already names the page; a visible title would repeat it. */}
+        <h1 className="sr-only">Shows</h1>
         <TabsNav tabs={tabs} active={activeTab} base="/app/shows" />
         {activeTab === "watchlist" && total > 0 ? (
           <div className="ml-auto shrink-0">
@@ -60,7 +65,7 @@ async function EmptyShows() {
         <p className="mt-2 max-w-md text-white/50">Add shows from Explore to start tracking.</p>
         <Button asChild className="mt-5">
           <Link href="/app/explore">
-            <Search className="size-4" /> Explore
+            <HugeiconsIcon icon={Search01Icon} className="size-4" /> Explore
           </Link>
         </Button>
       </div>
@@ -73,6 +78,15 @@ async function EmptyShows() {
       ) : null}
     </div>
   );
+}
+
+// "2026-07-15" reads like a database dump; show "Wed 15 Jul" like the app does.
+function formatAirDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 }
 
 function Upcoming({ calendar }: { calendar: Calendar | null }) {
@@ -90,34 +104,38 @@ function Upcoming({ calendar }: { calendar: Calendar | null }) {
   }
 
   return (
-    <div className="max-w-3xl space-y-7">
+    <div className="mx-auto max-w-2xl space-y-8">
       {groups.map(([label, items]) =>
         items.length > 0 ? (
           <section key={label}>
-            <div className="mb-3 flex items-center gap-3">
-              <span className="text-sm font-extrabold" style={{ color: "var(--accent-text)" }}>
+            <div className="mb-4 text-center">
+              <span
+                className="section-pill"
+                style={label === "Today" ? { background: "var(--accent)", color: "var(--on-accent)" } : undefined}
+              >
                 {label}
               </span>
-              <div className="h-px flex-1 bg-white/[0.07]" />
             </div>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-3">
               {items.map((episode) => (
-                <div key={episode.id} className="flex items-center gap-3.5">
+                <div key={episode.id} className="flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4">
                   <div
-                    className="surface relative h-[60px] w-[104px] shrink-0 overflow-hidden rounded-[9px]"
+                    className="relative h-[88px] w-[116px] shrink-0 self-stretch overflow-hidden"
                     style={{ background: episode.title?.backdropUrl ? undefined : "linear-gradient(140deg,#2a2f3a,#14110d)" }}
                   >
                     {episode.title?.backdropUrl ? (
-                      <Image src={episode.title.backdropUrl} alt="" fill sizes="104px" className="object-cover" />
+                      <Image src={episode.title.backdropUrl} alt="" fill sizes="116px" className="object-cover" />
                     ) : null}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-white">{episode.title?.title}</p>
-                    <p className="mt-0.5 text-xs font-medium text-white/50">
+                  <div className="min-w-0 flex-1 py-3.5">
+                    <p className="truncate text-[16px] font-extrabold text-white">{episode.title?.title}</p>
+                    <p className="mt-1 text-[13px] font-medium text-white/50">
                       S{episode.seasonNumber} · E{episode.episodeNumber}
                     </p>
                   </div>
-                  <span className="text-xs font-semibold text-white/55">{episode.airDate}</span>
+                  {episode.airDate ? (
+                    <span className="whitespace-nowrap text-[13px] font-bold text-white/55">{formatAirDate(episode.airDate)}</span>
+                  ) : null}
                 </div>
               ))}
             </div>

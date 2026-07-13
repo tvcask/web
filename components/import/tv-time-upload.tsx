@@ -1,8 +1,10 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { FileUploadIcon, Loading03Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileUp, Loader2 } from "lucide-react";
 import type { ImportRecord } from "@/lib/data";
 import { forgetActiveImport, readActiveImport, rememberActiveImport } from "@/components/import/active-import";
 
@@ -91,7 +93,7 @@ export function TvTimeUpload({ apiBase, token, requestedId }: { apiBase: string;
   if (restoring) {
     return (
       <div className="mt-6 flex items-center gap-2 text-sm text-white/50">
-        <Loader2 className="size-4 animate-spin" /> Restoring your import…
+        <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" /> Restoring your import…
       </div>
     );
   }
@@ -99,7 +101,7 @@ export function TvTimeUpload({ apiBase, token, requestedId }: { apiBase: string;
   return (
     <form onSubmit={onSubmit} className="mt-6 space-y-4">
       <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[12px] border border-dashed border-white/20 px-4 py-8 text-center transition hover:border-white/40">
-        <FileUp className="size-6 text-white/50" />
+        <HugeiconsIcon icon={FileUploadIcon} className="size-6 text-white/50" />
         <span className="max-w-full truncate text-sm font-semibold text-white">
           {fileName ?? "Choose your TV Time export ZIP"}
         </span>

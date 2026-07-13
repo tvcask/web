@@ -15,7 +15,7 @@ function seededGradient(title: string) {
 export function Poster({ src, title, className }: { src?: string | null; title: string; className?: string }) {
   if (src) {
     return (
-      <div className={cn("relative aspect-[2/3] w-full overflow-hidden rounded-[12px] bg-white/5", className)}>
+      <div className={cn("relative aspect-[2/3] w-full overflow-hidden rounded-[16px] bg-white/5", className)}>
         <Image
           src={src}
           alt=""
@@ -29,7 +29,7 @@ export function Poster({ src, title, className }: { src?: string | null; title: 
 
   return (
     <div
-      className={cn("relative flex aspect-[2/3] w-full items-end overflow-hidden rounded-[12px] p-2.5", className)}
+      className={cn("relative flex aspect-[2/3] w-full items-end overflow-hidden rounded-[16px] p-2.5", className)}
       style={{ background: seededGradient(title) }}
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />

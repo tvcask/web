@@ -1,10 +1,12 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading03Icon, Search01Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Search } from "lucide-react";
 import { apiGet } from "@/lib/query/client";
 import type { Title } from "@/lib/services/types";
 
@@ -82,7 +84,7 @@ export function SearchBox({
           setOpen(false);
         }}
       >
-        <Search className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-white/40 ${iconCls}`} />
+        <HugeiconsIcon icon={Search01Icon} className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-white/40 ${iconCls}`} />
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -92,7 +94,7 @@ export function SearchBox({
           className={`cask-focus w-full rounded-full bg-white/5 text-white outline-none placeholder:text-white/40 ${inputCls}`}
         />
         {loading ? (
-          <Loader2 className={`absolute top-1/2 size-4 -translate-y-1/2 animate-spin text-white/40 ${spinnerCls}`} />
+          <HugeiconsIcon icon={Loading03Icon} className={`absolute top-1/2 size-4 -translate-y-1/2 animate-spin text-white/40 ${spinnerCls}`} />
         ) : null}
       </form>
 

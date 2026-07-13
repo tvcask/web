@@ -1,7 +1,9 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading03Icon, PlusSignIcon, Tick02Icon } from '@hugeicons/core-free-icons';
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Loader2, Plus } from "lucide-react";
 import { mutate } from "@/lib/mutate";
 import { LIBRARY_IDS_KEY, useIsTracked, useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
@@ -43,14 +45,14 @@ export function AddToLibraryButton({
   if (tracked) {
     return (
       <span className={badge} style={style} aria-hidden>
-        {add.isPending ? <Loader2 className="size-[15px] animate-spin" /> : <Check className="size-[15px]" />}
+        {add.isPending ? <HugeiconsIcon icon={Loading03Icon} className="size-[15px] animate-spin" /> : <HugeiconsIcon icon={Tick02Icon} className="size-[15px]" />}
       </span>
     );
   }
 
   return (
     <button onClick={() => add.mutate()} className={badge} style={style} aria-label={`Add ${title}`}>
-      <Plus className="size-[15px]" />
+      <HugeiconsIcon icon={PlusSignIcon} className="size-[15px]" />
     </button>
   );
 }

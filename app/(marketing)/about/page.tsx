@@ -1,7 +1,8 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import {
@@ -122,7 +123,7 @@ export default function AboutPage() {
                   color: "var(--on-accent)",
                 }}
               >
-                Import TV Time <ArrowRight className="ml-2 size-4" />
+                Import TV Time <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
               </Link>
               <Link
                 href="/signup"
@@ -177,7 +178,7 @@ export default function AboutPage() {
                   color: "var(--on-accent)",
                 }}
               >
-                <Check className="size-3.5" />
+                <HugeiconsIcon icon={Tick02Icon} className="size-3.5" />
               </span>
               <span className="text-sm font-bold text-white/80">{item}</span>
             </div>

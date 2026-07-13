@@ -4,7 +4,7 @@ export function Logo() {
   return (
     <div className="flex items-center gap-2.5">
       <CaskMark className="size-[26px]" style={{ color: "var(--accent)" }} />
-      <span className="display whitespace-nowrap text-[17px] lowercase text-white">
+      <span className="whitespace-nowrap text-[18px] font-extrabold lowercase tracking-[-0.01em] text-white">
         {site.displayName}
       </span>
     </div>
