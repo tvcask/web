@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://tvcask.com",
   ),
-  title: `${site.displayName} — ${site.tagline}`,
+  title: `${site.displayName} | ${site.tagline}`,
   description: site.description,
   applicationName: site.displayName,
   icons: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: `${site.displayName} — ${site.tagline}`,
+    title: `${site.displayName} | ${site.tagline}`,
     description: site.description,
     type: "website",
     url: "/",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.displayName} — ${site.tagline}`,
+    title: `${site.displayName} | ${site.tagline}`,
     description: site.description,
     images: ["/og-brand.png"],
   },
