@@ -186,11 +186,24 @@ export type ImportRecord = {
   importedListItems: number;
   unmatchedListItems: number;
   errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export async function getImport(id: string): Promise<ImportRecord | null> {
   try {
     return await api<ImportRecord>(`/v1/me/import/${id}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export async function getLatestImport(): Promise<ImportRecord | null> {
+  try {
+    return await api<ImportRecord>("/v1/me/import/latest");
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       return null;

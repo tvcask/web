@@ -1,6 +1,8 @@
 import { AppBottomNav } from "@/components/app-shell/app-bottom-nav";
 import { AppTopNav } from "@/components/app-shell/app-top-nav";
 import { Toaster } from "@/components/ui/toaster";
+import { ImportWatcher } from "@/components/import/import-watcher";
+import type { ImportRecord } from "@/lib/data";
 
 type AppShellUser = {
   name?: string | null;
@@ -11,11 +13,13 @@ type AppShellUser = {
 export function AppShell({
   children,
   modal,
-  user
+  user,
+  latestImport
 }: {
   children: React.ReactNode;
   modal?: React.ReactNode;
   user: AppShellUser;
+  latestImport: ImportRecord | null;
 }) {
   return (
     <div className="min-h-screen bg-[#0d0c0b] text-[#F4EEE6]">
@@ -26,6 +30,7 @@ export function AppShell({
           relative to <main> instead of the viewport (breaking it on long pages). */}
       {modal}
       <AppBottomNav />
+      <ImportWatcher initial={latestImport} />
       <Toaster />
     </div>
   );

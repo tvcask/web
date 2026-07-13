@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import { API_URL, getToken } from "@/lib/api";
-import { getImport } from "@/lib/data";
+import { getImport, getLatestImport } from "@/lib/data";
 import { ImportProgress } from "@/components/import/import-progress";
 import { TvTimeUpload } from "@/components/import/tv-time-upload";
 
@@ -11,7 +11,8 @@ export default async function ImportPage({
   searchParams: Promise<{ id?: string }>;
 }) {
   const { id } = await searchParams;
-  const record = id ? await getImport(id) : null;
+  const requested = id ? await getImport(id) : await getLatestImport().catch(() => null);
+  const record = id || requested?.status === "processing" ? requested : null;
   const token = await getToken();
 
   return (
