@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.0](https://github.com/tvcask/web/compare/tvcask-web-v0.3.0...tvcask-web-v0.4.0) (2026-07-13)
+
+
+### Features
+
+* add admin user drilldown ([39912ee](https://github.com/tvcask/web/commit/39912ee69c3d3a31bc6f982a59b3da08d58b9ca6))
+* add Instagram footer link ([41f1742](https://github.com/tvcask/web/commit/41f17422a63733fb26c6bc9186ffb850888900e9))
+* add private admin dashboard ([64cea71](https://github.com/tvcask/web/commit/64cea7169a3c49ee4d5769b52ed5605128f76e02))
+* align product positioning and brand messaging ([9698d58](https://github.com/tvcask/web/commit/9698d5874855970bb143dd053044d081d642710b))
+* guide official TV Time imports ([7d52ffd](https://github.com/tvcask/web/commit/7d52ffdb992bce49209ab0211bbe2153c921ab08))
+* improve TV Time import SEO ([5861d26](https://github.com/tvcask/web/commit/5861d26b00dde8a2b2c2eb1d34ff619656f4fd06))
+* notify when TV Time imports finish ([5fedaee](https://github.com/tvcask/web/commit/5fedaeea4982919dd517c65f09ec39eea45b8f03))
+
+
+### Bug Fixes
+
+* refine homepage metadata ([ff5ab21](https://github.com/tvcask/web/commit/ff5ab21f88d1eacc1373c54fcba772652db00bc2))
+* restore active import progress ([0dd8f28](https://github.com/tvcask/web/commit/0dd8f288762a88cdb0a90f8192d63896dc4102c0))
+
 ## [0.3.0](https://github.com/tvcask/web/compare/tvcask-web-v0.2.0...tvcask-web-v0.3.0) (2026-07-12)
 
 
