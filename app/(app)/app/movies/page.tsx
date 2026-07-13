@@ -25,7 +25,8 @@ export default async function MoviesPage({ searchParams }: { searchParams: Promi
   return (
     <div className="mx-auto max-w-[1300px]">
       <header className="mb-6 flex items-center gap-2.5 sm:gap-4">
-        <h1 className="display shrink-0 text-xl text-white sm:text-2xl">Movies</h1>
+        {/* The nav pill already names the page; a visible title would repeat it. */}
+        <h1 className="sr-only">Movies</h1>
         <TabsNav tabs={tabs} active={activeTab} base="/app/movies" />
         {total > 0 ? (
           <div className="ml-auto shrink-0">
