@@ -67,27 +67,24 @@ export function UpNextCard({
   const marking = advance.isPending;
 
   return (
-    <article className="flex items-center gap-3 rounded-[16px] border border-white/[0.08] p-3 sm:gap-5 sm:p-4">
+    <article className="flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4 sm:gap-5 sm:pr-5">
       <Link
         href={href}
-        className="relative h-[64px] w-[112px] shrink-0 overflow-hidden rounded-[10px] ring-1 ring-white/[0.07] sm:h-[80px] sm:w-[140px]"
+        className="relative h-[88px] w-[116px] shrink-0 self-stretch overflow-hidden sm:h-[96px] sm:w-[150px]"
         style={item.title.backdropUrl ? undefined : { background: seededGradient(item.title.title) }}
       >
         {item.title.backdropUrl ? (
-          <Image src={item.title.backdropUrl} alt="" fill sizes="140px" className="object-cover" />
+          <Image src={item.title.backdropUrl} alt="" fill sizes="150px" className="object-cover" />
         ) : null}
       </Link>
 
-      <div className="min-w-0 flex-1">
-        <Link
-          href={href}
-          className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white"
-        >
-          <span className="truncate">{item.title.title}</span>
-          <ChevronRight className="size-3 shrink-0" />
+      <div className="min-w-0 flex-1 py-3.5">
+        <Link href={href} className="group flex max-w-full items-center gap-1">
+          <span className="truncate text-[16.5px] font-extrabold text-white">{item.title.title}</span>
+          <ChevronRight className="size-4 shrink-0 text-white/35 transition group-hover:text-white/70" />
         </Link>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="display flex items-baseline text-xl text-white">
+        <div className="mt-1.5 flex items-baseline gap-2">
+          <span className="flex items-baseline text-[15px] font-bold text-white/65">
             S{pad(season)}&nbsp;|&nbsp;E
             <span className="relative inline-flex overflow-hidden">
               <AnimatePresence mode="popLayout" initial={false}>

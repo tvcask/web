@@ -94,30 +94,32 @@ function Upcoming({ calendar }: { calendar: Calendar | null }) {
       {groups.map(([label, items]) =>
         items.length > 0 ? (
           <section key={label}>
-            <div className="mb-3 flex items-center gap-3">
-              <span className="text-sm font-extrabold" style={{ color: "var(--accent-text)" }}>
+            <div className="mb-4 text-center">
+              <span
+                className="section-pill"
+                style={label === "Today" ? { background: "var(--accent)", color: "var(--on-accent)" } : undefined}
+              >
                 {label}
               </span>
-              <div className="h-px flex-1 bg-white/[0.07]" />
             </div>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-3">
               {items.map((episode) => (
-                <div key={episode.id} className="flex items-center gap-3.5">
+                <div key={episode.id} className="flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4">
                   <div
-                    className="surface relative h-[60px] w-[104px] shrink-0 overflow-hidden rounded-[9px]"
+                    className="relative h-[88px] w-[116px] shrink-0 self-stretch overflow-hidden"
                     style={{ background: episode.title?.backdropUrl ? undefined : "linear-gradient(140deg,#2a2f3a,#14110d)" }}
                   >
                     {episode.title?.backdropUrl ? (
-                      <Image src={episode.title.backdropUrl} alt="" fill sizes="104px" className="object-cover" />
+                      <Image src={episode.title.backdropUrl} alt="" fill sizes="116px" className="object-cover" />
                     ) : null}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-white">{episode.title?.title}</p>
-                    <p className="mt-0.5 text-xs font-medium text-white/50">
+                  <div className="min-w-0 flex-1 py-3.5">
+                    <p className="truncate text-[16px] font-extrabold text-white">{episode.title?.title}</p>
+                    <p className="mt-1 text-[13px] font-medium text-white/50">
                       S{episode.seasonNumber} · E{episode.episodeNumber}
                     </p>
                   </div>
-                  <span className="text-xs font-semibold text-white/55">{episode.airDate}</span>
+                  <span className="text-[13px] font-bold text-white/55">{episode.airDate}</span>
                 </div>
               ))}
             </div>

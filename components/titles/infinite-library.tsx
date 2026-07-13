@@ -119,13 +119,13 @@ function MovieRow({
   const href = `/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`;
 
   return (
-    <div className="surface flex items-center gap-3.5 rounded-[14px] p-3">
-      <Link href={href} className="w-12 shrink-0 overflow-hidden rounded-[8px]">
-        <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[8px]" />
+    <div className="flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4">
+      <Link href={href} className="w-[64px] shrink-0 self-stretch overflow-hidden">
+        <Poster src={item.title.posterUrl} title={item.title.title} className="h-full rounded-none" />
       </Link>
-      <Link href={href} className="min-w-0 flex-1">
-        <p className="truncate text-[15px] font-bold text-white">{item.title.title}</p>
-        <p className="mt-0.5 text-[12.5px] font-medium text-white/50">{item.title.year ?? "Movie"}</p>
+      <Link href={href} className="min-w-0 flex-1 py-3.5">
+        <p className="truncate text-[16px] font-extrabold text-white">{item.title.title}</p>
+        <p className="mt-0.5 text-[13px] font-medium text-white/50">{item.title.year ?? "Movie"}</p>
       </Link>
       {item.status === "completed" ? (
         <span className="grid size-8 shrink-0 place-items-center rounded-full" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
