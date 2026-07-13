@@ -85,7 +85,7 @@ export default async function ImportPage({
             of your export before then.
           </p>
 
-          <TvTimeUpload apiBase={API_URL} token={token ?? ""} />
+          <TvTimeUpload apiBase={API_URL} token={token ?? ""} requestedId={id} />
         </div>
       )}
     </div>

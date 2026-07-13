@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import type { CastMember, Episode, Title, UserTitle, UserTitleWithTitle, WatchProvider } from "@/lib/services/types";
 
 export type DiscoverSection = { title: string; kind: string; items: Title[] };
@@ -191,8 +191,11 @@ export type ImportRecord = {
 export async function getImport(id: string): Promise<ImportRecord | null> {
   try {
     return await api<ImportRecord>(`/v1/me/import/${id}`);
-  } catch {
-    return null;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }
 
