@@ -28,8 +28,7 @@ export default async function ImportPage({
           <p className="text-white/60">
             Upload the official <b className="text-white">TV Time GDPR .zip</b> and
             we&apos;ll bring over your shows, movies, watched episodes, favorites,
-            and custom lists. The JSON export from the TV Time Out extension is
-            supported too.
+            and custom lists. ZIP files created by TV Time Out work too.
           </p>
 
           <details open className="group mt-5 rounded-[12px] border border-white/[0.08] open:bg-white/[0.02]">
@@ -68,16 +67,16 @@ export default async function ImportPage({
               <ChevronDown className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
             </summary>
             <p className="px-4 pb-4 text-sm leading-6 text-white/60">
-              Upload the JSON ZIP from the{" "}
+              On a computer, use the{" "}
               <a
                 href="https://chromewebstore.google.com/detail/tv-time-out-by-refract/pmejpdpjbkjklfceogdkolmgclldogbi"
                 target="_blank"
                 rel="noreferrer"
                 className="font-semibold text-[color:var(--accent-text)] underline underline-offset-2"
               >
-                TV Time Out browser extension
+                TV Time Out Chrome extension
               </a>
-              . There is no need to export again.
+              {" "}to export your history, then upload that ZIP here.
             </p>
           </details>
 

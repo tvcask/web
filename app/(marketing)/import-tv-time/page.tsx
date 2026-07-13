@@ -102,7 +102,7 @@ const faqs = [
   },
   {
     q: "What file do I upload?",
-    a: "Upload the official gdpr-data.zip downloaded from TV Time. tvcask also supports the JSON ZIP created by the TV Time Out browser extension.",
+    a: "Upload the official gdpr-data.zip downloaded from TV Time. tvcask also supports ZIP files created by the TV Time Out Chrome extension.",
   },
   {
     q: "Is tvcask a TV Time alternative?",
