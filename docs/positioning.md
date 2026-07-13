@@ -109,6 +109,30 @@ Import confirmation:
 
 > Your history is safe. Keep watching from where you left off.
 
+## TV Time import language
+
+Use the official TV Time GDPR export as the primary path:
+
+> Download your official TV Time GDPR export and upload the ZIP without extracting it.
+
+Present TV Time Out as the supported alternative for people who already used the browser extension:
+
+> Already exported with TV Time Out? Upload the ZIP created by the Chrome extension. There is no need to export again.
+
+When space is limited:
+
+> Import your official TV Time export or TV Time Out ZIP.
+
+Describe what transfers with concrete terms: shows, movies, watched episodes, favorites, and custom lists. Do not promise that every title will match. TV Time and tvcask use different catalog identifiers, so incomplete or conflicting titles may be skipped rather than linked to the wrong item.
+
+The public import page uses this search title and headline:
+
+> TV Time Alternative: Import Your Watch History | tvcask
+
+> Move your TV Time watch history to tvcask
+
+Use “TV Time alternative” on the focused import page and in search descriptions. Do not make it the master brand position. The lasting position remains the independent home for a person’s watch history.
+
 ## Campaign lines
 
 Use these for launch posts, screenshots, and focused sections:
@@ -143,3 +167,5 @@ Avoid inflated language, generic claims, and startup slogans that could describe
 ## Naming
 
 Write the brand as `tvcask` in running copy. Use `tvcask for iPhone` when naming the native app in marketing. Use `tvcask web app` only when the platform distinction matters.
+
+Keep `tvcask` lowercase at the beginning of a sentence, in page titles, in App Store fields, and in social profiles. Do not alternate between `tvcask`, `Tvcask`, and `TV Cask`. Search engines do not need a capitalized variant, and one spelling keeps the wordmark and product name aligned.
