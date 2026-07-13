@@ -68,8 +68,16 @@ export default async function ImportPage({
               <ChevronDown className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
             </summary>
             <p className="px-4 pb-4 text-sm leading-6 text-white/60">
-              Upload the JSON ZIP from the TV Time Out browser extension. There
-              is no need to export again.
+              Upload the JSON ZIP from the{" "}
+              <a
+                href="https://chromewebstore.google.com/detail/tv-time-out-by-refract/pmejpdpjbkjklfceogdkolmgclldogbi"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-[color:var(--accent-text)] underline underline-offset-2"
+              >
+                TV Time Out browser extension
+              </a>
+              . There is no need to export again.
             </p>
           </details>
 

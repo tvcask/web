@@ -162,6 +162,17 @@ export default function ImportTvTimePage() {
             <p className="text-sm font-semibold text-white/48">
               TV Time shuts down on July 15, 2026. Save a local copy before then.
             </p>
+            <p className="text-sm text-white/48">
+              Prefer the browser extension?{" "}
+              <a
+                href="https://chromewebstore.google.com/detail/tv-time-out-by-refract/pmejpdpjbkjklfceogdkolmgclldogbi"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-[color:var(--accent-text)] underline underline-offset-2"
+              >
+                Open TV Time Out
+              </a>
+            </p>
             <div className="flex flex-wrap gap-2 pt-2">
               {["Shows", "Movies", "Episodes", "Favorites", "Custom lists"].map(
                 (item) => (
