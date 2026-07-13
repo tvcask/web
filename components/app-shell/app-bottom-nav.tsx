@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { isNavActive, navItems } from "@/components/app-shell/nav-items";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,6 @@ export function AppBottomNav() {
       <div className="mx-auto grid max-w-md grid-cols-4">
         {navItems.map((item) => {
           const active = isNavActive(pathname, item);
-          const Icon = item.icon;
           return (
             <Link
               key={item.href}
@@ -28,7 +28,7 @@ export function AppBottomNav() {
               )}
               style={active ? { color: "var(--accent-text)" } : undefined}
             >
-              <Icon className="size-[22px]" />
+              <HugeiconsIcon icon={item.icon} className="size-[23px]" strokeWidth={1.8} />
               {item.label}
             </Link>
           );

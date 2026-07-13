@@ -64,23 +64,7 @@ export function InfiniteLibrary({
           ))}
         </div>
       ) : type === "show" ? (
-        <div className="flex flex-col gap-3">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {/* Caught-up shows (no aired episode left to watch) drop off the up-next list; they stay in the grid view. */}
-            {items
-              .filter((item) => item.nextEpisode != null)
-              .map((item) => (
-              <motion.div
-                key={item.id}
-                layout
-                exit={{ opacity: 0, height: 0, transition: { duration: 0.32, ease: [0.2, 0.8, 0.2, 1] } }}
-                style={{ overflow: "hidden" }}
-              >
-                <UpNextCard item={item} returnTo={returnTo} onComplete={removeLocally} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+        <ShowList items={items} returnTo={returnTo} onComplete={removeLocally} />
       ) : (
         <div className="grid gap-x-6 gap-y-2.5 md:grid-cols-2">
           <AnimatePresence mode="popLayout" initial={false}>
@@ -104,6 +88,62 @@ export function InfiniteLibrary({
         </div>
       ) : null}
     </>
+  );
+}
+
+// The same split the app makes: the freshest shows with episodes left are
+// "watch next", the rest have gone stale. Caught-up shows (no aired episode
+// left) drop off the list entirely; they stay in the grid view.
+const WATCH_NEXT_COUNT = 3;
+
+function ShowList({
+  items,
+  returnTo,
+  onComplete
+}: {
+  items: UserTitleWithTitle[];
+  returnTo: string;
+  onComplete: (id: string) => void;
+}) {
+  const withNext = items.filter((item) => item.nextEpisode != null);
+  const upNext = withNext.slice(0, WATCH_NEXT_COUNT);
+  const stale = withNext.slice(WATCH_NEXT_COUNT);
+
+  const group = (groupItems: UserTitleWithTitle[]) => (
+    <AnimatePresence mode="popLayout" initial={false}>
+      {groupItems.map((item) => (
+        <motion.div
+          key={item.id}
+          layout
+          exit={{ opacity: 0, height: 0, transition: { duration: 0.32, ease: [0.2, 0.8, 0.2, 1] } }}
+          style={{ overflow: "hidden" }}
+        >
+          <UpNextCard item={item} returnTo={returnTo} onComplete={onComplete} />
+        </motion.div>
+      ))}
+    </AnimatePresence>
+  );
+
+  return (
+    <div className="max-w-2xl">
+      {upNext.length > 0 ? (
+        <>
+          <div className="mb-4 text-center">
+            <span className="section-pill">Watch next</span>
+          </div>
+          <div className="flex flex-col gap-3">{group(upNext)}</div>
+        </>
+      ) : null}
+
+      {stale.length > 0 ? (
+        <>
+          <div className="mb-4 mt-7 text-center">
+            <span className="section-pill">Haven&apos;t watched for a while</span>
+          </div>
+          <div className="flex flex-col gap-3">{group(stale)}</div>
+        </>
+      ) : null}
+    </div>
   );
 }
 

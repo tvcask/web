@@ -75,6 +75,15 @@ async function EmptyShows() {
   );
 }
 
+// "2026-07-15" reads like a database dump; show "Wed 15 Jul" like the app does.
+function formatAirDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
+
 function Upcoming({ calendar }: { calendar: Calendar | null }) {
   const groups = calendar
     ? ([
@@ -90,7 +99,7 @@ function Upcoming({ calendar }: { calendar: Calendar | null }) {
   }
 
   return (
-    <div className="max-w-3xl space-y-7">
+    <div className="max-w-2xl space-y-8">
       {groups.map(([label, items]) =>
         items.length > 0 ? (
           <section key={label}>
@@ -119,7 +128,9 @@ function Upcoming({ calendar }: { calendar: Calendar | null }) {
                       S{episode.seasonNumber} · E{episode.episodeNumber}
                     </p>
                   </div>
-                  <span className="text-[13px] font-bold text-white/55">{episode.airDate}</span>
+                  {episode.airDate ? (
+                    <span className="whitespace-nowrap text-[13px] font-bold text-white/55">{formatAirDate(episode.airDate)}</span>
+                  ) : null}
                 </div>
               ))}
             </div>
