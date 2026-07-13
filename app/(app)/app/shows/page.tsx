@@ -1,6 +1,7 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Search01Icon } from '@hugeicons/core-free-icons';
 import Image from "next/image";
 import Link from "next/link";
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
@@ -60,7 +61,7 @@ async function EmptyShows() {
         <p className="mt-2 max-w-md text-white/50">Add shows from Explore to start tracking.</p>
         <Button asChild className="mt-5">
           <Link href="/app/explore">
-            <Search className="size-4" /> Explore
+            <HugeiconsIcon icon={Search01Icon} className="size-4" /> Explore
           </Link>
         </Button>
       </div>
@@ -99,7 +100,7 @@ function Upcoming({ calendar }: { calendar: Calendar | null }) {
   }
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="mx-auto max-w-2xl space-y-8">
       {groups.map(([label, items]) =>
         items.length > 0 ? (
           <section key={label}>

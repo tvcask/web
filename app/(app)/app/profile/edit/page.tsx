@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { updateProfileAction } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
@@ -15,13 +16,13 @@ export default async function EditProfilePage({
   return (
     <div className="mx-auto max-w-[600px]">
       <Link href="/app/profile" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
-        <ChevronLeft className="size-4" /> Profile
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Profile
       </Link>
       <h1 className="display mb-7 text-2xl text-white">Edit profile</h1>
 
       <form action={updateProfileAction} className="surface rounded-[16px] p-5">
         <div className="flex items-center gap-4">
-          <Avatar src={user?.avatarUrl} size={72} className="ring-2 ring-white/10" />
+          <Avatar src={user?.avatarUrl} name={user?.name} size={72} className="ring-2 ring-white/10" />
           <div className="min-w-0 flex-1">
             <label className="block text-[13px] font-semibold text-white/60">Avatar URL</label>
             <input

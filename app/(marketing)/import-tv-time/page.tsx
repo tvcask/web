@@ -1,16 +1,7 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight02Icon, Calendar03Icon, CheckListIcon, ChromeIcon, Download01Icon, FileUploadIcon, Search01Icon, SquareLock01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarDays,
-  Check,
-  Chrome,
-  Download,
-  FileUp,
-  ListChecks,
-  Lock,
-  Search,
-} from "lucide-react";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
@@ -49,22 +40,22 @@ export const metadata: Metadata = {
 
 const features = [
   {
-    icon: FileUp,
+    icon: FileUploadIcon,
     title: "Official TV Time import",
     copy: "Upload the GDPR ZIP downloaded from TV Time. TV Time Out ZIP files are supported too.",
   },
   {
-    icon: Check,
+    icon: Tick02Icon,
     title: "Watched episodes",
     copy: "Keep season and episode progress attached to your account.",
   },
   {
-    icon: ListChecks,
+    icon: CheckListIcon,
     title: "Custom lists",
     copy: "Bring over user lists and the titles inside them.",
   },
   {
-    icon: CalendarDays,
+    icon: Calendar03Icon,
     title: "Up next and calendar",
     copy: "Continue from your local tvcask library after import.",
   },
@@ -95,14 +86,14 @@ const steps = [
 
 const exportOptions = [
   {
-    icon: Download,
+    icon: Download01Icon,
     label: "Recommended",
     title: "Official TV Time GDPR export",
     copy: "Request your data directly from TV Time, then upload the gdpr-data.zip file without extracting it.",
     details: ["Shows and movies", "Watched episodes", "Favorites and custom lists"],
   },
   {
-    icon: Chrome,
+    icon: ChromeIcon,
     label: "Also supported",
     title: "TV Time Out Chrome extension",
     copy: "Already exported with TV Time Out? Upload the ZIP created by the extension. There is no need to export again.",
@@ -179,7 +170,7 @@ export default function ImportTvTimePage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
                 <a href="https://gdpr.tvtime.com/gdpr/self-service" target="_blank" rel="noreferrer">
-                  Get TV Time export <ArrowRight className="size-4" />
+                  Get TV Time export <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
                 </a>
               </Button>
               <Button
@@ -234,7 +225,7 @@ export default function ImportTvTimePage() {
                     color: "var(--on-accent)",
                   }}
                 >
-                  <FileUp className="size-5" />
+                  <HugeiconsIcon icon={FileUploadIcon} className="size-5" />
                 </div>
               </div>
               <div className="mt-5 space-y-2.5">
@@ -264,7 +255,7 @@ export default function ImportTvTimePage() {
                   key={item}
                   className="rounded-[12px] bg-white/[0.04] px-3 py-3"
                 >
-                  <Check
+                  <HugeiconsIcon icon={Tick02Icon}
                     className="size-4"
                     style={{ color: "var(--accent-text)" }}
                   />
@@ -292,7 +283,6 @@ export default function ImportTvTimePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {exportOptions.map((option) => {
-              const Icon = option.icon;
               return (
                 <article key={option.title} className="surface rounded-[16px] p-6">
                   <div className="flex items-center justify-between gap-4">
@@ -300,7 +290,7 @@ export default function ImportTvTimePage() {
                       className="grid size-10 place-items-center rounded-full"
                       style={{ background: "rgba(211,158,94,0.12)" }}
                     >
-                      <Icon className="size-5" style={{ color: "var(--accent-text)" }} />
+                      <HugeiconsIcon icon={option.icon} className="size-5" style={{ color: "var(--accent-text)" }} />
                     </span>
                     <span className="rounded-full bg-white/[0.06] px-3 py-1 text-xs font-bold text-white/55">
                       {option.label}
@@ -311,7 +301,7 @@ export default function ImportTvTimePage() {
                   <ul className="mt-5 space-y-2.5">
                     {option.details.map((detail) => (
                       <li key={detail} className="flex items-center gap-2.5 text-sm font-semibold text-white/62">
-                        <Check className="size-4 shrink-0" style={{ color: "var(--accent-text)" }} />
+                        <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0" style={{ color: "var(--accent-text)" }} />
                         {detail}
                       </li>
                     ))}
@@ -333,14 +323,14 @@ export default function ImportTvTimePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-4">
             {features.map((feature) => {
-              const Icon = feature.icon;
               return (
                 <div key={feature.title} className="surface rounded-[16px] p-5">
                   <span
                     className="grid size-9 place-items-center rounded-full"
                     style={{ background: "rgba(211,158,94,0.12)" }}
                   >
-                    <Icon
+                    <HugeiconsIcon
+                      icon={feature.icon}
                       className="size-4"
                       style={{ color: "var(--accent-text)" }}
                     />
@@ -416,7 +406,7 @@ export default function ImportTvTimePage() {
 
         <section className="mx-auto grid max-w-6xl gap-4 px-5 pb-20 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="surface rounded-[16px] p-6">
-            <Search
+            <HugeiconsIcon icon={Search01Icon}
               className="size-5"
               style={{ color: "var(--accent-text)" }}
             />
@@ -429,7 +419,7 @@ export default function ImportTvTimePage() {
               tracking across the web app and the upcoming iOS app.
             </p>
             <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-white/58">
-              <Lock
+              <HugeiconsIcon icon={SquareLock01Icon}
                 className="size-4"
                 style={{ color: "var(--accent-text)" }}
               />{" "}

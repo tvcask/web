@@ -1,6 +1,7 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon, Delete02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, Trash2 } from "lucide-react";
 import { deleteListAction, removeListItemAction, updateListAction } from "@/app/actions";
 import { Poster } from "@/components/titles/poster";
 import { ConfirmButton } from "@/components/ui/confirm-button";
@@ -22,7 +23,7 @@ export default async function ListPage({
   return (
     <div className="mx-auto max-w-[980px] space-y-6">
       <Link href="/app/profile" className="inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
-        <ChevronLeft className="size-4" /> Profile
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Profile
       </Link>
 
       <section className="surface rounded-[16px] p-5">
@@ -66,7 +67,7 @@ export default async function ListPage({
                 message="Delete this list? Titles and watch history stay in your library."
                 className="inline-flex h-10 items-center gap-2 rounded-full border border-[#ef6d5a]/40 px-4 text-sm font-bold text-[#ef6d5a] transition hover:bg-[#ef6d5a]/10"
               >
-                <Trash2 className="size-4" /> Delete list
+                <HugeiconsIcon icon={Delete02Icon} className="size-4" /> Delete list
               </ConfirmButton>
             </form>
           </div>
@@ -95,7 +96,7 @@ export default async function ListPage({
                       className="grid size-7 place-items-center rounded-full text-white/35 transition hover:bg-white/5 hover:text-white"
                       aria-label={`Remove ${item.title.title}`}
                     >
-                      <Trash2 className="size-4" />
+                      <HugeiconsIcon icon={Delete02Icon} className="size-4" />
                     </ConfirmButton>
                   </form>
                 </div>

@@ -1,9 +1,20 @@
-import { User } from "lucide-react";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { UserIcon } from '@hugeicons/core-free-icons';
 import { cn } from "@/lib/utils";
 
-// One branded default for everyone (cask amber + person glyph) until a user
-// uploads their own.
-export function Avatar({ src, size = 34, className = "" }: { src?: string | null; size?: number; className?: string }) {
+// The same placeholder the iOS app uses: warm cask gradient with the user's
+// initial. Falls back to a person glyph when we don't know a name.
+export function Avatar({
+  src,
+  name,
+  size = 34,
+  className = ""
+}: {
+  src?: string | null;
+  name?: string | null;
+  size?: number;
+  className?: string;
+}) {
   if (src) {
     return (
       <img
@@ -14,19 +25,27 @@ export function Avatar({ src, size = 34, className = "" }: { src?: string | null
       />
     );
   }
+  const initial = name?.trim()[0]?.toUpperCase();
   return (
     <span
       className={cn("grid shrink-0 place-items-center rounded-full", className)}
       style={{
         width: size,
         height: size,
-        background: "linear-gradient(145deg, oklch(0.48 0.05 58), oklch(0.72 0.13 68))"
+        background: "linear-gradient(160deg, #3a2f2a, #c0956a)"
       }}
     >
-      <User
-        strokeWidth={2.4}
-        style={{ width: size * 0.5, height: size * 0.5, color: "var(--on-accent)" }}
-      />
+      {initial ? (
+        <span className="font-extrabold text-white" style={{ fontSize: size * 0.42 }}>
+          {initial}
+        </span>
+      ) : (
+        <HugeiconsIcon
+          icon={UserIcon}
+          strokeWidth={2.4}
+          style={{ width: size * 0.5, height: size * 0.5, color: "#fff" }}
+        />
+      )}
     </span>
   );
 }

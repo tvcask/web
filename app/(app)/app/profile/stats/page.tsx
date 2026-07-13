@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { getStats } from "@/lib/data";
 import { StatsInsights } from "@/components/stats/stats-insights";
 
@@ -27,7 +28,7 @@ export default async function StatsPage() {
   return (
     <div className="mx-auto max-w-[900px] space-y-8">
       <Link href="/app/profile" className="inline-flex items-center gap-1 text-sm font-semibold text-white/60 hover:text-white">
-        <ChevronLeft className="size-4" /> Profile
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Profile
       </Link>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">

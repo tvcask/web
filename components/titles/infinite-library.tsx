@@ -1,9 +1,11 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading03Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2 } from "lucide-react";
 import { Poster } from "@/components/titles/poster";
 import { UpNextCard } from "@/components/titles/up-next-card";
 import { useCompleteFromLibrary, useLibrary } from "@/lib/query/library";
@@ -66,7 +68,7 @@ export function InfiniteLibrary({
       ) : type === "show" ? (
         <ShowList items={items} returnTo={returnTo} onComplete={removeLocally} />
       ) : (
-        <div className="grid gap-x-6 gap-y-2.5 md:grid-cols-2">
+        <div className="mx-auto grid max-w-4xl gap-x-6 gap-y-3 md:grid-cols-2">
           <AnimatePresence mode="popLayout" initial={false}>
             {items.map((item) => (
               <motion.div
@@ -84,7 +86,7 @@ export function InfiniteLibrary({
       {hasNextPage ? <div ref={sentinelRef} className="h-12" /> : null}
       {isFetchingNextPage ? (
         <div className="mt-4 flex justify-center">
-          <Loader2 className="size-5 animate-spin text-white/40" />
+          <HugeiconsIcon icon={Loading03Icon} className="size-5 animate-spin text-white/40" />
         </div>
       ) : null}
     </>
@@ -125,7 +127,7 @@ function ShowList({
   );
 
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-2xl">
       {upNext.length > 0 ? (
         <>
           <div className="mb-4 text-center">
@@ -169,7 +171,7 @@ function MovieRow({
       </Link>
       {item.status === "completed" ? (
         <span className="grid size-8 shrink-0 place-items-center rounded-full" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-          <Check className="size-4" />
+          <HugeiconsIcon icon={Tick02Icon} className="size-4" />
         </span>
       ) : (
         <button
@@ -178,7 +180,7 @@ function MovieRow({
           style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
           aria-label={`Mark ${item.title.title} watched`}
         >
-          <Check className="size-4" />
+          <HugeiconsIcon icon={Tick02Icon} className="size-4" />
         </button>
       )}
     </div>

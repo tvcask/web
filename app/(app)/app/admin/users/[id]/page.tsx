@@ -1,7 +1,8 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { getAdminUser, type AdminUserDetail } from "@/lib/admin";
 import { ApiError } from "@/lib/api";
 
@@ -29,7 +30,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
   return (
     <div className="mx-auto max-w-[900px] space-y-8">
       <div>
-        <Link href="/app/admin/users" className="inline-flex items-center gap-1 text-sm font-semibold text-white/60 hover:text-white"><ChevronLeft className="size-4" /> Users</Link>
+        <Link href="/app/admin/users" className="inline-flex items-center gap-1 text-sm font-semibold text-white/60 hover:text-white"><HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Users</Link>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="display text-2xl text-white">{user.name || "Unnamed user"}</h1>

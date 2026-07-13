@@ -1,9 +1,12 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { FileUploadIcon, Logout03Icon, Settings01Icon, UserIcon } from '@hugeicons/core-free-icons';
+
+import type { IconSvgElement } from '@hugeicons/react';
+
 import { useEffect, useRef, useState } from "react";
-import type { ComponentType } from "react";
 import Link from "next/link";
-import { FileUp, LogOut, Settings, User } from "lucide-react";
 import { endSession } from "@/app/actions";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -31,7 +34,7 @@ export function AccountMenu({ name, email, avatarUrl }: { name: string; email?: 
         onClick={() => setOpen((value) => !value)}
         className="cask-focus grid size-10 place-items-center rounded-full"
       >
-        <Avatar src={avatarUrl} size={34} />
+        <Avatar src={avatarUrl} name={name} size={34} />
       </button>
 
       {open ? (
@@ -41,13 +44,13 @@ export function AccountMenu({ name, email, avatarUrl }: { name: string; email?: 
             {email ? <p className="truncate text-[13px] text-white/40">{email}</p> : null}
           </div>
           <div className="py-1">
-            <MenuLink href="/app/profile" icon={User} label="Profile" onClick={() => setOpen(false)} />
-            <MenuLink href="/app/settings" icon={Settings} label="Settings" onClick={() => setOpen(false)} />
-            <MenuLink href="/app/import" icon={FileUp} label="Import from TV Time" onClick={() => setOpen(false)} />
+            <MenuLink href="/app/profile" icon={UserIcon} label="Profile" onClick={() => setOpen(false)} />
+            <MenuLink href="/app/settings" icon={Settings01Icon} label="Settings" onClick={() => setOpen(false)} />
+            <MenuLink href="/app/import" icon={FileUploadIcon} label="Import from TV Time" onClick={() => setOpen(false)} />
           </div>
           <form action={endSession} className="border-t border-white/[0.06] pt-1">
             <button className="flex w-full items-center gap-3 rounded-[8px] px-3 py-2.5 text-left text-sm font-semibold text-white/70 transition hover:bg-white/5 hover:text-white">
-              <LogOut className="size-4" /> Log out
+              <HugeiconsIcon icon={Logout03Icon} className="size-4" /> Log out
             </button>
           </form>
         </div>
@@ -58,12 +61,12 @@ export function AccountMenu({ name, email, avatarUrl }: { name: string; email?: 
 
 function MenuLink({
   href,
-  icon: Icon,
+  icon,
   label,
   onClick
 }: {
   href: string;
-  icon: ComponentType<{ className?: string }>;
+  icon: IconSvgElement;
   label: string;
   onClick: () => void;
 }) {
@@ -74,7 +77,7 @@ function MenuLink({
       className="flex items-center gap-3 rounded-[8px] px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/5 hover:text-white"
       role="menuitem"
     >
-      <Icon className="size-4 text-[color:var(--accent-text)]" /> {label}
+      <HugeiconsIcon icon={icon} className="size-4 text-[color:var(--accent-text)]" /> {label}
     </Link>
   );
 }

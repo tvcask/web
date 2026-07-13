@@ -1,7 +1,9 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
+
 import { useState, type InputHTMLAttributes } from "react";
-import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type PasswordInputProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -28,7 +30,7 @@ export function PasswordInput({ className, inputClassName, ...props }: PasswordI
         onClick={() => setVisible((value) => !value)}
         className="absolute right-2 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-white/45 transition hover:bg-white/[0.06] hover:text-white"
       >
-        {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+        {visible ? <HugeiconsIcon icon={ViewOffSlashIcon} className="size-4" /> : <HugeiconsIcon icon={ViewIcon} className="size-4" />}
       </button>
     </div>
   );

@@ -1,9 +1,11 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading03Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { AddToLibraryButton } from "@/components/titles/add-to-library-button";
 import { Poster } from "@/components/titles/poster";
 import { apiGet } from "@/lib/query/client";
@@ -80,7 +82,7 @@ export function InfiniteCatalog({
       {hasNextPage ? <div ref={sentinelRef} className="h-12" /> : null}
       {isFetchingNextPage ? (
         <div className="mt-4 flex justify-center">
-          <Loader2 className="size-5 animate-spin text-white/40" />
+          <HugeiconsIcon icon={Loading03Icon} className="size-5 animate-spin text-white/40" />
         </div>
       ) : null}
     </>

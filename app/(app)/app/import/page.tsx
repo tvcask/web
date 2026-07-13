@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowDown01Icon, ArrowLeft01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronDown, ChevronLeft } from "lucide-react";
 import { API_URL, getToken } from "@/lib/api";
 import { getImport, getLatestImport } from "@/lib/data";
 import { ImportProgress } from "@/components/import/import-progress";
@@ -18,7 +19,7 @@ export default async function ImportPage({
   return (
     <div className="mx-auto max-w-[640px]">
       <Link href="/app/settings" className="mb-4 inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
-        <ChevronLeft className="size-4" /> Settings
+        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Settings
       </Link>
       <h1 className="display mb-6 text-2xl text-white">Import from TV Time</h1>
 
@@ -35,7 +36,7 @@ export default async function ImportPage({
           <details open className="group mt-5 rounded-[12px] border border-white/[0.08] open:bg-white/[0.02]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
               Official TV Time export
-              <ChevronDown className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
+              <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
             </summary>
             <ol className="space-y-3 px-4 pb-4 text-sm text-white/60">
               <li>
@@ -65,7 +66,7 @@ export default async function ImportPage({
           <details className="group mt-3 rounded-[12px] border border-white/[0.08] open:bg-white/[0.02]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
               Already exported with TV Time Out?
-              <ChevronDown className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
+              <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
             </summary>
             <p className="px-4 pb-4 text-sm leading-6 text-white/60">
               On a computer, use the{" "}

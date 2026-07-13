@@ -1,7 +1,9 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading03Icon } from '@hugeicons/core-free-icons';
+
 import { useFormStatus } from "react-dom";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Server-action submit button that shows a pending state while the action runs.
@@ -22,7 +24,7 @@ export function SubmitButton({
       className={cn("inline-flex items-center justify-center gap-2 transition active:scale-[0.98] disabled:opacity-60", className)}
       {...props}
     >
-      {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+      {pending ? <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" /> : null}
       {pending && pendingLabel ? pendingLabel : children}
     </button>
   );

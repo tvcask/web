@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ChevronRight, Heart, Plus, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -55,12 +56,12 @@ export default async function ProfilePage() {
             aria-label="Settings"
             className="grid size-9 place-items-center rounded-full bg-black/40 text-white"
           >
-            <Settings className="size-[18px]" />
+            <HugeiconsIcon icon={Settings01Icon} className="size-[18px]" />
           </Link>
         </div>
         <div className="relative grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-4 px-5 pb-5 pt-20 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6 sm:pt-24">
           <div className="relative shrink-0">
-            <Avatar src={user?.avatarUrl} size={78} className="ring-[3px] ring-white/90" />
+            <Avatar src={user?.avatarUrl} name={user?.name} size={78} className="ring-[3px] ring-white/90" />
             <Link
               href="/app/profile/badges"
               aria-label={`Level ${badges.level}, see your progress`}
@@ -107,7 +108,7 @@ export default async function ProfilePage() {
               </div>
             ))}
           </div>
-          <ChevronRight className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-white/60" />
+          <HugeiconsIcon icon={ArrowRight01Icon} className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-white/60" />
         </div>
       </Link>
 
@@ -154,7 +155,7 @@ function ListsSection({ lists, total }: { lists: UserListDetail[]; total: number
           className="ml-auto grid size-8 place-items-center rounded-full border border-white/12 text-white/70 transition hover:bg-white/5 hover:text-white"
           aria-label="Create list"
         >
-          <Plus className="size-4" />
+          <HugeiconsIcon icon={PlusSignIcon} className="size-4" />
         </Link>
       </div>
 
@@ -167,7 +168,7 @@ function ListsSection({ lists, total }: { lists: UserListDetail[]; total: number
                   <p className="truncate text-sm font-bold text-white">{list.name}</p>
                   <p className="mt-1 text-xs font-semibold text-white/40">{(list.itemCount ?? list.items.length).toLocaleString()} titles</p>
                 </div>
-                <ChevronRight className="mt-0.5 size-5 shrink-0 text-white/30" />
+                <HugeiconsIcon icon={ArrowRight01Icon} className="mt-0.5 size-5 shrink-0 text-white/30" />
               </div>
               {list.items.length > 0 ? (
                 <div className="mt-3 flex -space-x-3">
@@ -209,11 +210,11 @@ function Rail({
   return (
     <section>
       <div className="mb-3 flex items-center gap-2">
-        {heart ? <Heart className="size-4 fill-current" style={{ color: "var(--accent-text)" }} aria-hidden /> : null}
+        {heart ? <HugeiconsIcon icon={FavouriteIcon} className="size-4 fill-current" style={{ color: "var(--accent-text)" }} aria-hidden /> : null}
         <h2 className="display text-lg text-white">{title}</h2>
         {href ? (
           <Link href={href} className="ml-auto text-white/40 transition hover:text-white" aria-label={`All ${title}`}>
-            <ChevronRight className="size-5" />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="size-5" />
           </Link>
         ) : null}
       </div>

@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight02Icon, CircleIcon, Tick02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ArrowRight, Check, Circle } from "lucide-react";
 import { MarketingHeader } from "@/components/marketing/header";
 import { HeroProductPreview, MobileComingSoonBanner, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
                 <Link href="/signup">
-                  Get started <ArrowRight className="size-4" />
+                  Get started <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="secondary" className="h-12 px-6 text-[15px]">
@@ -83,14 +84,14 @@ export default function HomePage() {
             <div className="surface rounded-[16px] p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2">
                 <span className="grid size-7 place-items-center rounded-full bg-emerald-500/12 text-emerald-300">
-                  <Check className="size-4" />
+                  <HugeiconsIcon icon={Tick02Icon} className="size-4" />
                 </span>
                 <h3 className="display text-lg text-white">Works today</h3>
               </div>
               <div className="space-y-3">
                 {worksToday.map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
-                    <Check className="size-4 shrink-0 text-emerald-300" />
+                    <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0 text-emerald-300" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -100,14 +101,14 @@ export default function HomePage() {
             <div className="surface rounded-[16px] p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2">
                 <span className="grid size-7 place-items-center rounded-full" style={{ background: "rgba(211,158,94,0.12)", color: "var(--accent-text)" }}>
-                  <Circle className="size-3.5" />
+                  <HugeiconsIcon icon={CircleIcon} className="size-3.5" />
                 </span>
                 <h3 className="display text-lg text-white">Coming next</h3>
               </div>
               <div className="space-y-3">
                 {comingNext.map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/60">
-                    <Circle className="size-3.5 shrink-0" style={{ color: "var(--accent-text)", opacity: 0.5 }} />
+                    <HugeiconsIcon icon={CircleIcon} className="size-3.5 shrink-0" style={{ color: "var(--accent-text)", opacity: 0.5 }} />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -131,7 +132,7 @@ export default function HomePage() {
               </p>
             </div>
             <span className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white">
-              Learn more <ArrowRight className="ml-2 size-4" />
+              Learn more <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
             </span>
           </Link>
         </section>

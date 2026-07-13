@@ -1,11 +1,13 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, ChevronRight } from "lucide-react";
 import { celebrate } from "@/lib/celebrate";
 import type { UserTitleWithTitle } from "@/lib/services/types";
 
@@ -81,7 +83,7 @@ export function UpNextCard({
       <div className="min-w-0 flex-1 py-3.5">
         <Link href={href} className="group flex max-w-full items-center gap-1">
           <span className="truncate text-[16.5px] font-extrabold text-white">{item.title.title}</span>
-          <ChevronRight className="size-4 shrink-0 text-white/35 transition group-hover:text-white/70" />
+          <HugeiconsIcon icon={ArrowRight01Icon} className="size-4 shrink-0 text-white/35 transition group-hover:text-white/70" />
         </Link>
         <div className="mt-1.5 flex items-baseline gap-2">
           <span className="flex items-baseline text-[15px] font-bold text-white/65">
@@ -111,7 +113,7 @@ export function UpNextCard({
         style={{ boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.25)" }}
         aria-label={`Mark S${pad(season)}E${pad(next)} of ${item.title.title} watched`}
       >
-        <Check className="size-5" />
+        <HugeiconsIcon icon={Tick02Icon} className="size-5" />
         <AnimatePresence>
           {marking ? (
             <motion.span
@@ -122,7 +124,7 @@ export function UpNextCard({
               exit={{ scale: 0 }}
               transition={{ type: "spring", stiffness: 520, damping: 26 }}
             >
-              <Check className="size-5" />
+              <HugeiconsIcon icon={Tick02Icon} className="size-5" />
             </motion.span>
           ) : null}
         </AnimatePresence>

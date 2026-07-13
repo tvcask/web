@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowLeft02Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { ArrowLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InfiniteLibrary } from "@/components/titles/infinite-library";
 import { getLibraryPage } from "@/lib/data";
@@ -27,7 +28,7 @@ export default async function LibraryPage({
           className="grid size-9 shrink-0 place-items-center rounded-full border border-white/12 text-white/70 transition hover:bg-white/5 hover:text-white"
           aria-label="Back to profile"
         >
-          <ArrowLeft className="size-4" />
+          <HugeiconsIcon icon={ArrowLeft02Icon} className="size-4" />
         </Link>
         <h1 className="display text-xl capitalize text-white sm:text-2xl">{heading}</h1>
         {total > 0 ? (
@@ -45,7 +46,7 @@ export default async function LibraryPage({
           </p>
           <Button asChild className="mt-5">
             <Link href="/app/explore">
-              <Search className="size-4" /> Explore
+              <HugeiconsIcon icon={Search01Icon} className="size-4" /> Explore
             </Link>
           </Button>
         </div>

@@ -1,8 +1,10 @@
 "use client";
 
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon } from '@hugeicons/core-free-icons';
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 
 // Detail modal for the intercepting `@modal/(.)titles/[id]` route. Bottom sheet
@@ -48,7 +50,7 @@ export function TitleDrawer({ children }: { children: React.ReactNode }) {
           className="absolute left-4 top-4 z-30 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:left-5 sm:top-5"
           aria-label="Close"
         >
-          <X className="size-4" />
+          <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
         </DrawerClose>
 
         <div

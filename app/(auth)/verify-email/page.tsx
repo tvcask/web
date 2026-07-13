@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from '@hugeicons/react';
+import { CancelCircleIcon, CheckmarkCircle02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
-import { CheckCircle2, XCircle } from "lucide-react";
 import { api } from "@/lib/api";
 import { AuthCard } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
@@ -20,9 +21,9 @@ export default async function VerifyEmailPage({ searchParams }: { searchParams: 
     <AuthCard title={verified ? "Email verified" : "Verification failed"}>
       <div className="flex flex-col items-center text-center">
         {verified ? (
-          <CheckCircle2 className="size-12" style={{ color: "var(--accent-text)" }} />
+          <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-12" style={{ color: "var(--accent-text)" }} />
         ) : (
-          <XCircle className="size-12 text-[#ef6d5a]" />
+          <HugeiconsIcon icon={CancelCircleIcon} className="size-12 text-[#ef6d5a]" />
         )}
         <p className="mt-4 text-sm leading-6 text-white/55">
           {verified
