@@ -13,12 +13,12 @@ import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
 
-const title = "Import your TV Time history into tvcask";
+const title = "Import your TV Time watch history";
 const description =
-  "Move your TV Time export to tvcask with shows, movies, watched episodes, favorites, and custom lists preserved.";
+  "Import your official TV Time GDPR export into tvcask and keep your shows, movies, watched episodes, favorites, and custom lists.";
 
 export const metadata: Metadata = {
-  title: "Import TV Time Data | tvcask",
+  title: "Import TV Time Data and Watch History | tvcask",
   description,
   alternates: {
     canonical: "/import-tv-time",
@@ -48,8 +48,8 @@ export const metadata: Metadata = {
 const features = [
   {
     icon: FileUp,
-    title: "TV Time ZIP import",
-    copy: "Upload the export file you downloaded from TV Time.",
+    title: "Official TV Time import",
+    copy: "Upload the GDPR ZIP downloaded from TV Time. TV Time Out ZIP files are supported too.",
   },
   {
     icon: Check,
@@ -72,7 +72,7 @@ const steps = [
   {
     n: "01",
     title: "Export from TV Time",
-    copy: "Download your TV Time data export and keep the ZIP intact.",
+    copy: "Request your data from the official TV Time GDPR page and keep the downloaded ZIP intact.",
   },
   {
     n: "02",
@@ -102,7 +102,7 @@ const faqs = [
   },
   {
     q: "What file do I upload?",
-    a: "Upload the ZIP export you downloaded from TV Time. tvcask reads the series, movies, and lists files inside it.",
+    a: "Upload the official gdpr-data.zip downloaded from TV Time. tvcask also supports the JSON ZIP created by the TV Time Out browser extension.",
   },
   {
     q: "Is tvcask a TV Time alternative?",
@@ -110,7 +110,7 @@ const faqs = [
   },
   {
     q: "Is my TV Time data private?",
-    a: "Imports are attached to your tvcask account. Your library and lists are not public unless you choose public list settings later.",
+    a: "tvcask reads only the watch history files it needs. Account credentials, tokens, IP addresses, and device files in the official archive are ignored. The ZIP is not stored after it is parsed.",
   },
 ];
 
@@ -141,24 +141,27 @@ export default function ImportTvTimePage() {
               {title}
             </h1>
             <p className="max-w-xl text-lg leading-8 text-white/58">
-              Move your watch history without starting over. tvcask imports
-              shows, movies, watched episodes, favorites, and custom lists from
-              your TV Time export.
+              Download your official TV Time export, bring it to tvcask, and
+              keep your shows, movies, watched episodes, favorites, and custom
+              lists.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
-                <Link href="/signup?returnTo=%2Fapp%2Fimport">
-                  Create account <ArrowRight className="size-4" />
-                </Link>
+                <a href="https://gdpr.tvtime.com/gdpr/self-service" target="_blank" rel="noreferrer">
+                  Get TV Time export <ArrowRight className="size-4" />
+                </a>
               </Button>
               <Button
                 asChild
                 variant="secondary"
                 className="h-12 px-6 text-[15px]"
               >
-                <Link href="/login?returnTo=%2Fapp%2Fimport">Import now</Link>
+                <Link href="/signup?returnTo=%2Fapp%2Fimport">Import into tvcask</Link>
               </Button>
             </div>
+            <p className="text-sm font-semibold text-white/48">
+              TV Time shuts down on July 15, 2026. Save a local copy before then.
+            </p>
             <div className="flex flex-wrap gap-2 pt-2">
               {["Shows", "Movies", "Episodes", "Favorites", "Custom lists"].map(
                 (item) => (

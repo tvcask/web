@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection, LEGAL_CONTACT } from "@/components/marketing/legal";
 
-const UPDATED = "July 10, 2026";
+const UPDATED = "July 13, 2026";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | tvcask",
@@ -48,7 +48,9 @@ export default function PrivacyPage() {
             </>,
             <>
               <b className="text-white/80">Imported data</b> — when you import a TV Time export, we read the shows,
-              movies, watched episodes, favorites, and lists in that file to recreate your history.
+              movies, watched episodes, favorites, and lists needed to recreate your history. Official TV Time GDPR
+              archives can contain unrelated account, login, device, and network files. tvcask does not open or use
+              those files.
             </>,
             <>
               <b className="text-white/80">Basic technical logs</b> — standard server logs (such as request times and
@@ -126,6 +128,11 @@ export default function PrivacyPage() {
         <p>
           We keep your data for as long as your account is active. When you delete your account, your personal data and
           library are removed from our systems. Routine backups are rotated on a short schedule.
+        </p>
+        <p>
+          Uploaded TV Time ZIP files are parsed in memory and are not stored after the import request. The shows,
+          movies, watched episodes, favorites, and lists created from the import remain in your tvcask account until
+          you remove them or delete your account.
         </p>
       </LegalSection>
 

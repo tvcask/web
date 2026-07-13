@@ -78,9 +78,9 @@ export function TvTimeUpload({ apiBase, token }: { apiBase: string; token: strin
       <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[12px] border border-dashed border-white/20 px-4 py-8 text-center transition hover:border-white/40">
         <FileUp className="size-6 text-white/50" />
         <span className="max-w-full truncate text-sm font-semibold text-white">
-          {fileName ?? "Choose your TV Time export"}
+          {fileName ?? "Choose your TV Time export ZIP"}
         </span>
-        <span className="text-xs text-white/40">.zip file</span>
+        <span className="text-xs text-white/40">Official GDPR or TV Time Out .zip</span>
         <span className="mt-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white">
           {fileName ? "Change file" : "Browse files"}
         </span>
@@ -135,5 +135,5 @@ function apiErrorMessage(responseText: string, status: number): string {
   }
   if (status === 413) return "That file is too large to upload. The export must be under 40MB.";
   if (status === 401) return "Your session expired. Refresh the page and try again.";
-  return "Upload failed. Make sure it's the .zip you downloaded from TV Time.";
+  return "Upload failed. Choose the official TV Time GDPR .zip or the TV Time Out .zip.";
 }
