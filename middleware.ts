@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  return NextResponse.redirect(new URL("/app", request.url));
+  return NextResponse.redirect(new URL("/app/shows", request.url));
 }
 
 export const config = {
