@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
 import { getImportStatus } from "@/app/actions";
-import { celebrate } from "@/lib/celebrate";
 import { toast } from "@/lib/toast";
 import type { ImportRecord } from "@/lib/data";
 import { forgetActiveImport, rememberActiveImport } from "@/components/import/active-import";
@@ -12,6 +11,7 @@ import { forgetActiveImport, rememberActiveImport } from "@/components/import/ac
 export function ImportProgress({ initial }: { initial: ImportRecord }) {
   const [rec, setRec] = useState(initial);
   const announced = useRef(false);
+  const pollingStartedAt = useRef(Date.now());
 
   useEffect(() => {
     if (rec.status === "processing") {
@@ -25,14 +25,27 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
     if (rec.status !== "processing") {
       return;
     }
-    const timer = setInterval(async () => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
       try {
-        setRec(await getImportStatus(rec.id));
+        const next = await getImportStatus(rec.id);
+        if (cancelled) return;
+        setRec(next);
+        if (next.status !== "processing") return;
       } catch {
         // keep the last known state; next tick retries
       }
-    }, 3000);
-    return () => clearInterval(timer);
+      if (cancelled) return;
+      const elapsed = Date.now() - pollingStartedAt.current;
+      const delay = document.visibilityState === "visible" && elapsed < 60_000 ? 5000 : 15_000;
+      timer = setTimeout(poll, delay);
+    };
+    timer = setTimeout(poll, 5000);
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
   }, [rec.status, rec.id]);
 
   // Announce the outcome once, when the background matching settles.
@@ -40,7 +53,7 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
     if (announced.current) return;
     if (rec.status === "completed") {
       announced.current = true;
-      celebrate(`${rec.matchedTitles} titles and ${rec.importedLists} lists from TV Time`);
+      toast(`TV Time import complete. ${rec.matchedTitles} titles restored.`);
     } else if (rec.status === "failed") {
       announced.current = true;
       toast(rec.errorMessage ?? "Import failed. Please try again.");
