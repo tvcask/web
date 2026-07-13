@@ -151,7 +151,7 @@ export default async function SettingsPage({
           <SettingsLink href="/privacy" label="Privacy Policy" border />
           <SettingsLink href="/guidelines" label="Community Guidelines" border />
           <SettingsLink href="/about" label="About tvcask" border />
-          <SettingsLink href={site.github} label="GitHub" border external />
+          <SettingsLink href="/support" label="Support" border />
         </div>
       </Section>
 

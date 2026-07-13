@@ -33,9 +33,9 @@ export function MarketingFooter() {
             <Link href="/about" className="block font-bold text-white/55 transition hover:text-white">
               About tvcask
             </Link>
-            <a href={site.github} target="_blank" rel="noreferrer" className="block font-bold text-white/55 transition hover:text-white">
-              GitHub
-            </a>
+            <Link href="/support" className="block font-bold text-white/55 transition hover:text-white">
+              Support
+            </Link>
             <a href={site.instagram} target="_blank" rel="noreferrer" className="block font-bold text-white/55 transition hover:text-white">
               Instagram
             </a>
