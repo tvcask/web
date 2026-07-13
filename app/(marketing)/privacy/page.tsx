@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection, LEGAL_CONTACT } from "@/components/marketing/legal";
 
-const UPDATED = "July 10, 2026";
+const UPDATED = "July 13, 2026";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | tvcask",
@@ -69,9 +69,20 @@ export default function PrivacyPage() {
             "To store and display your tracked shows, movies, episodes, lists, and stats.",
             "To match your titles against catalog data and show artwork and episode details.",
             "To send account emails you request, such as email verification and password resets.",
-            "To keep the service running, debug problems, and prevent abuse."
+            "To keep the service running, debug problems, prevent abuse, and respond to support requests."
           ]}
         />
+      </LegalSection>
+
+      <LegalSection title="Administrative access">
+        <p>
+          Access to account details is restricted to authorized administrators and used only to operate and secure the
+          service, investigate import problems, or respond to support requests. Administrative access is logged.
+        </p>
+        <p>
+          Our administration tools show account details, library totals, and import summaries. They do not expose
+          password hashes, authentication tokens, uploaded files, or individual watch history.
+        </p>
       </LegalSection>
 
       <LegalSection title="Third parties we rely on">
