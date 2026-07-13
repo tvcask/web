@@ -7,5 +7,6 @@ export const site = {
   description: "Keep your complete watch history in one place and pick up exactly where you left off.",
   logo: "/logo-horizontal.png",
   icon: "/logo-vertical.png",
-  github: "https://github.com/tvcask"
+  github: "https://github.com/tvcask",
+  instagram: "https://www.instagram.com/tvcask/"
 } as const;
