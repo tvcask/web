@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
+import { TOKEN_COOKIE } from "@/lib/auth/constants";
 
 // Server-side client for the tvcask Go API. All app data flows through here.
 export const API_URL = process.env.API_URL ?? "http://localhost:8080";
-export const TOKEN_COOKIE = "tvcask_token";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {

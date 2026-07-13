@@ -3,7 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { api, ApiError, TOKEN_COOKIE } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import { TOKEN_COOKIE } from "@/lib/auth/constants";
 import type { ImportRecord } from "@/lib/data";
 import { isWatchRegion } from "@/lib/regions";
 
