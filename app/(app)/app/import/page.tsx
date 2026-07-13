@@ -26,49 +26,66 @@ export default async function ImportPage({
       ) : (
         <div className="surface rounded-[16px] p-7">
           <p className="text-white/60">
-            TV Time has no built-in export, so grab your history with the free{" "}
-            <b className="text-white">TV Time Out</b> browser extension and upload the{" "}
-            <b className="text-white">.zip</b> here. We&apos;ll match your shows and movies against TMDB and pull in every
-            watched episode.
+            Upload the official <b className="text-white">TV Time GDPR .zip</b> and
+            we&apos;ll bring over your shows, movies, watched episodes, favorites,
+            and custom lists. ZIP files created by TV Time Out work too.
           </p>
 
-          <details className="group mt-5 rounded-[12px] border border-white/[0.08] open:bg-white/[0.02]">
+          <details open className="group mt-5 rounded-[12px] border border-white/[0.08] open:bg-white/[0.02]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
-              How do I export my TV Time data?
+              Official TV Time export
               <ChevronDown className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
             </summary>
             <ol className="space-y-3 px-4 pb-4 text-sm text-white/60">
               <li>
-                <span className="font-semibold text-white/80">1.</span> Install{" "}
+                <span className="font-semibold text-white/80">1.</span> Open the{" "}
                 <a
-                  href="https://chromewebstore.google.com/detail/tv-time-out-by-refract/pmejpdpjbkjklfceogdkolmgclldogbi"
+                  href="https://gdpr.tvtime.com/gdpr/self-service"
                   target="_blank"
                   rel="noreferrer"
                   className="font-semibold text-[color:var(--accent-text)] underline underline-offset-2"
                 >
-                  TV Time Out by Refract
+                  TV Time GDPR export page
                 </a>{" "}
-                from the Chrome Web Store (works in Chrome and Edge).
+                and sign in to the account that holds your history.
               </li>
               <li>
-                <span className="font-semibold text-white/80">2.</span> Open{" "}
-                <b className="text-white/80">app.tvtime.com</b> and log in.
+                <span className="font-semibold text-white/80">2.</span> Request
+                your data, then download <b className="text-white/80">gdpr-data.zip</b>{" "}
+                when it is ready.
               </li>
               <li>
-                <span className="font-semibold text-white/80">3.</span> Click the extension icon, pick the{" "}
-                <b className="text-white/80">JSON</b> format, and hit <b className="text-white/80">Export my data</b>.
-              </li>
-              <li>
-                <span className="font-semibold text-white/80">4.</span> It saves a <b className="text-white/80">.zip</b> to
-                your downloads. Upload that file below.
-              </li>
-              <li className="border-t border-white/[0.06] pt-3 text-xs text-white/40">
-                TV Time shuts down on July 15, 2026 and deletes all data, so export before then.
+                <span className="font-semibold text-white/80">3.</span> Keep the
+                ZIP intact and upload it below.
               </li>
             </ol>
           </details>
 
-          <TvTimeUpload apiBase={API_URL} token={token ?? ""} />
+          <details className="group mt-3 rounded-[12px] border border-white/[0.08] open:bg-white/[0.02]">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
+              Already exported with TV Time Out?
+              <ChevronDown className="size-4 shrink-0 text-white/50 transition group-open:rotate-180" />
+            </summary>
+            <p className="px-4 pb-4 text-sm leading-6 text-white/60">
+              On a computer, use the{" "}
+              <a
+                href="https://chromewebstore.google.com/detail/tv-time-out-by-refract/pmejpdpjbkjklfceogdkolmgclldogbi"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-[color:var(--accent-text)] underline underline-offset-2"
+              >
+                TV Time Out Chrome extension
+              </a>
+              {" "}to export your history, then upload that ZIP here.
+            </p>
+          </details>
+
+          <p className="mt-4 text-xs leading-5 text-white/40">
+            TV Time shuts down on July 15, 2026. Download and keep a local copy
+            of your export before then.
+          </p>
+
+          <TvTimeUpload apiBase={API_URL} token={token ?? ""} requestedId={id} />
         </div>
       )}
     </div>

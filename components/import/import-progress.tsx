@@ -7,10 +7,19 @@ import { getImportStatus } from "@/app/actions";
 import { celebrate } from "@/lib/celebrate";
 import { toast } from "@/lib/toast";
 import type { ImportRecord } from "@/lib/data";
+import { forgetActiveImport, rememberActiveImport } from "@/components/import/active-import";
 
 export function ImportProgress({ initial }: { initial: ImportRecord }) {
   const [rec, setRec] = useState(initial);
   const announced = useRef(false);
+
+  useEffect(() => {
+    if (rec.status === "processing") {
+      rememberActiveImport(rec.id);
+    } else {
+      forgetActiveImport(rec.id);
+    }
+  }, [rec.id, rec.status]);
 
   useEffect(() => {
     if (rec.status !== "processing") {
@@ -100,7 +109,7 @@ export function ImportProgress({ initial }: { initial: ImportRecord }) {
 
       {!done ? (
         <p className="mt-5 text-sm text-white/50">
-          Matching {rec.totalTitles} titles against TMDB. This runs in the background. You can keep using the app.
+          Matching {rec.totalTitles} titles against TMDB. You can leave this page and return here to check progress.
         </p>
       ) : (
         <div className="mt-6 flex flex-wrap gap-3">

@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileUp } from "lucide-react";
+import { FileUp, Loader2 } from "lucide-react";
 import type { ImportRecord } from "@/lib/data";
+import { forgetActiveImport, readActiveImport, rememberActiveImport } from "@/components/import/active-import";
 
 // 40MB — matches the API's maxUploadBytes. We upload straight to the Go API so the
 // zip never hits Vercel (Server Actions/Route Handlers cap request bodies at 4.5MB).
@@ -11,13 +12,26 @@ const MAX_BYTES = 40 * 1024 * 1024;
 
 type Phase = "idle" | "uploading" | "error";
 
-export function TvTimeUpload({ apiBase, token }: { apiBase: string; token: string }) {
+export function TvTimeUpload({ apiBase, token, requestedId }: { apiBase: string; token: string; requestedId?: string }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(true);
+
+  useEffect(() => {
+    const activeId = readActiveImport();
+    if (activeId && activeId !== requestedId) {
+      router.replace(`/app/import?id=${encodeURIComponent(activeId)}`);
+      return;
+    }
+    if (activeId && activeId === requestedId) {
+      forgetActiveImport(activeId);
+    }
+    setRestoring(false);
+  }, [requestedId, router]);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,6 +63,7 @@ export function TvTimeUpload({ apiBase, token }: { apiBase: string; token: strin
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         const rec = JSON.parse(xhr.responseText) as ImportRecord;
+        rememberActiveImport(rec.id);
         router.push(`/app/import?id=${rec.id}`);
         return;
       }
@@ -73,14 +88,22 @@ export function TvTimeUpload({ apiBase, token }: { apiBase: string; token: strin
 
   const uploading = phase === "uploading";
 
+  if (restoring) {
+    return (
+      <div className="mt-6 flex items-center gap-2 text-sm text-white/50">
+        <Loader2 className="size-4 animate-spin" /> Restoring your import…
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="mt-6 space-y-4">
       <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[12px] border border-dashed border-white/20 px-4 py-8 text-center transition hover:border-white/40">
         <FileUp className="size-6 text-white/50" />
         <span className="max-w-full truncate text-sm font-semibold text-white">
-          {fileName ?? "Choose your TV Time export"}
+          {fileName ?? "Choose your TV Time export ZIP"}
         </span>
-        <span className="text-xs text-white/40">.zip file</span>
+        <span className="text-xs text-white/40">Official GDPR or TV Time Out .zip</span>
         <span className="mt-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white">
           {fileName ? "Change file" : "Browse files"}
         </span>
@@ -135,5 +158,5 @@ function apiErrorMessage(responseText: string, status: number): string {
   }
   if (status === 413) return "That file is too large to upload. The export must be under 40MB.";
   if (status === 401) return "Your session expired. Refresh the page and try again.";
-  return "Upload failed. Make sure it's the .zip you downloaded from TV Time.";
+  return "Upload failed. Choose the official TV Time GDPR .zip or the TV Time Out .zip.";
 }
