@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.5.0](https://github.com/tvcask/web/compare/tvcask-web-v0.4.0...tvcask-web-v0.5.0) (2026-07-14)
+
+
+### Features
+
+* friendly UI revamp to match the app ([9d8df0d](https://github.com/tvcask/web/commit/9d8df0d06570cfdcda3e291b450c533929853b69))
+* improve returning user navigation ([6f88b2a](https://github.com/tvcask/web/commit/6f88b2a701e9be7dee89f2342ef204827d4a020f))
+* **ui:** discrete avatar placeholder and single-column movie list ([a945933](https://github.com/tvcask/web/commit/a9459334bfe232a99bdf866e80a215e28f52ea05))
+* **ui:** friendly revamp to match the app's card style and Gabarito type ([1ece8f3](https://github.com/tvcask/web/commit/1ece8f37065f50ed59b87f008cafad900bea175a))
+* **ui:** hugeicons nav, watch-next sections, and upcoming layout fixes ([7d38f92](https://github.com/tvcask/web/commit/7d38f9241395445a1ac7404df95ba2bed5e095cf))
+* **ui:** pin the library filter bar under the top nav ([c973139](https://github.com/tvcask/web/commit/c973139a36d75c9abf9fd7fe338efaea774fd357))
+
+
+### Bug Fixes
+
+* **calendar:** group upcoming episodes by the viewer's local date ([4ef42dd](https://github.com/tvcask/web/commit/4ef42ddcc7a5e0d5fe88504a66259197b0c82a1c))
+* **nav:** preserve active tab in title details ([db3e690](https://github.com/tvcask/web/commit/db3e690a3fad26ea351f3f4d6783e08c63d2ab7d))
+* **nav:** preserve active tab in title details ([e869ec9](https://github.com/tvcask/web/commit/e869ec9632bfc11fbe184df833a6b18e454794fd))
+* remove extra home redirect ([3c0e5b2](https://github.com/tvcask/web/commit/3c0e5b276c503859c1586b32c49fd504bb9d8a5f))
+* **ui:** crisper edge on the sticky filter bar ([a95be74](https://github.com/tvcask/web/commit/a95be741e7fbee97a4478736883629ebdab1898b))
+* **ui:** hide redundant page titles behind the nav pills ([aa04f61](https://github.com/tvcask/web/commit/aa04f61e7891b1fdc22a90f499acdc952211e4c6))
+* upcoming calendar groups by the viewer's local date ([81336be](https://github.com/tvcask/web/commit/81336be1225a7e6937a031cafb09a122967de9a3))
+
 ## [0.4.0](https://github.com/tvcask/web/compare/tvcask-web-v0.3.0...tvcask-web-v0.4.0) (2026-07-13)
 
 
