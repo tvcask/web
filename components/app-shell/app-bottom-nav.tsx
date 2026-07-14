@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { isNavActive, navItems } from "@/components/app-shell/nav-items";
+import { isNavActive, navContextPath, navItems } from "@/components/app-shell/nav-items";
 import { cn } from "@/lib/utils";
 
 export function AppBottomNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const navPathname = navContextPath(pathname, searchParams.get("returnTo"));
 
   return (
     <nav
@@ -17,7 +19,7 @@ export function AppBottomNav() {
     >
       <div className="mx-auto grid max-w-md grid-cols-4">
         {navItems.map((item) => {
-          const active = isNavActive(pathname, item);
+          const active = isNavActive(navPathname, item);
           return (
             <Link
               key={item.href}
