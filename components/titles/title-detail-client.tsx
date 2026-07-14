@@ -12,14 +12,15 @@ import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
 import type { TitleDetail } from "@/lib/data";
+import { formatAirDate, localDate } from "@/lib/dates";
 import type { Episode } from "@/lib/services/types";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
 
-// An episode counts as aired if it has no date or its date is today or earlier
-// (UTC, matching the API). Unaired episodes can't be marked watched.
-const hasAired = (e: Episode) => !e.airDate || e.airDate <= new Date().toISOString().slice(0, 10);
+// An episode counts as aired if it has no date or its date is today or
+// earlier in the viewer's timezone. Unaired episodes can't be marked watched.
+const hasAired = (e: Episode) => !e.airDate || e.airDate <= localDate();
 
 // Roll back an optimistic change and tell the user it didn't stick.
 function onSaveError(revert: () => void) {
@@ -403,7 +404,7 @@ export function TitleDetailClient({
                                 <p className="truncate text-sm font-semibold text-white">
                                   E{pad(episode.episodeNumber)} · {episode.name ?? "TBA"}
                                 </p>
-                                <p className="mt-0.5 text-xs text-white/45">{future ? "Airs " : ""}{episode.airDate ?? ""}</p>
+                                <p className="mt-0.5 text-xs text-white/45">{future ? "Airs " : ""}{episode.airDate ? formatAirDate(episode.airDate) : ""}</p>
                               </div>
                               <button
                                 onClick={() => toggleEpisode(episode)}
