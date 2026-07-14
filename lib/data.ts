@@ -9,7 +9,13 @@ export async function getCollection(kind: string, page = 1): Promise<CollectionP
   return { title: res.title ?? "", items: res.items ?? [], page: res.page ?? page, hasMore: Boolean(res.hasMore) };
 }
 export type CalendarEpisode = Episode & { title: Title | null };
-export type Calendar = { today: CalendarEpisode[]; thisWeek: CalendarEpisode[]; later: CalendarEpisode[] };
+export type Calendar = {
+  today: CalendarEpisode[];
+  thisWeek: CalendarEpisode[];
+  later: CalendarEpisode[];
+  // Flat air-date-sorted list the browser groups locally. Absent on older APIs.
+  episodes?: CalendarEpisode[];
+};
 
 export type Stats = {
   episodesWatched: number;
