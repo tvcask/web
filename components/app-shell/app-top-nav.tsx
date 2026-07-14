@@ -4,15 +4,17 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { AccountMenu } from "@/components/app-shell/account-menu";
-import { isNavActive, navItems } from "@/components/app-shell/nav-items";
+import { isNavActive, navContextPath, navItems } from "@/components/app-shell/nav-items";
 import { Logo } from "@/components/marketing/logo";
 import { SearchBox } from "@/components/titles/search-box";
 import { cn } from "@/lib/utils";
 
 export function AppTopNav({ user }: { user: { name?: string | null; email?: string | null; avatarUrl?: string | null } }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const navPathname = navContextPath(pathname, searchParams.get("returnTo"));
   const displayName = user.name || user.email?.split("@")[0] || "you";
 
   return (
@@ -24,7 +26,7 @@ export function AppTopNav({ user }: { user: { name?: string | null; email?: stri
 
         <nav className="hidden items-center gap-1.5 lg:flex">
           {navItems.map((item) => {
-            const active = isNavActive(pathname, item);
+            const active = isNavActive(navPathname, item);
             return (
               <Link
                 key={item.href}

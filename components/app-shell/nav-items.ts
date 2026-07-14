@@ -16,6 +16,14 @@ export const navItems: NavItem[] = [
   { href: "/app/profile", label: "Profile", icon: UserIcon, match: ["/app/settings", "/app/import"] }
 ];
 
+export function navContextPath(pathname: string, returnTo?: string | null) {
+  if (!pathname.startsWith("/app/titles/") || !returnTo?.startsWith("/app/")) {
+    return pathname;
+  }
+
+  return returnTo.split(/[?#]/, 1)[0];
+}
+
 export function isNavActive(pathname: string, item: NavItem) {
   if (pathname === item.href || pathname.startsWith(`${item.href}/`)) {
     return true;
