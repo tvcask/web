@@ -35,6 +35,7 @@ export type Settings = {
   titlesInLanguage: boolean;
   privateProfile: boolean;
   newEpisodeAlerts: boolean;
+  badgeAlerts: boolean;
   premiereReminders: boolean;
   weeklyDigest: boolean;
   watchRegion: string;
