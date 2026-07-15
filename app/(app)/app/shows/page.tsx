@@ -1,6 +1,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
@@ -17,7 +18,10 @@ const tabs = [
 export default async function ShowsPage({ searchParams }: { searchParams: Promise<{ tab?: string; view?: string }> }) {
   const { tab, view } = await searchParams;
   const activeTab = tab === "upcoming" ? "upcoming" : "watchlist";
-  const activeView = view === "grid" ? "grid" : "list";
+  const savedView = (await cookies()).get("tvcask-shows-view")?.value;
+  const activeView = view === "grid" || view === "list"
+    ? view
+    : savedView === "grid" ? "grid" : "list";
 
   // The watch list is active shows only — completed shows leave it.
   const status = "watchlist,watching";
@@ -38,7 +42,12 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
         <TabsNav tabs={tabs} active={activeTab} base="/app/shows" />
         {activeTab === "watchlist" && total > 0 ? (
           <div className="ml-auto shrink-0">
-            <ViewToggle view={activeView} listHref="/app/shows?tab=watchlist&view=list" gridHref="/app/shows?tab=watchlist&view=grid" />
+            <ViewToggle
+              view={activeView}
+              listHref="/app/shows?tab=watchlist&view=list"
+              gridHref="/app/shows?tab=watchlist&view=grid"
+              preference="shows"
+            />
           </div>
         ) : null}
       </header>
@@ -55,6 +64,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
     </div>
   );
 }
+
 
 async function EmptyShows() {
   const sections = await getDiscover();
@@ -81,4 +91,3 @@ async function EmptyShows() {
     </div>
   );
 }
-

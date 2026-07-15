@@ -1,6 +1,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Search01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Button } from "@/components/ui/button";
 import { TabsNav } from "@/components/ui/tabs-nav";
 import { ViewToggle } from "@/components/ui/view-toggle";
@@ -16,7 +17,10 @@ const tabs = [
 export default async function MoviesPage({ searchParams }: { searchParams: Promise<{ tab?: string; view?: string }> }) {
   const { tab, view } = await searchParams;
   const activeTab = tab === "watched" ? "watched" : "watchlist";
-  const activeView = view === "list" ? "list" : "grid";
+  const savedView = (await cookies()).get("tvcask-movies-view")?.value;
+  const activeView = view === "grid" || view === "list"
+    ? view
+    : savedView === "list" ? "list" : "grid";
   const status = activeTab === "watched" ? "completed" : "watchlist,watching";
 
   const { items, total } = await getLibraryPage({ type: "movie", status, limit: 40 });
@@ -37,6 +41,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Promi
               view={activeView}
               listHref={`/app/movies?tab=${activeTab}&view=list`}
               gridHref={`/app/movies?tab=${activeTab}&view=grid`}
+              preference="movies"
             />
           </div>
         ) : null}

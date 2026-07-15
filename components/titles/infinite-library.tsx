@@ -31,6 +31,12 @@ export function InfiniteLibrary({
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useLibrary({ type, status, favorite, initial, total });
   const { markComplete, removeLocally } = useCompleteFromLibrary(type, status, favorite);
   const items = data.pages.flatMap((page) => page.items);
+  // Grid and list are layouts for the same actionable show watchlist. The
+  // status guard also hides legacy completed records with incomplete episode
+  // rows from before completed shows populated their watched history.
+  const visibleItems = type === "show"
+    ? items.filter((item) => item.status !== "completed" && item.nextEpisode != null)
+    : items;
 
   // Same infinite-scroll UX as before: observe a sentinel, pull the next page.
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -53,20 +59,42 @@ export function InfiniteLibrary({
 
   return (
     <>
-      {view === "grid" ? (
+      {type === "show" && visibleItems.length === 0 && !hasNextPage ? (
+        <div className="surface mx-auto max-w-2xl rounded-[16px] p-8 text-center">
+          <h2 className="display text-xl text-white">You&apos;re all caught up</h2>
+          <p className="mt-2 text-white/50">Nothing left to watch right now. New episodes will show up here.</p>
+        </div>
+      ) : view === "grid" ? (
         <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
-          {items.map((item) => (
-            <Link
-              key={item.id}
-              href={`/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`}
-              className="block overflow-hidden rounded-[14px] lift"
-            >
-              <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[14px]" />
-            </Link>
-          ))}
+          {visibleItems.map((item) => {
+            const progress = item.episodeCount > 0
+              ? Math.max(0, Math.min(1, (item.episodeCount - item.remaining) / item.episodeCount))
+              : 0;
+
+            return (
+              <Link
+                key={item.id}
+                href={`/app/titles/${item.title.id}?returnTo=${encodeURIComponent(returnTo)}`}
+                className="relative block overflow-hidden rounded-[14px] lift"
+              >
+                <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[14px]" />
+                {type === "show" ? (
+                  <span
+                    className="pointer-events-none absolute inset-x-2 bottom-2 h-[3px] overflow-hidden rounded-full bg-white/25"
+                    aria-hidden="true"
+                  >
+                    <span
+                      className="block h-full rounded-full bg-[var(--accent)]"
+                      style={{ width: `${progress * 100}%` }}
+                    />
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
         </div>
       ) : type === "show" ? (
-        <ShowList items={items} returnTo={returnTo} onComplete={removeLocally} />
+        <ShowList items={visibleItems} returnTo={returnTo} onComplete={removeLocally} />
       ) : (
         <div className="mx-auto flex max-w-2xl flex-col gap-3">
           <AnimatePresence mode="popLayout" initial={false}>
@@ -95,7 +123,7 @@ export function InfiniteLibrary({
 
 // The same split the app makes: the freshest shows with episodes left are
 // "watch next", the rest have gone stale. Caught-up shows (no aired episode
-// left) drop off the list entirely; they stay in the grid view.
+// left) drop off both watchlist layouts entirely.
 const WATCH_NEXT_COUNT = 3;
 
 function ShowList({
