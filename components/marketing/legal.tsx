@@ -1,9 +1,11 @@
-import { MarketingFooter } from "@/components/marketing/footer";
-import { MarketingHeader } from "@/components/marketing/header";
+import Link from "next/link";
+import { Logo } from "@/components/marketing/logo";
+import { Button } from "@/components/ui/button";
+import { getToken } from "@/lib/api";
 
 // Shared shell for the legal pages (privacy, terms, guidelines) so they read as
 // one set and match the marketing look.
-export function LegalPage({
+export async function LegalPage({
   title,
   updated,
   intro,
@@ -14,9 +16,26 @@ export function LegalPage({
   intro: string;
   children: React.ReactNode;
 }) {
+  const isAuthenticated = Boolean(await getToken());
+
   return (
     <>
-      <MarketingHeader />
+      <header className="border-b border-white/[0.06]">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-5">
+          <Link href="/" aria-label="tvcask home">
+            <Logo />
+          </Link>
+          {isAuthenticated ? (
+            <Button asChild className="h-10 px-4 text-sm">
+              <Link href="/app/shows">Open app</Link>
+            </Button>
+          ) : (
+            <Link href="/" className="text-sm font-bold text-white/55 transition hover:text-white">
+              Back to tvcask
+            </Link>
+          )}
+        </div>
+      </header>
       <main className="mx-auto max-w-3xl px-5 pb-24 pt-12 sm:pt-16">
         <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
           Legal
@@ -26,7 +45,14 @@ export function LegalPage({
         <p className="mt-6 text-[15px] leading-7 text-white/60">{intro}</p>
         <div className="mt-10 space-y-10">{children}</div>
       </main>
-      <MarketingFooter />
+      <footer className="border-t border-white/[0.06]">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 px-5 py-7 text-xs font-semibold text-white/35">
+          <p>Copyright {new Date().getFullYear()} tvcask.</p>
+          <Link href={isAuthenticated ? "/app/shows" : "/"} className="transition hover:text-white">
+            {isAuthenticated ? "Open app" : "Back to tvcask"}
+          </Link>
+        </div>
+      </footer>
     </>
   );
 }

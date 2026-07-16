@@ -3,8 +3,14 @@ import { forgotPasswordAction } from "@/app/actions";
 import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Input } from "@/components/ui/input";
+import { getCurrentUser } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<{ sent?: string }> }) {
+  if (await getCurrentUser()) {
+    redirect("/app/shows");
+  }
+
   const { sent } = await searchParams;
   return (
     <AuthCard

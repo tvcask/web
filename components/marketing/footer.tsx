@@ -2,9 +2,12 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { Logo } from "@/components/marketing/logo";
+import { getToken } from "@/lib/api";
 import { site } from "@/lib/site";
 
-export function MarketingFooter() {
+export async function MarketingFooter() {
+  const isAuthenticated = Boolean(await getToken());
+
   return (
     <footer className="border-t border-white/[0.06]">
       <div className="mx-auto w-full max-w-6xl px-5 py-11">
@@ -21,12 +24,20 @@ export function MarketingFooter() {
             <Link href="/import-tv-time" className="block font-bold text-white/55 transition hover:text-white">
               TV Time import
             </Link>
-            <Link href="/signup" className="block font-bold text-white/55 transition hover:text-white">
-              Create account
-            </Link>
-            <Link href="/login" className="block font-bold text-white/55 transition hover:text-white">
-              Log in
-            </Link>
+            {isAuthenticated ? (
+              <Link href="/app/shows" className="block font-bold text-white/55 transition hover:text-white">
+                Open app
+              </Link>
+            ) : (
+              <>
+                <Link href="/signup" className="block font-bold text-white/55 transition hover:text-white">
+                  Create account
+                </Link>
+                <Link href="/login" className="block font-bold text-white/55 transition hover:text-white">
+                  Log in
+                </Link>
+              </>
+            )}
           </nav>
 
           <nav className="space-y-3 text-sm">
