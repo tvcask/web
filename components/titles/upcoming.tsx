@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { Calendar } from "@/lib/data";
 import { formatAirDate, groupCalendar } from "@/lib/dates";
 
@@ -42,7 +43,7 @@ export function Upcoming({ calendar }: { calendar: Calendar }) {
             </div>
             <div className="flex flex-col gap-3">
               {items.map((episode) => (
-                <div key={episode.id} className="flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4">
+                <Link href={`/app/titles/${episode.titleId}?returnTo=${encodeURIComponent("/app/shows?tab=upcoming")}#${encodeURIComponent(episode.id)}`} key={episode.id} className="group flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4 transition hover:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
                   <div
                     className="relative h-[88px] w-[116px] shrink-0 self-stretch overflow-hidden"
                     style={{ background: episode.title?.backdropUrl ? undefined : "linear-gradient(140deg,#2a2f3a,#14110d)" }}
@@ -60,7 +61,8 @@ export function Upcoming({ calendar }: { calendar: Calendar }) {
                   {episode.airDate ? (
                     <span className="whitespace-nowrap text-[13px] font-bold text-white/55">{formatAirDate(episode.airDate)}</span>
                   ) : null}
-                </div>
+                  <span className="text-lg text-white/25 transition group-hover:translate-x-0.5 group-hover:text-white/55" aria-hidden>›</span>
+                </Link>
               ))}
             </div>
           </section>

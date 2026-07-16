@@ -3,7 +3,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { celebrate } from "@/lib/celebrate";
@@ -58,6 +58,8 @@ export function TitleDetailClient({
   );
   const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
   const [favorite, setFavorite] = useState(initial.favorite);
+  const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
+  const [openSeason, setOpenSeason] = useState<number | null>(() => episodes[0]?.seasonNumber ?? null);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
 
   // Keep the cached library lists in sync with the drawer — debounced so rapid
@@ -72,6 +74,14 @@ export function TitleDetailClient({
   const watchedCount = airedEpisodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
   const pct = airedEpisodes.length > 0 ? Math.min(100, Math.round((watchedCount / airedEpisodes.length) * 100)) : 0;
   const seasons = groupSeasons(episodes);
+
+  useEffect(() => {
+    const episodeID = decodeURIComponent(window.location.hash.slice(1));
+    const target = episodes.find((episode) => episode.id === episodeID);
+    if (!target) return;
+    setOpenSeason(target.seasonNumber);
+    requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
+  }, [episodes]);
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
@@ -368,8 +378,11 @@ export function TitleDetailClient({
                   const allWatched = airedSeason.length > 0 && seasonWatched === airedSeason.length;
                   return (
                     <div key={seasonNumber}>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-sm font-bold text-white">Season {seasonNumber}</span>
+                      <div className="mb-2 flex items-center justify-between rounded-[12px] bg-white/[0.035] px-3 py-2">
+                        <button type="button" onClick={() => setOpenSeason(openSeason === seasonNumber ? null : seasonNumber)} className="flex flex-1 items-center gap-2 text-left text-sm font-bold text-white" aria-expanded={openSeason === seasonNumber}>
+                          <span className={`text-white/40 transition ${openSeason === seasonNumber ? "rotate-90" : ""}`}>›</span>
+                          Season {seasonNumber}
+                        </button>
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-white/45">
                             {seasonWatched}/{airedSeason.length}
@@ -383,12 +396,12 @@ export function TitleDetailClient({
                           </button>
                         </div>
                       </div>
-                      <div className="flex flex-col">
+                      {openSeason === seasonNumber ? <div className="flex flex-col">
                         {seasonEpisodes.map((episode) => {
                           const isWatched = watched.has(key(episode.seasonNumber, episode.episodeNumber));
                           const future = !hasAired(episode);
                           return (
-                            <div key={episode.id} className={`flex items-center gap-3.5 border-b border-white/[0.06] py-2.5 ${future && !isWatched ? "opacity-55" : ""}`}>
+                            <div id={episode.id} key={episode.id} className={`scroll-mt-24 flex items-center gap-3.5 border-b border-white/[0.06] py-2.5 ${future && !isWatched ? "opacity-55" : ""}`}>
                               <div
                                 className="relative h-[46px] w-[80px] shrink-0 overflow-hidden rounded-[7px]"
                                 style={{ background: "linear-gradient(140deg,#2a2f3a,#14110d)" }}
@@ -397,12 +410,12 @@ export function TitleDetailClient({
                                   <Image src={episode.stillUrl} alt="" fill sizes="80px" className="object-cover" />
                                 ) : null}
                               </div>
-                              <div className="min-w-0 flex-1">
+                              <button type="button" onClick={() => setSelectedEpisode(episode)} className="min-w-0 flex-1 text-left" aria-label={`View details for ${episode.name || `episode ${episode.episodeNumber}`}`}>
                                 <p className="truncate text-sm font-semibold text-white">
                                   E{pad(episode.episodeNumber)} · {episode.name ?? "TBA"}
                                 </p>
                                 <p className="mt-0.5 text-xs text-white/45">{future ? "Airs " : ""}{episode.airDate ? formatAirDate(episode.airDate) : ""}</p>
-                              </div>
+                              </button>
                               <button
                                 onClick={() => toggleEpisode(episode)}
                                 disabled={future && !isWatched}
@@ -419,7 +432,7 @@ export function TitleDetailClient({
                             </div>
                           );
                         })}
-                      </div>
+                      </div> : null}
                     </div>
                   );
                 })}
@@ -434,8 +447,33 @@ export function TitleDetailClient({
             TMDB
           </a>
           . This product is not endorsed or certified by TMDB.
+          {title.episodeMetadataAttribution ? (
+            <>
+              {" "}{title.episodeMetadataAttribution}. See{" "}
+              <a href={title.episodeMetadataUrl || "https://thetvdb.com"} target="_blank" rel="noreferrer" className="underline transition hover:text-white/55">TheTVDB</a>.
+            </>
+          ) : null}
         </p>
       </div>
+
+      {selectedEpisode ? (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/70" role="dialog" aria-modal="true" aria-labelledby="episode-detail-title" onClick={() => setSelectedEpisode(null)}>
+          <div className="mt-auto max-h-[88dvh] w-full overflow-y-auto rounded-t-[24px] border border-white/10 bg-[#11100e] shadow-2xl sm:mt-0 sm:h-full sm:max-h-none sm:max-w-[480px] sm:rounded-none sm:border-y-0 sm:border-r-0" onClick={(event) => event.stopPropagation()}>
+            <div className="sticky top-0 z-10 flex justify-end bg-gradient-to-b from-black/55 to-transparent p-4 pb-8"><button type="button" onClick={() => setSelectedEpisode(null)} className="grid size-10 place-items-center rounded-full bg-black/55 text-white/80 backdrop-blur" aria-label="Close episode details"><HugeiconsIcon icon={Cancel01Icon} className="size-4" /></button></div>
+            {selectedEpisode.stillUrl ? <div className="relative -mt-20 aspect-video w-full"><Image src={selectedEpisode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 480px" className="object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#11100e] via-transparent to-black/20" /></div> : null}
+            <div className="p-6 sm:p-8">
+              <div className="flex items-start justify-between gap-4">
+                <div><p className="text-xs font-bold text-[var(--accent)]">S{pad(selectedEpisode.seasonNumber)}E{pad(selectedEpisode.episodeNumber)}</p><h2 id="episode-detail-title" className="display mt-2 text-2xl text-white">{selectedEpisode.name || "Episode details"}</h2></div>
+              </div>
+              <p className="mt-3 text-sm text-white/45">{[selectedEpisode.airDate ? formatAirDate(selectedEpisode.airDate) : null, selectedEpisode.runtimeMinutes ? `${selectedEpisode.runtimeMinutes} min` : null, selectedEpisode.finaleType ? `${selectedEpisode.finaleType} finale` : null].filter(Boolean).join(" · ")}</p>
+              <div className="my-6 h-px bg-white/[0.07]" />
+              <h3 className="text-sm font-bold text-white">About this episode</h3>
+              <p className="mt-3 text-[15px] leading-7 text-white/65">{selectedEpisode.overview?.trim() || "No synopsis is available yet."}</p>
+              {selectedEpisode.metadataSource === "tvdb" ? <a href="https://thetvdb.com" target="_blank" rel="noreferrer" className="mt-8 inline-block text-xs font-bold text-[var(--accent)]">Episode metadata provided by TheTVDB ↗</a> : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -62,6 +62,8 @@ export type TitleDetail = Title & {
   watchProviders: WatchProvider[];
   watchProviderLink?: string;
   watchProviderAttribution: string;
+  episodeMetadataAttribution?: string;
+  episodeMetadataUrl?: string;
 };
 export type MyTitle = { tracked: boolean; userTitle?: UserTitle; watched: string[] };
 

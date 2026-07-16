@@ -45,6 +45,11 @@ export type Episode = {
   runtimeMinutes?: number | null;
   network?: string | null;
   stillUrl?: string | null;
+  tvdbId?: number;
+  absoluteNumber?: number;
+  productionCode?: string;
+  finaleType?: string;
+  metadataSource?: "tmdb" | "tvdb";
 };
 
 export type UserTitle = {
