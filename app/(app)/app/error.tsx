@@ -17,7 +17,7 @@ export default function AppError({
     <div className="mx-auto max-w-md px-5 py-20 text-center">
       <h1 className="display text-xl text-white">Something went wrong.</h1>
       <p className="mt-2 text-sm leading-6 text-white/55">
-        We couldn&apos;t load this page. It&apos;s usually temporary — try again.
+        We couldn&apos;t load this page. It&apos;s usually temporary.
       </p>
       <button
         onClick={reset}
