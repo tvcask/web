@@ -4,8 +4,14 @@ import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { getCurrentUser } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; reset?: string; returnTo?: string }> }) {
+  if (await getCurrentUser()) {
+    redirect("/app/shows");
+  }
+
   const { error, reset, returnTo } = await searchParams;
   const safeReturnTo = typeof returnTo === "string" && returnTo.startsWith("/app/") ? returnTo : "";
   return (

@@ -3,6 +3,7 @@ import { ArrowRight02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getToken } from "@/lib/api";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import {
@@ -69,7 +70,9 @@ const visualPosters = [
   moviePosters[4],
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const isAuthenticated = Boolean(await getToken());
+
   return (
     <>
       <MarketingHeader />
@@ -126,10 +129,10 @@ export default function AboutPage() {
                 Import TV Time <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
               </Link>
               <Link
-                href="/signup"
+                href={isAuthenticated ? "/app/shows" : "/signup"}
                 className="inline-flex h-12 items-center justify-center rounded-full border border-white/12 px-6 text-[15px] font-bold text-white"
               >
-                Create account
+                {isAuthenticated ? "Open app" : "Create account"}
               </Link>
             </div>
           </div>
