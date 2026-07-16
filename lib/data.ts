@@ -2,6 +2,21 @@ import { api, ApiError } from "@/lib/api";
 import type { CastMember, Episode, Title, UserTitle, UserTitleWithTitle, WatchProvider } from "@/lib/services/types";
 
 export type DiscoverSection = { title: string; kind: string; items: Title[] };
+
+export function normalizeDiscoverSections(value: unknown): DiscoverSection[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((section) => {
+    if (
+      !section ||
+      typeof section !== "object" ||
+      typeof section.title !== "string" ||
+      typeof section.kind !== "string"
+    ) {
+      return [];
+    }
+    return [{ ...section, items: Array.isArray(section.items) ? section.items : [] } as DiscoverSection];
+  });
+}
 export type CollectionPage = { title: string; items: Title[]; page: number; hasMore: boolean };
 
 export async function getCollection(kind: string, page = 1): Promise<CollectionPage> {
@@ -111,8 +126,8 @@ export async function getCalendar(): Promise<Calendar> {
 }
 
 export async function getDiscover(): Promise<DiscoverSection[]> {
-  const res = await api<{ sections: DiscoverSection[] }>("/v1/titles/discover");
-  return res.sections ?? [];
+  const res = await api<{ sections: unknown }>("/v1/titles/discover");
+  return normalizeDiscoverSections(res.sections);
 }
 
 export async function getStats(): Promise<Stats> {
