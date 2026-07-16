@@ -14,6 +14,7 @@ import { toast } from "@/lib/toast";
 import type { TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import type { Episode } from "@/lib/services/types";
+import { Poster } from "@/components/titles/poster";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
@@ -196,11 +197,7 @@ export function TitleDetailClient({
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#0a0a0c]/75 to-[#0a0a0c]" />
         <div className="relative flex h-full items-end gap-4">
           <div className="relative h-[168px] w-[112px] shrink-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
-            {title.posterUrl ? (
-              <Image src={title.posterUrl} alt="" fill sizes="112px" className="object-cover" />
-            ) : (
-              <div className="h-full w-full" style={{ background: seededGradient(title.title) }} />
-            )}
+            <Poster src={title.posterUrl} title={title.title} className="h-full rounded-[14px]" />
           </div>
           <div className="min-w-0 pb-1">
             <h1 className="display truncate text-3xl text-white sm:text-4xl">{title.title}</h1>
