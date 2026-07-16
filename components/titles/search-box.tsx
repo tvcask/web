@@ -4,11 +4,11 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Loading03Icon, Search01Icon } from '@hugeicons/core-free-icons';
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/query/client";
 import type { Title } from "@/lib/services/types";
+import { Poster } from "@/components/titles/poster";
 
 export function SearchBox({
   initialQuery = "",
@@ -108,7 +108,7 @@ export function SearchBox({
                   className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-white/[0.05]"
                 >
                   <div className="relative h-[54px] w-[38px] shrink-0 overflow-hidden rounded-[6px] bg-white/5">
-                    {t.posterUrl ? <Image src={t.posterUrl} alt="" fill sizes="38px" className="object-cover" /> : null}
+                    <Poster src={t.posterUrl} title={t.title} className="h-full rounded-[6px] p-1" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold text-white">{t.title}</p>
