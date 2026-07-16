@@ -10,5 +10,6 @@ export const site = {
   instagram: "https://www.instagram.com/tvcask/",
   tmdb: "https://www.themoviedb.org/",
   tvdb: "https://thetvdb.com/",
-  justwatch: "https://www.justwatch.com/"
+  justwatch: "https://www.justwatch.com/",
+  feedback: "https://tvcask.userjot.com/"
 } as const;
