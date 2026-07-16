@@ -156,6 +156,14 @@ export default async function SettingsPage({
         </div>
       </Section>
 
+      <Section title="Data sources & credits">
+        <div className="surface overflow-hidden rounded-[14px]">
+          <SettingsLink href={site.tmdb} label="The Movie Database (TMDB)" external />
+          <SettingsLink href={site.tvdb} label="TheTVDB episode metadata" border external />
+          <SettingsLink href={site.justwatch} label="JustWatch availability" border external />
+        </div>
+      </Section>
+
       {/* Danger zone */}
       <Section title="Danger zone">
         <details className="group surface overflow-hidden rounded-[14px]">

@@ -3,7 +3,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { celebrate } from "@/lib/celebrate";
@@ -74,6 +74,14 @@ export function TitleDetailClient({
   const watchedCount = airedEpisodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
   const pct = airedEpisodes.length > 0 ? Math.min(100, Math.round((watchedCount / airedEpisodes.length) * 100)) : 0;
   const seasons = groupSeasons(episodes);
+
+  useEffect(() => {
+    const episodeID = decodeURIComponent(window.location.hash.slice(1));
+    const target = episodes.find((episode) => episode.id === episodeID);
+    if (!target) return;
+    setOpenSeason(target.seasonNumber);
+    requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
+  }, [episodes]);
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
@@ -393,7 +401,7 @@ export function TitleDetailClient({
                           const isWatched = watched.has(key(episode.seasonNumber, episode.episodeNumber));
                           const future = !hasAired(episode);
                           return (
-                            <div key={episode.id} className={`flex items-center gap-3.5 border-b border-white/[0.06] py-2.5 ${future && !isWatched ? "opacity-55" : ""}`}>
+                            <div id={episode.id} key={episode.id} className={`scroll-mt-24 flex items-center gap-3.5 border-b border-white/[0.06] py-2.5 ${future && !isWatched ? "opacity-55" : ""}`}>
                               <div
                                 className="relative h-[46px] w-[80px] shrink-0 overflow-hidden rounded-[7px]"
                                 style={{ background: "linear-gradient(140deg,#2a2f3a,#14110d)" }}

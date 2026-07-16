@@ -7,5 +7,8 @@ export const site = {
   description: "Import your TV Time history, track shows and movies, and pick up where you left off.",
   logo: "/logo-horizontal.png",
   icon: "/logo-vertical.png",
-  instagram: "https://www.instagram.com/tvcask/"
+  instagram: "https://www.instagram.com/tvcask/",
+  tmdb: "https://www.themoviedb.org/",
+  tvdb: "https://thetvdb.com/",
+  justwatch: "https://www.justwatch.com/"
 } as const;
