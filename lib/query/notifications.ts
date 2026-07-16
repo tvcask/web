@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { mutate } from "@/lib/mutate";
 import { apiGet } from "@/lib/query/client";
 import { queryKeys } from "@/lib/query/keys";
@@ -30,6 +30,18 @@ export function useNotifications() {
   });
 }
 
+export function useInfiniteNotifications() {
+  return useInfiniteQuery({
+    queryKey: [...queryKeys.notifications, "infinite"],
+    queryFn: ({ pageParam }) =>
+      apiGet<NotificationsPage>(
+        `/api/v1/me/notifications${pageParam ? `?before=${encodeURIComponent(pageParam)}` : ""}`
+      ),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.nextCursor
+  });
+}
+
 // Patch the cached page instead of refetching, so the row and the bell count
 // update the instant the user clicks.
 function markReadInCache(page: NotificationsPage | undefined, id?: string): NotificationsPage | undefined {
@@ -42,12 +54,23 @@ function markReadInCache(page: NotificationsPage | undefined, id?: string): Noti
   return { ...page, items, unreadCount };
 }
 
+function updateNotificationCaches(queryClient: ReturnType<typeof useQueryClient>, id?: string) {
+  queryClient.setQueryData<NotificationsPage>(queryKeys.notifications, (page) => markReadInCache(page, id));
+  queryClient.setQueryData<InfiniteData<NotificationsPage, string | undefined>>(
+    [...queryKeys.notifications, "infinite"],
+    (data) =>
+      data
+        ? { ...data, pages: data.pages.map((page) => markReadInCache(page, id) ?? page) }
+        : data
+  );
+}
+
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => mutate(`me/notifications/${id}/read`, "PATCH"),
     onMutate: (id) => {
-      queryClient.setQueryData<NotificationsPage>(queryKeys.notifications, (page) => markReadInCache(page, id));
+      updateNotificationCaches(queryClient, id);
     },
     onSettled: () => void queryClient.invalidateQueries({ queryKey: queryKeys.notifications })
   });
@@ -58,7 +81,7 @@ export function useMarkAllNotificationsRead() {
   return useMutation({
     mutationFn: () => mutate("me/notifications/read-all", "POST"),
     onMutate: () => {
-      queryClient.setQueryData<NotificationsPage>(queryKeys.notifications, (page) => markReadInCache(page));
+      updateNotificationCaches(queryClient);
     },
     onSettled: () => void queryClient.invalidateQueries({ queryKey: queryKeys.notifications })
   });

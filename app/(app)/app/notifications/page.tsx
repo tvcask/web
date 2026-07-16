@@ -8,14 +8,16 @@ import { timeAgo } from "@/lib/dates";
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
-  useNotifications,
+  useInfiniteNotifications,
   type NotificationItem
 } from "@/lib/query/notifications";
 
 export default function NotificationsPage() {
-  const query = useNotifications();
+  const query = useInfiniteNotifications();
   const markAll = useMarkAllNotificationsRead();
-  const unread = query.data?.unreadCount ?? 0;
+  const pages = query.data?.pages ?? [];
+  const items = pages.flatMap((page) => page.items);
+  const unread = pages[0]?.unreadCount ?? 0;
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -38,15 +40,25 @@ export default function NotificationsPage() {
         </div>
       ) : query.isError ? (
         <p className="surface rounded-[14px] p-6 text-white/50">Could not load notifications. Try again shortly.</p>
-      ) : query.data.items.length === 0 ? (
+      ) : items.length === 0 ? (
         <p className="surface rounded-[14px] p-6 text-white/50">
           New episodes of shows you track and badges you earn show up here.
         </p>
       ) : (
         <div className="flex flex-col gap-3">
-          {query.data.items.map((item) => (
+          {items.map((item) => (
             <Row key={item.id} item={item} />
           ))}
+          {query.hasNextPage ? (
+            <button
+              type="button"
+              disabled={query.isFetchingNextPage}
+              onClick={() => void query.fetchNextPage()}
+              className="cask-focus self-center rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-white/65 disabled:opacity-50"
+            >
+              {query.isFetchingNextPage ? "Loading…" : "Load older"}
+            </button>
+          ) : null}
         </div>
       )}
     </div>

@@ -15,14 +15,20 @@ type Alerts = {
  */
 export function NotificationToggles({ initial }: { initial: Alerts }) {
   const [alerts, setAlerts] = useState(initial);
+  const [saving, setSaving] = useState(false);
 
   const toggle = (key: keyof Alerts) => {
+    if (saving) return;
+    const previous = alerts[key];
     const next = { ...alerts, [key]: !alerts[key] };
     setAlerts(next);
-    mutate("me/settings", "PATCH", { [key]: next[key] }).catch(() => {
-      setAlerts(alerts);
-      toast("Could not save that. Try again.");
-    });
+    setSaving(true);
+    mutate("me/settings", "PATCH", { [key]: next[key] })
+      .catch(() => {
+        setAlerts((current) => ({ ...current, [key]: previous }));
+        toast("Could not save that. Try again.");
+      })
+      .finally(() => setSaving(false));
   };
 
   return (
@@ -31,6 +37,7 @@ export function NotificationToggles({ initial }: { initial: Alerts }) {
         label="New episode alerts"
         hint="When a show you track airs an episode"
         checked={alerts.newEpisodeAlerts}
+        disabled={saving}
         onToggle={() => toggle("newEpisodeAlerts")}
       />
       <div className="border-t border-white/[0.06]" />
@@ -38,6 +45,7 @@ export function NotificationToggles({ initial }: { initial: Alerts }) {
         label="Badge alerts"
         hint="When you earn a badge"
         checked={alerts.badgeAlerts}
+        disabled={saving}
         onToggle={() => toggle("badgeAlerts")}
       />
     </div>
@@ -48,11 +56,13 @@ function ToggleRow({
   label,
   hint,
   checked,
+  disabled,
   onToggle
 }: {
   label: string;
   hint: string;
   checked: boolean;
+  disabled: boolean;
   onToggle: () => void;
 }) {
   return (
@@ -66,8 +76,9 @@ function ToggleRow({
         role="switch"
         aria-checked={checked}
         aria-label={label}
+        disabled={disabled}
         onClick={onToggle}
-        className="cask-focus relative h-7 w-12 shrink-0 rounded-full transition-colors"
+        className="cask-focus relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60"
         style={{ background: checked ? "var(--accent)" : "rgba(255,255,255,0.15)" }}
       >
         <span
