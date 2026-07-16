@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.6.0](https://github.com/tvcask/web/compare/tvcask-web-v0.5.0...tvcask-web-v0.6.0) (2026-07-16)
+
+
+### Features
+
+* add clickable episode details ([908b13a](https://github.com/tvcask/web/commit/908b13a9a50705723c9cc411eb5dd3230bc132c3))
+* add clickable episode details ([951c1e1](https://github.com/tvcask/web/commit/951c1e1b436ed2314bcb0c0e005485d161620cba))
+* add feedback and bug report link ([d33a865](https://github.com/tvcask/web/commit/d33a86583de6ca55058db5dc8cf79c4b45bd06df))
+* add UserJot feedback link ([b115818](https://github.com/tvcask/web/commit/b115818699175427963742e1269e3ed3a06f303d))
+* link upcoming episodes and surface credits ([14545a9](https://github.com/tvcask/web/commit/14545a91fa6e23c98beed3dc7db29b426db7329d))
+
+
+### Bug Fixes
+
+* align library grids and remember view ([d78246d](https://github.com/tvcask/web/commit/d78246d1f5e3f641fcc52b815cb3cf5a4d63c4b7))
+* clarify feedback link purpose ([3734801](https://github.com/tvcask/web/commit/3734801172603363c4b647a194cbebfd4b7c528c))
+* **explore:** tolerate partial catalog responses ([d3361f6](https://github.com/tvcask/web/commit/d3361f6c72af6c78db7a33fb74ab5c5d84f58719))
+* **explore:** tolerate partial catalog responses ([765b709](https://github.com/tvcask/web/commit/765b709a1e758b58ac4fef4f6b78170991c90f5b))
+* load TMDB artwork reliably ([fb737e6](https://github.com/tvcask/web/commit/fb737e6e74d9f816d5905c6e9e3c1974e124c446))
+* load TMDB artwork reliably ([f27a637](https://github.com/tvcask/web/commit/f27a6373a2e9b48214a50dfa7549337ead782baf))
+
 ## [0.5.0](https://github.com/tvcask/web/compare/tvcask-web-v0.4.0...tvcask-web-v0.5.0) (2026-07-14)
 
 
