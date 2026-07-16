@@ -11,6 +11,7 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { getCatalogStatus, getSettings } from "@/lib/data";
 import { WATCH_REGIONS } from "@/lib/regions";
+import { NotificationToggles } from "@/components/settings/notification-toggles";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -124,6 +125,13 @@ export default async function SettingsPage({
           {saved === "region" ? <Note tone="ok">Watch region updated.</Note> : null}
           {error === "region" ? <Note tone="err">Could not update watch region.</Note> : null}
         </form>
+      </Section>
+
+      {/* Notifications */}
+      <Section title="Notifications">
+        <NotificationToggles
+          initial={{ newEpisodeAlerts: settings.newEpisodeAlerts ?? true, badgeAlerts: settings.badgeAlerts ?? true }}
+        />
       </Section>
 
       {/* Import */}

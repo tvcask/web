@@ -6,6 +6,7 @@ import { Search01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { AccountMenu } from "@/components/app-shell/account-menu";
+import { NotificationsBell } from "@/components/app-shell/notifications-bell";
 import { isNavActive, navContextPath, navItems } from "@/components/app-shell/nav-items";
 import { Logo } from "@/components/marketing/logo";
 import { SearchBox } from "@/components/titles/search-box";
@@ -49,6 +50,7 @@ export function AppTopNav({ user }: { user: { name?: string | null; email?: stri
           <Link href="/app/explore" aria-label="Search" className="text-white/60 md:hidden">
             <HugeiconsIcon icon={Search01Icon} className="size-5" />
           </Link>
+          <NotificationsBell />
           <AccountMenu name={displayName} email={user.email} avatarUrl={user.avatarUrl} />
         </div>
       </div>
