@@ -26,7 +26,10 @@ export function useNotifications() {
   return useQuery({
     queryKey: queryKeys.notifications,
     queryFn: () => apiGet<NotificationsPage>("/api/v1/me/notifications"),
-    staleTime: 30_000
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: "always"
   });
 }
 
