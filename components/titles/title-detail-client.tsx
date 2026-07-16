@@ -58,6 +58,7 @@ export function TitleDetailClient({
   );
   const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
   const [favorite, setFavorite] = useState(initial.favorite);
+  const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
 
   // Keep the cached library lists in sync with the drawer — debounced so rapid
@@ -397,12 +398,12 @@ export function TitleDetailClient({
                                   <Image src={episode.stillUrl} alt="" fill sizes="80px" className="object-cover" />
                                 ) : null}
                               </div>
-                              <div className="min-w-0 flex-1">
+                              <button type="button" onClick={() => setSelectedEpisode(episode)} className="min-w-0 flex-1 text-left" aria-label={`View details for ${episode.name || `episode ${episode.episodeNumber}`}`}>
                                 <p className="truncate text-sm font-semibold text-white">
                                   E{pad(episode.episodeNumber)} · {episode.name ?? "TBA"}
                                 </p>
                                 <p className="mt-0.5 text-xs text-white/45">{future ? "Airs " : ""}{episode.airDate ? formatAirDate(episode.airDate) : ""}</p>
-                              </div>
+                              </button>
                               <button
                                 onClick={() => toggleEpisode(episode)}
                                 disabled={future && !isWatched}
@@ -434,8 +435,31 @@ export function TitleDetailClient({
             TMDB
           </a>
           . This product is not endorsed or certified by TMDB.
+          {title.episodeMetadataAttribution ? (
+            <>
+              {" "}{title.episodeMetadataAttribution}. See{" "}
+              <a href={title.episodeMetadataUrl || "https://thetvdb.com"} target="_blank" rel="noreferrer" className="underline transition hover:text-white/55">TheTVDB</a>.
+            </>
+          ) : null}
         </p>
       </div>
+
+      {selectedEpisode ? (
+        <div className="fixed inset-0 z-50 grid place-items-end bg-black/70 p-4 sm:place-items-center" role="dialog" aria-modal="true" aria-labelledby="episode-detail-title" onClick={() => setSelectedEpisode(null)}>
+          <div className="w-full max-w-lg overflow-hidden rounded-[20px] border border-white/10 bg-[#11100e] shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            {selectedEpisode.stillUrl ? <div className="relative aspect-video w-full"><Image src={selectedEpisode.stillUrl} alt="" fill sizes="512px" className="object-cover" /></div> : null}
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div><p className="text-xs font-bold text-[var(--accent)]">S{pad(selectedEpisode.seasonNumber)}E{pad(selectedEpisode.episodeNumber)}</p><h2 id="episode-detail-title" className="display mt-1 text-xl text-white">{selectedEpisode.name || "Episode details"}</h2></div>
+                <button type="button" onClick={() => setSelectedEpisode(null)} className="grid size-9 shrink-0 place-items-center rounded-full bg-white/5 text-white/70" aria-label="Close episode details"><HugeiconsIcon icon={Cancel01Icon} className="size-4" /></button>
+              </div>
+              <p className="mt-2 text-xs text-white/45">{[selectedEpisode.airDate ? formatAirDate(selectedEpisode.airDate) : null, selectedEpisode.runtimeMinutes ? `${selectedEpisode.runtimeMinutes} min` : null, selectedEpisode.finaleType ? `${selectedEpisode.finaleType} finale` : null].filter(Boolean).join(" · ")}</p>
+              <p className="mt-4 text-sm leading-6 text-white/70">{selectedEpisode.overview?.trim() || "No synopsis is available yet."}</p>
+              {selectedEpisode.metadataSource === "tvdb" ? <a href="https://thetvdb.com" target="_blank" rel="noreferrer" className="mt-5 inline-block text-xs font-bold text-[var(--accent)]">Episode metadata provided by TheTVDB ↗</a> : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
