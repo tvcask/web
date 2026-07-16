@@ -153,7 +153,7 @@ export default async function SettingsPage({
           <SettingsLink href="/guidelines" label="Community Guidelines" border />
           <SettingsLink href="/about" label="About tvcask" border />
           <SettingsLink href="/support" label="Support" border />
-          <SettingsLink href={site.feedback} label="Feedback & bug reports" border external />
+          <SettingsLink href={site.feedback} label="Share feedback & ideas" border external />
         </div>
       </Section>
 
