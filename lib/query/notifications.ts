@@ -12,6 +12,9 @@ export type NotificationItem = {
   body: string;
   actionPath: string;
   imageUrl: string;
+  badgeKey?: string;
+  badgeArt?: string;
+  badgeTier?: string;
   readAt?: string | null;
   createdAt: string;
 };
