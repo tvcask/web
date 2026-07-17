@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Award01Icon, Notification02Icon } from "@hugeicons/core-free-icons";
 import { timeAgo } from "@/lib/dates";
+import { BadgeMedallion } from "@/components/badges/badge-medallion";
 import { useMarkNotificationRead, useNotifications } from "@/lib/query/notifications";
 import { toast } from "@/lib/toast";
 
@@ -92,7 +93,14 @@ export function NotificationsBell() {
                   }}
                   className="flex items-center gap-3 rounded-[12px] p-2.5 transition hover:bg-white/5"
                 >
-                  {item.imageUrl ? (
+                  {item.type === "badge_earned" && item.badgeKey && item.badgeArt && item.badgeTier ? (
+                    <span className="grid h-[52px] w-10 shrink-0 place-items-center rounded-[7px] bg-[rgba(211,158,94,0.06)]">
+                      <BadgeMedallion
+                        badge={{ key: item.badgeKey, art: item.badgeArt, tier: item.badgeTier, earned: true }}
+                        size={40}
+                      />
+                    </span>
+                  ) : item.imageUrl ? (
                     <Image src={item.imageUrl} alt="" width={40} height={52} className="h-[52px] w-10 shrink-0 rounded-[7px] object-cover" />
                   ) : (
                     <span className="grid h-[52px] w-10 shrink-0 place-items-center rounded-[7px] bg-white/5">

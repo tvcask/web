@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Award01Icon, Loading03Icon, Notification02Icon } from "@hugeicons/core-free-icons";
 import { timeAgo } from "@/lib/dates";
+import { BadgeMedallion } from "@/components/badges/badge-medallion";
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
@@ -84,7 +85,14 @@ function Row({ item }: { item: NotificationItem }) {
       onClick={onClick}
       className="cask-focus flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4 text-left transition hover:bg-white/[0.07]"
     >
-      {item.imageUrl ? (
+      {item.type === "badge_earned" && item.badgeKey && item.badgeArt && item.badgeTier ? (
+        <span className="grid h-[88px] w-16 shrink-0 place-items-center self-stretch bg-[rgba(211,158,94,0.06)]">
+          <BadgeMedallion
+            badge={{ key: item.badgeKey, art: item.badgeArt, tier: item.badgeTier, earned: true }}
+            size={58}
+          />
+        </span>
+      ) : item.imageUrl ? (
         <span className="relative h-[88px] w-[64px] shrink-0 self-stretch overflow-hidden">
           <Image src={item.imageUrl} alt="" fill sizes="64px" className="object-cover" />
         </span>
