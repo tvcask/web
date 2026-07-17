@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0](https://github.com/tvcask/web/compare/tvcask-web-v0.6.0...tvcask-web-v0.7.0) (2026-07-17)
+
+
+### Features
+
+* notifications inbox and bell ([7092226](https://github.com/tvcask/web/commit/70922269916dbcdd1a9ccd3b9d74b804199c57f4))
+* **notifications:** add live web notification UX ([4077d3b](https://github.com/tvcask/web/commit/4077d3bca582b53b10eff4a4e59596578ef69d9c))
+* **notifications:** improve live web notification UX ([852461c](https://github.com/tvcask/web/commit/852461ce54570253c5153e3ba7001406c5699928))
+* **notifications:** show earned badge artwork ([81559e4](https://github.com/tvcask/web/commit/81559e45f490848ad322678e13212b0ed7bf2bf5))
+* **notifications:** show earned badge artwork ([219d859](https://github.com/tvcask/web/commit/219d859a9dd79f951c5dd23e499db6bca60f64df))
+
+
+### Bug Fixes
+
+* **notifications:** harden feed interactions ([a1bc2c0](https://github.com/tvcask/web/commit/a1bc2c0e433f535f13b39dbe28bf5facc0c1f270))
+
 ## [0.6.0](https://github.com/tvcask/web/compare/tvcask-web-v0.5.0...tvcask-web-v0.6.0) (2026-07-16)
 
 
