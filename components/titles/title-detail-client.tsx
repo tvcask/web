@@ -11,7 +11,7 @@ import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
-import type { TitleDetail } from "@/lib/data";
+import type { Person, TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import type { Episode } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
@@ -22,6 +22,12 @@ const key = (s: number, e: number) => `${s}-${e}`;
 // An episode counts as aired if it has no date or its date is today or
 // earlier in the viewer's timezone. Unaired episodes can't be marked watched.
 const hasAired = (e: Episode) => !e.airDate || e.airDate <= localDate();
+
+function formatPersonDates(person: Person): string {
+  const format = (value: string) => new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
+  if (!person.birthday) return "";
+  return person.deathday ? `${format(person.birthday)} – ${format(person.deathday)}` : `Born ${format(person.birthday)}`;
+}
 
 // Roll back an optimistic change and tell the user it didn't stick.
 function onSaveError(revert: () => void) {
@@ -61,6 +67,9 @@ export function TitleDetailClient({
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const [openSeason, setOpenSeason] = useState<number | null>(() => episodes[0]?.seasonNumber ?? null);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
+  const [selectedPerson, setSelectedPerson] = useState<{ id: number; name: string; profileUrl?: string } | null>(null);
+  const [person, setPerson] = useState<Person | null>(null);
+  const [personError, setPersonError] = useState(false);
 
   // Keep the cached library lists in sync with the drawer — debounced so rapid
   // toggles trigger a single refetch.
@@ -82,6 +91,22 @@ export function TitleDetailClient({
     setOpenSeason(target.seasonNumber);
     requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
   }, [episodes]);
+
+  useEffect(() => {
+    if (!selectedPerson) return;
+    const controller = new AbortController();
+    setPerson(null);
+    setPersonError(false);
+    fetch(`/api/v1/people/${selectedPerson.id}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("person request failed");
+        setPerson((await response.json()) as Person);
+      })
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) setPersonError(true);
+      });
+    return () => controller.abort();
+  }, [selectedPerson]);
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
@@ -347,7 +372,13 @@ export function TitleDetailClient({
             <h2 className="display mb-3 text-base text-white">Cast</h2>
             <div className="flex gap-4 overflow-x-auto pb-2">
               {title.cast.map((person) => (
-                <div key={person.id} className="w-[82px] shrink-0 text-center">
+                <button
+                  type="button"
+                  key={person.id}
+                  className="w-[82px] shrink-0 text-center"
+                  onClick={() => setSelectedPerson(person)}
+                  aria-label={`View ${person.name}'s biography`}
+                >
                   <div className="relative mx-auto size-16 overflow-hidden rounded-full bg-white/[0.06] ring-1 ring-white/10">
                     {person.profileUrl ? (
                       <Image src={person.profileUrl} alt="" fill sizes="64px" className="object-cover" />
@@ -359,8 +390,43 @@ export function TitleDetailClient({
                   </div>
                   <p className="mt-2 truncate text-xs font-bold text-white/80">{person.name}</p>
                   {person.character ? <p className="mt-0.5 truncate text-[11px] text-white/40">{person.character}</p> : null}
-                </div>
+                </button>
               ))}
+            </div>
+          </div>
+        ) : null}
+
+        {selectedPerson ? (
+          <div className="fixed inset-0 z-50 grid place-items-end bg-black/70 p-0 backdrop-blur-sm sm:place-items-center sm:p-6" role="presentation" onMouseDown={() => setSelectedPerson(null)}>
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="person-name"
+              className="surface max-h-[85vh] w-full overflow-y-auto rounded-t-[24px] p-6 sm:max-w-xl sm:rounded-[24px]"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <div className="flex items-start gap-4">
+                <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-white/10">
+                  {(person?.profileUrl || selectedPerson.profileUrl) ? (
+                    <Image src={person?.profileUrl || selectedPerson.profileUrl!} alt="" fill sizes="96px" className="object-cover" />
+                  ) : (
+                    <div className="grid h-full place-items-center text-2xl font-extrabold text-white/45">{(selectedPerson.name.trim()[0] ?? "?").toUpperCase()}</div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1 pt-1">
+                  <h2 id="person-name" className="display text-xl text-white">{person?.name || selectedPerson.name}</h2>
+                  {person?.knownFor ? <p className="mt-1 text-sm text-white/50">{person.knownFor}</p> : null}
+                  {person ? (
+                    <p className="mt-3 text-xs leading-5 text-white/45">
+                      {[formatPersonDates(person), person.placeOfBirth].filter(Boolean).join(" · ")}
+                    </p>
+                  ) : null}
+                </div>
+                <button type="button" aria-label="Close biography" className="grid size-9 shrink-0 place-items-center rounded-full bg-white/[0.06] text-white/60 hover:text-white" onClick={() => setSelectedPerson(null)}>
+                  <HugeiconsIcon icon={Cancel01Icon} size={18} />
+                </button>
+              </div>
+              {personError ? <p className="mt-6 text-sm text-red-300">Biography unavailable. Please try again.</p> : person ? <p className="mt-6 whitespace-pre-line text-[15px] leading-7 text-white/70">{person.biography?.trim() || "No biography is available yet."}</p> : <p className="mt-6 animate-pulse text-sm text-white/40">Loading biography…</p>}
             </div>
           </div>
         ) : null}

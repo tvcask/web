@@ -66,6 +66,16 @@ export type TitleDetail = Title & {
   episodeMetadataAttribution?: string;
   episodeMetadataUrl?: string;
 };
+export type Person = {
+  id: string;
+  name: string;
+  biography?: string;
+  profileUrl?: string;
+  birthday?: string;
+  deathday?: string;
+  placeOfBirth?: string;
+  knownFor?: string;
+};
 export type MyTitle = { tracked: boolean; userTitle?: UserTitle; watched: string[] };
 
 export type LibraryQuery = { type?: "show" | "movie"; status?: string; favorite?: boolean; limit?: number; offset?: number };
