@@ -1,7 +1,7 @@
 "use client";
 
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowLeft01Icon, Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -30,17 +30,15 @@ function formatPersonDates(person: Person): string {
   return person.deathday ? `${format(person.birthday)} – ${format(person.deathday)}` : `Born ${format(person.birthday)}`;
 }
 
-export function PersonDialog({
+function PersonDialog({
   castMember,
   person,
   error,
-  titleName,
   onClose
 }: {
   castMember: CastMember;
   person: Person | null;
   error: boolean;
-  titleName?: string;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -59,87 +57,66 @@ export function PersonDialog({
   const profileURL = person?.profileUrl || castMember.profileUrl;
   return createPortal(
     <div
-      className="actor-dialog-backdrop pointer-events-auto fixed inset-0 z-[100] grid place-items-end bg-black/80 backdrop-blur-md sm:place-items-center sm:p-6"
+      className="fixed inset-0 z-[100] grid place-items-end bg-black/80 backdrop-blur-md sm:place-items-center sm:p-6"
       role="presentation"
-      onPointerDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+      onMouseDown={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="person-name"
-        className="actor-dialog-panel flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-[28px] border border-white/10 bg-[#111114] shadow-2xl sm:max-h-[min(780px,90dvh)] sm:max-w-3xl sm:rounded-[28px]"
+        className="max-h-[90dvh] w-full overflow-y-auto rounded-t-[28px] border border-white/10 bg-[#111114] shadow-2xl sm:max-w-2xl sm:rounded-[28px]"
+        onMouseDown={(event) => event.stopPropagation()}
       >
-        <header className="flex shrink-0 items-center justify-between border-b border-white/[0.07] px-4 py-3 sm:px-5">
-          <button
-            type="button"
-            className="cask-focus group inline-flex min-w-0 items-center gap-2 rounded-full px-2 py-2 text-sm font-bold text-white/60 transition hover:bg-white/5 hover:text-white"
-            onPointerDown={(event) => {
-              event.stopPropagation();
-              onClose();
-            }}
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4 shrink-0 transition-transform group-hover:-translate-x-0.5" />
-            <span className="truncate">{titleName ? `Back to ${titleName}` : "Back to title"}</span>
-          </button>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/[0.07] bg-[#111114]/95 px-6 py-4 backdrop-blur">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/40">Cast details</p>
           <button
             autoFocus
             type="button"
             aria-label="Close cast details"
             className="grid size-9 place-items-center rounded-full bg-white/[0.07] text-white/60 transition hover:bg-white/10 hover:text-white"
-            onPointerDown={(event) => {
-              event.stopPropagation();
-              onClose();
-            }}
+            onClick={onClose}
           >
             <HugeiconsIcon icon={Cancel01Icon} size={18} />
           </button>
-        </header>
+        </div>
 
-        <div className="nos min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="grid gap-7 p-5 pb-10 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8 sm:p-8">
-            <aside className="sm:sticky sm:top-8 sm:self-start">
-              <div className="flex gap-5 sm:block">
-                <div className="relative h-36 w-28 shrink-0 overflow-hidden rounded-[20px] bg-white/[0.06] shadow-xl shadow-black/25 ring-1 ring-white/10 sm:aspect-[4/5] sm:h-auto sm:w-full">
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start gap-5 sm:gap-7">
+            <div className="relative h-36 w-28 shrink-0 overflow-hidden rounded-[20px] bg-white/[0.06] ring-1 ring-white/10 sm:h-44 sm:w-36">
               {profileURL ? (
-                    <Image src={profileURL} alt="" fill sizes="(min-width: 640px) 190px, 112px" className="object-cover" priority />
+                <Image src={profileURL} alt="" fill sizes="(min-width: 640px) 144px, 112px" className="object-cover" />
               ) : (
                 <div className="grid h-full place-items-center text-3xl font-extrabold text-white/45">{(castMember.name.trim()[0] ?? "?").toUpperCase()}</div>
               )}
-                </div>
-                <div className="min-w-0 pt-1 sm:pt-5">
-                  <p className="eyebrow">Cast member</p>
-                  <h2 id="person-name" className="display mt-1 text-2xl leading-tight text-white sm:text-3xl">{person?.name || castMember.name}</h2>
-                  {castMember.character ? <p className="mt-2 text-sm font-bold leading-5 text-[var(--accent-text)]">as {castMember.character}</p> : null}
-                  {person?.knownFor ? <p className="mt-2 text-sm text-white/50">{person.knownFor}</p> : null}
-                </div>
-              </div>
-
-              {person ? (
-                <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-white/[0.07] pt-5 text-xs sm:grid-cols-1">
-                  {formatPersonDates(person) ? <div><dt className="text-white/35">Life</dt><dd className="mt-1 leading-5 text-white/65">{formatPersonDates(person)}</dd></div> : null}
-                  {person.placeOfBirth ? <div><dt className="text-white/35">From</dt><dd className="mt-1 leading-5 text-white/65">{person.placeOfBirth}</dd></div> : null}
-                </dl>
-              ) : null}
-            </aside>
-
-            <main className="min-w-0 sm:border-l sm:border-white/[0.07] sm:pl-8">
-              <div className="mb-5 flex items-center gap-3">
-                <span className="h-px w-7 bg-[var(--accent)]/70" aria-hidden />
-                <p className="eyebrow">Biography</p>
-              </div>
-              {error ? (
-                <div className="rounded-2xl border border-red-300/15 bg-red-300/[0.05] p-4 text-sm text-red-200">Biography unavailable. Please close this view and try again.</div>
-              ) : person ? (
-                <p className="max-w-[68ch] whitespace-pre-line text-[15px] leading-7 text-white/70 sm:text-base sm:leading-8">{person.biography?.trim() || "No biography is available yet."}</p>
-              ) : (
-                <div className="space-y-4 pt-1" aria-label="Loading biography">
-                  {["w-full", "w-11/12", "w-full", "w-4/5"].map((width, index) => <div key={index} className={`h-3 animate-pulse rounded-full bg-white/[0.06] ${width}`} />)}
-                </div>
-              )}
-            </main>
             </div>
+            <div className="min-w-0 flex-1 pt-2">
+              <h2 id="person-name" className="display text-2xl text-white sm:text-3xl">{person?.name || castMember.name}</h2>
+              {castMember.character ? <p className="mt-2 text-sm font-semibold text-[var(--accent)]">as {castMember.character}</p> : null}
+              {person?.knownFor ? <p className="mt-2 text-sm text-white/50">{person.knownFor}</p> : null}
+              {person ? (
+                <div className="mt-4 space-y-1 text-xs leading-5 text-white/45 sm:text-sm">
+                  {formatPersonDates(person) ? <p>{formatPersonDates(person)}</p> : null}
+                  {person.placeOfBirth ? <p>{person.placeOfBirth}</p> : null}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="mt-7 border-t border-white/[0.07] pt-6">
+            <h3 className="display mb-3 text-base text-white">Biography</h3>
+            {error ? (
+              <p className="text-sm text-red-300">Biography unavailable. Please try again.</p>
+            ) : person ? (
+              <p className="whitespace-pre-line text-[15px] leading-7 text-white/70">{person.biography?.trim() || "No biography is available yet."}</p>
+            ) : (
+              <div className="space-y-3" aria-label="Loading biography">
+                <div className="h-3 animate-pulse rounded-full bg-white/[0.06]" />
+                <div className="h-3 w-5/6 animate-pulse rounded-full bg-white/[0.06]" />
+                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/[0.06]" />
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </div>,
@@ -188,12 +165,7 @@ export function TitleDetailClient({
   const [selectedPerson, setSelectedPerson] = useState<CastMember | null>(null);
   const [person, setPerson] = useState<Person | null>(null);
   const [personError, setPersonError] = useState(false);
-  const personCache = useRef(new Map<number, Person>());
-  const personTrigger = useRef<HTMLButtonElement | null>(null);
-  const closePerson = useCallback(() => {
-    setSelectedPerson(null);
-    requestAnimationFrame(() => personTrigger.current?.focus());
-  }, []);
+  const closePerson = useCallback(() => setSelectedPerson(null), []);
 
   // Keep the cached library lists in sync with the drawer — debounced so rapid
   // toggles trigger a single refetch.
@@ -218,21 +190,13 @@ export function TitleDetailClient({
 
   useEffect(() => {
     if (!selectedPerson) return;
-    const cached = personCache.current.get(selectedPerson.id);
-    if (cached) {
-      setPerson(cached);
-      setPersonError(false);
-      return;
-    }
     const controller = new AbortController();
     setPerson(null);
     setPersonError(false);
     fetch(`/api/v1/people/${selectedPerson.id}`, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error("person request failed");
-        const result = (await response.json()) as Person;
-        personCache.current.set(selectedPerson.id, result);
-        setPerson(result);
+        setPerson((await response.json()) as Person);
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) setPersonError(true);
@@ -508,10 +472,7 @@ export function TitleDetailClient({
                   type="button"
                   key={person.id}
                   className="w-[82px] shrink-0 text-center"
-                  onClick={(event) => {
-                    personTrigger.current = event.currentTarget;
-                    setSelectedPerson(person);
-                  }}
+                  onClick={() => setSelectedPerson(person)}
                   aria-label={`View ${person.name}'s biography`}
                 >
                   <div className="relative mx-auto size-16 overflow-hidden rounded-full bg-white/[0.06] ring-1 ring-white/10">
@@ -531,7 +492,7 @@ export function TitleDetailClient({
           </div>
         ) : null}
 
-        {selectedPerson ? <PersonDialog castMember={selectedPerson} person={person} error={personError} titleName={title.title} onClose={closePerson} /> : null}
+        {selectedPerson ? <PersonDialog castMember={selectedPerson} person={person} error={personError} onClose={closePerson} /> : null}
 
         {!isMovie ? (
           <div>
