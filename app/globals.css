@@ -117,6 +117,34 @@ button:disabled {
   display: none;
 }
 
+/* Actor details enter on compositor-friendly properties only. The nested
+   title drawer stays mounted underneath, so returning feels instantaneous. */
+@keyframes actor-dialog-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes actor-dialog-panel-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.actor-dialog-backdrop {
+  animation: actor-dialog-backdrop-in 160ms ease-out both;
+}
+
+.actor-dialog-panel {
+  animation: actor-dialog-panel-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actor-dialog-backdrop,
+  .actor-dialog-panel {
+    animation: none;
+  }
+}
+
 .lift {
   transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
