@@ -4,6 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { celebrate } from "@/lib/celebrate";
@@ -11,9 +12,9 @@ import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
-import type { TitleDetail } from "@/lib/data";
+import type { Person, TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
-import type { Episode } from "@/lib/services/types";
+import type { CastMember, Episode } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
@@ -22,6 +23,106 @@ const key = (s: number, e: number) => `${s}-${e}`;
 // An episode counts as aired if it has no date or its date is today or
 // earlier in the viewer's timezone. Unaired episodes can't be marked watched.
 const hasAired = (e: Episode) => !e.airDate || e.airDate <= localDate();
+
+function formatPersonDates(person: Person): string {
+  const format = (value: string) => new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
+  if (!person.birthday) return "";
+  return person.deathday ? `${format(person.birthday)} – ${format(person.deathday)}` : `Born ${format(person.birthday)}`;
+}
+
+function PersonDialog({
+  castMember,
+  person,
+  error,
+  onClose
+}: {
+  castMember: CastMember;
+  person: Person | null;
+  error: boolean;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onClose]);
+
+  const profileURL = person?.profileUrl || castMember.profileUrl;
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] grid place-items-end bg-black/80 backdrop-blur-md sm:place-items-center sm:p-6"
+      role="presentation"
+      onMouseDown={onClose}
+    >
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="person-name"
+        className="max-h-[90dvh] w-full overflow-y-auto rounded-t-[28px] border border-white/10 bg-[#111114] shadow-2xl sm:max-w-2xl sm:rounded-[28px]"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/[0.07] bg-[#111114]/95 px-6 py-4 backdrop-blur">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/40">Cast details</p>
+          <button
+            autoFocus
+            type="button"
+            aria-label="Close cast details"
+            className="grid size-9 place-items-center rounded-full bg-white/[0.07] text-white/60 transition hover:bg-white/10 hover:text-white"
+            onClick={onClose}
+          >
+            <HugeiconsIcon icon={Cancel01Icon} size={18} />
+          </button>
+        </div>
+
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start gap-5 sm:gap-7">
+            <div className="relative h-36 w-28 shrink-0 overflow-hidden rounded-[20px] bg-white/[0.06] ring-1 ring-white/10 sm:h-44 sm:w-36">
+              {profileURL ? (
+                <Image src={profileURL} alt="" fill sizes="(min-width: 640px) 144px, 112px" className="object-cover" />
+              ) : (
+                <div className="grid h-full place-items-center text-3xl font-extrabold text-white/45">{(castMember.name.trim()[0] ?? "?").toUpperCase()}</div>
+              )}
+            </div>
+            <div className="min-w-0 flex-1 pt-2">
+              <h2 id="person-name" className="display text-2xl text-white sm:text-3xl">{person?.name || castMember.name}</h2>
+              {castMember.character ? <p className="mt-2 text-sm font-semibold text-[var(--accent)]">as {castMember.character}</p> : null}
+              {person?.knownFor ? <p className="mt-2 text-sm text-white/50">{person.knownFor}</p> : null}
+              {person ? (
+                <div className="mt-4 space-y-1 text-xs leading-5 text-white/45 sm:text-sm">
+                  {formatPersonDates(person) ? <p>{formatPersonDates(person)}</p> : null}
+                  {person.placeOfBirth ? <p>{person.placeOfBirth}</p> : null}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="mt-7 border-t border-white/[0.07] pt-6">
+            <h3 className="display mb-3 text-base text-white">Biography</h3>
+            {error ? (
+              <p className="text-sm text-red-300">Biography unavailable. Please try again.</p>
+            ) : person ? (
+              <p className="whitespace-pre-line text-[15px] leading-7 text-white/70">{person.biography?.trim() || "No biography is available yet."}</p>
+            ) : (
+              <div className="space-y-3" aria-label="Loading biography">
+                <div className="h-3 animate-pulse rounded-full bg-white/[0.06]" />
+                <div className="h-3 w-5/6 animate-pulse rounded-full bg-white/[0.06]" />
+                <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/[0.06]" />
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>,
+    document.body
+  );
+}
 
 // Roll back an optimistic change and tell the user it didn't stick.
 function onSaveError(revert: () => void) {
@@ -61,6 +162,10 @@ export function TitleDetailClient({
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const [openSeason, setOpenSeason] = useState<number | null>(() => episodes[0]?.seasonNumber ?? null);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
+  const [selectedPerson, setSelectedPerson] = useState<CastMember | null>(null);
+  const [person, setPerson] = useState<Person | null>(null);
+  const [personError, setPersonError] = useState(false);
+  const closePerson = useCallback(() => setSelectedPerson(null), []);
 
   // Keep the cached library lists in sync with the drawer — debounced so rapid
   // toggles trigger a single refetch.
@@ -82,6 +187,22 @@ export function TitleDetailClient({
     setOpenSeason(target.seasonNumber);
     requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
   }, [episodes]);
+
+  useEffect(() => {
+    if (!selectedPerson) return;
+    const controller = new AbortController();
+    setPerson(null);
+    setPersonError(false);
+    fetch(`/api/v1/people/${selectedPerson.id}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("person request failed");
+        setPerson((await response.json()) as Person);
+      })
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) setPersonError(true);
+      });
+    return () => controller.abort();
+  }, [selectedPerson]);
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
@@ -347,7 +468,13 @@ export function TitleDetailClient({
             <h2 className="display mb-3 text-base text-white">Cast</h2>
             <div className="flex gap-4 overflow-x-auto pb-2">
               {title.cast.map((person) => (
-                <div key={person.id} className="w-[82px] shrink-0 text-center">
+                <button
+                  type="button"
+                  key={person.id}
+                  className="w-[82px] shrink-0 text-center"
+                  onClick={() => setSelectedPerson(person)}
+                  aria-label={`View ${person.name}'s biography`}
+                >
                   <div className="relative mx-auto size-16 overflow-hidden rounded-full bg-white/[0.06] ring-1 ring-white/10">
                     {person.profileUrl ? (
                       <Image src={person.profileUrl} alt="" fill sizes="64px" className="object-cover" />
@@ -359,11 +486,13 @@ export function TitleDetailClient({
                   </div>
                   <p className="mt-2 truncate text-xs font-bold text-white/80">{person.name}</p>
                   {person.character ? <p className="mt-0.5 truncate text-[11px] text-white/40">{person.character}</p> : null}
-                </div>
+                </button>
               ))}
             </div>
           </div>
         ) : null}
+
+        {selectedPerson ? <PersonDialog castMember={selectedPerson} person={person} error={personError} onClose={closePerson} /> : null}
 
         {!isMovie ? (
           <div>
