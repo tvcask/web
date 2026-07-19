@@ -281,22 +281,49 @@ export function TitleDetailClient({
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
 
-    const request = markThrough
-      ? mutate(`me/titles/${title.id}/episodes/through`, "POST", {
-          season: ep.seasonNumber,
-          episode: ep.episodeNumber
-        })
-      : mutate(`me/titles/${title.id}/episodes`, "POST", {
-          season: ep.seasonNumber,
-          episode: ep.episodeNumber,
-          episodeId: ep.id,
-          watched: willWatch
-        });
+    if (markThrough) {
+      mutate(`me/titles/${title.id}/episodes/through`, "POST", {
+        season: ep.seasonNumber,
+        episode: ep.episodeNumber
+      })
+        .then(() =>
+          toast(`Marked ${through.length} earlier episodes`, {
+            action: { label: "Undo", onClick: () => undoMarkThrough(through, prev.watched, nextWatched) }
+          })
+        )
+        .catch(onSaveError(() => {
+          setWatched(prev.watched);
+          setTracked(prev.tracked);
+        }));
+      return;
+    }
 
-    request.catch(onSaveError(() => {
+    mutate(`me/titles/${title.id}/episodes`, "POST", {
+      season: ep.seasonNumber,
+      episode: ep.episodeNumber,
+      episodeId: ep.id,
+      watched: willWatch
+    }).catch(onSaveError(() => {
       setWatched(prev.watched);
       setTracked(prev.tracked);
     }));
+  }
+
+  // Reverse a mark-through. There's no bulk-unmark endpoint, so clear the run
+  // episode by episode; `before`/`after` are the watched sets to roll to.
+  function undoMarkThrough(marked: Episode[], before: Set<string>, after: Set<string>) {
+    setWatched(before);
+    scheduleRefresh();
+    Promise.all(
+      marked.map((e) =>
+        mutate(`me/titles/${title.id}/episodes`, "POST", {
+          season: e.seasonNumber,
+          episode: e.episodeNumber,
+          episodeId: e.id,
+          watched: false
+        })
+      )
+    ).catch(onSaveError(() => setWatched(after)));
   }
 
   function toggleSeason(seasonNumber: number, seasonEpisodes: Episode[], allWatched: boolean) {
