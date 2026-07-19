@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.0](https://github.com/tvcask/web/compare/tvcask-web-v0.7.0...tvcask-web-v0.8.0) (2026-07-19)
+
+
+### Features
+
+* **cast:** show actor biographies ([f96c0ab](https://github.com/tvcask/web/commit/f96c0ab19a37b6ef4a685d3f05ec94f345df1fbe))
+* **cast:** show actor biographies ([6514696](https://github.com/tvcask/web/commit/6514696fc888f912bdd2024413b86d31d5e32fd5))
+* **episodes:** add undo toast for mark-through ([9a8d9ee](https://github.com/tvcask/web/commit/9a8d9ee121a0a282f4c5d8791f63f9f96518c0f3))
+* **episodes:** mark prior episodes watched ([331b106](https://github.com/tvcask/web/commit/331b1061b2509cdc8ca45b7a1a4d68cd00722ba2))
+* **episodes:** mark prior episodes watched ([ac4e6f1](https://github.com/tvcask/web/commit/ac4e6f101c5f97850c6b4f61f909988f338308a2))
+
+
+### Bug Fixes
+
+* **cast:** harden actor detail experience ([4c419dc](https://github.com/tvcask/web/commit/4c419dc3759b45b09c78ce95a699151120af8158))
+* **cast:** harden actor detail experience ([0754f91](https://github.com/tvcask/web/commit/0754f91d13c7ee08e23e54b6ef7f81e12bcb1f87))
+* **cast:** harden actor detail experience ([787899e](https://github.com/tvcask/web/commit/787899e49ef5b0bdd7b3a7ce4c6502c54e5dae88))
+* **cast:** improve actor detail navigation ([85a962a](https://github.com/tvcask/web/commit/85a962ab3971eb36df07ee9d06f43b3b2d022c71))
+
 ## [0.7.0](https://github.com/tvcask/web/compare/tvcask-web-v0.6.0...tvcask-web-v0.7.0) (2026-07-17)
 
 
