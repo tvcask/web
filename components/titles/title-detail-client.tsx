@@ -257,15 +257,46 @@ export function TitleDetailClient({
     const k = key(ep.seasonNumber, ep.episodeNumber);
     const willWatch = !watched.has(k);
     if (willWatch && !hasAired(ep)) return;
+
+    // Checking an episode that still has several unwatched aired episodes before
+    // it marks the whole run through it in one server call. Otherwise it's a
+    // plain single toggle (and unchecking always is).
+    const through = willWatch
+      ? airedEpisodes.filter((e) => isAtOrBefore(e, ep) && !watched.has(key(e.seasonNumber, e.episodeNumber)))
+      : [];
+    const markThrough = through.length > 1;
+
     const nextWatched = new Set(watched);
-    if (willWatch) nextWatched.add(k);
-    else nextWatched.delete(k);
+    if (markThrough) {
+      for (const e of through) nextWatched.add(key(e.seasonNumber, e.episodeNumber));
+    } else if (willWatch) {
+      nextWatched.add(k);
+    } else {
+      nextWatched.delete(k);
+    }
 
     const prev = { watched, tracked };
     setWatched(nextWatched);
     setTracked(true);
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
+
+    if (markThrough) {
+      mutate(`me/titles/${title.id}/episodes/through`, "POST", {
+        season: ep.seasonNumber,
+        episode: ep.episodeNumber
+      })
+        .then(() =>
+          toast(`Marked ${through.length} earlier episodes`, {
+            action: { label: "Undo", onClick: () => undoMarkThrough(through, prev.watched, nextWatched) }
+          })
+        )
+        .catch(onSaveError(() => {
+          setWatched(prev.watched);
+          setTracked(prev.tracked);
+        }));
+      return;
+    }
 
     mutate(`me/titles/${title.id}/episodes`, "POST", {
       season: ep.seasonNumber,
@@ -276,6 +307,23 @@ export function TitleDetailClient({
       setWatched(prev.watched);
       setTracked(prev.tracked);
     }));
+  }
+
+  // Reverse a mark-through. There's no bulk-unmark endpoint, so clear the run
+  // episode by episode; `before`/`after` are the watched sets to roll to.
+  function undoMarkThrough(marked: Episode[], before: Set<string>, after: Set<string>) {
+    setWatched(before);
+    scheduleRefresh();
+    Promise.all(
+      marked.map((e) =>
+        mutate(`me/titles/${title.id}/episodes`, "POST", {
+          season: e.seasonNumber,
+          episode: e.episodeNumber,
+          episodeId: e.id,
+          watched: false
+        })
+      )
+    ).catch(onSaveError(() => setWatched(after)));
   }
 
   function toggleSeason(seasonNumber: number, seasonEpisodes: Episode[], allWatched: boolean) {
@@ -643,6 +691,16 @@ export function TitleDetailClient({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function isAtOrBefore(candidate: Episode, target: Episode): boolean {
+  // Specials (Season 0) sit outside the main chronology — marking a regular
+  // episode shouldn't sweep up earlier specials.
+  if (target.seasonNumber > 0 && candidate.seasonNumber <= 0) return false;
+  return (
+    candidate.seasonNumber < target.seasonNumber ||
+    (candidate.seasonNumber === target.seasonNumber && candidate.episodeNumber <= target.episodeNumber)
   );
 }
 

@@ -1,5 +1,8 @@
+export type ToastAction = { label: string; onClick: () => void };
+
 export type ToastOptions = {
   actionHref?: string;
+  action?: ToastAction;
 };
 
 export type ToastEvent = ToastOptions & {
