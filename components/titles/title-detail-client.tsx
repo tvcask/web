@@ -257,9 +257,23 @@ export function TitleDetailClient({
     const k = key(ep.seasonNumber, ep.episodeNumber);
     const willWatch = !watched.has(k);
     if (willWatch && !hasAired(ep)) return;
+
+    // Checking an episode that still has several unwatched aired episodes before
+    // it marks the whole run through it in one server call. Otherwise it's a
+    // plain single toggle (and unchecking always is).
+    const through = willWatch
+      ? airedEpisodes.filter((e) => isAtOrBefore(e, ep) && !watched.has(key(e.seasonNumber, e.episodeNumber)))
+      : [];
+    const markThrough = through.length > 1;
+
     const nextWatched = new Set(watched);
-    if (willWatch) nextWatched.add(k);
-    else nextWatched.delete(k);
+    if (markThrough) {
+      for (const e of through) nextWatched.add(key(e.seasonNumber, e.episodeNumber));
+    } else if (willWatch) {
+      nextWatched.add(k);
+    } else {
+      nextWatched.delete(k);
+    }
 
     const prev = { watched, tracked };
     setWatched(nextWatched);
@@ -267,12 +281,19 @@ export function TitleDetailClient({
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
 
-    mutate(`me/titles/${title.id}/episodes`, "POST", {
-      season: ep.seasonNumber,
-      episode: ep.episodeNumber,
-      episodeId: ep.id,
-      watched: willWatch
-    }).catch(onSaveError(() => {
+    const request = markThrough
+      ? mutate(`me/titles/${title.id}/episodes/through`, "POST", {
+          season: ep.seasonNumber,
+          episode: ep.episodeNumber
+        })
+      : mutate(`me/titles/${title.id}/episodes`, "POST", {
+          season: ep.seasonNumber,
+          episode: ep.episodeNumber,
+          episodeId: ep.id,
+          watched: willWatch
+        });
+
+    request.catch(onSaveError(() => {
       setWatched(prev.watched);
       setTracked(prev.tracked);
     }));
@@ -643,6 +664,16 @@ export function TitleDetailClient({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function isAtOrBefore(candidate: Episode, target: Episode): boolean {
+  // Specials (Season 0) sit outside the main chronology — marking a regular
+  // episode shouldn't sweep up earlier specials.
+  if (target.seasonNumber > 0 && candidate.seasonNumber <= 0) return false;
+  return (
+    candidate.seasonNumber < target.seasonNumber ||
+    (candidate.seasonNumber === target.seasonNumber && candidate.episodeNumber <= target.episodeNumber)
   );
 }
 
