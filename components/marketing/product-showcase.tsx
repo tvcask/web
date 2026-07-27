@@ -68,26 +68,39 @@ export const moviePosters: Poster[] = [
   },
 ];
 
-// Three rails drifting in alternating directions. Each row uses a different
-// order so the repeats across rows are not obvious.
-const catalogRows: Poster[][] = [
-  [...trendingShows, ...moviePosters.slice(0, 3)],
-  [...moviePosters, ...trendingShows.slice(2, 5)],
-  [
-    ...trendingShows.slice(3),
-    ...moviePosters.slice(3),
-    ...trendingShows.slice(0, 2),
-    moviePosters[0],
-  ],
+// Three rails drifting in alternating directions. The pool of posters is small,
+// so each row gets its own order and its own duration: matching speeds would
+// keep the rows in phase and make the repeats obvious.
+const catalogRows: { items: Poster[]; direction: "left" | "right"; duration: number }[] = [
+  {
+    items: [...trendingShows, ...moviePosters.slice(0, 3)],
+    direction: "left",
+    duration: 46,
+  },
+  {
+    items: [...moviePosters, ...trendingShows.slice(2, 5)],
+    direction: "right",
+    duration: 37,
+  },
+  {
+    items: [
+      ...trendingShows.slice(3),
+      ...moviePosters.slice(3),
+      ...trendingShows.slice(0, 2),
+      moviePosters[0],
+    ],
+    direction: "left",
+    duration: 53,
+  },
 ];
 
 export function HeroProductPreview() {
   return (
     <div className="hero-glow relative">
       <div className="surface overflow-hidden rounded-[18px] p-2 shadow-2xl shadow-black/40">
-        <div className="relative aspect-[1968/1186] overflow-hidden rounded-[12px] bg-black">
+        <div className="relative aspect-[1966/1240] overflow-hidden rounded-[12px] bg-black">
           <Image
-            src="/screens/web-lib-6.png"
+            src="/screens/web-library.jpg"
             alt="A tvcask profile on the web with rows of tracked shows, favorite shows, and movies"
             fill
             sizes="(max-width: 1024px) 100vw, 990px"
@@ -124,8 +137,9 @@ export function TrendingCatalogBand() {
             {catalogRows.map((row, index) => (
               <MovingPosterRail
                 key={index}
-                items={row}
-                direction={index % 2 === 0 ? "left" : "right"}
+                items={row.items}
+                direction={row.direction}
+                duration={row.duration}
                 offset={index}
               />
             ))}
@@ -237,10 +251,12 @@ export function MobileAppSection() {
 function MovingPosterRail({
   items,
   direction,
+  duration,
   offset = 0,
 }: {
   items: Poster[];
   direction: "left" | "right";
+  duration: number;
   offset?: number;
 }) {
   const loop = [...items, ...items];
@@ -248,6 +264,7 @@ function MovingPosterRail({
     <div className="relative overflow-hidden">
       <div
         className={`${direction === "left" ? "poster-marquee" : "poster-marquee-reverse"} flex w-max gap-3`}
+        style={{ animationDuration: `${duration}s` }}
       >
         {loop.map((item, index) => (
           <div

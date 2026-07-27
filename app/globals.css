@@ -171,11 +171,6 @@ button:disabled {
   animation: poster-marquee-reverse 42s linear infinite;
 }
 
-.poster-marquee:hover,
-.poster-marquee-reverse:hover {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .poster-marquee,
   .poster-marquee-reverse {
