@@ -167,13 +167,8 @@ button:disabled {
   animation: poster-marquee 42s linear infinite;
 }
 
-.poster-marquee-reverse {
-  animation: poster-marquee-reverse 42s linear infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .poster-marquee,
-  .poster-marquee-reverse {
+  .poster-marquee {
     animation: none;
   }
 }
@@ -197,14 +192,5 @@ button:disabled {
   }
   to {
     transform: translateX(-50%);
-  }
-}
-
-@keyframes poster-marquee-reverse {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
   }
 }

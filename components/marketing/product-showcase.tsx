@@ -1,7 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowRight02Icon,
-  PlusSignIcon,
   Tick02Icon,
 } from "@hugeicons/core-free-icons";
 import Image from "next/image";
@@ -68,43 +67,16 @@ export const moviePosters: Poster[] = [
   },
 ];
 
-// Three rails drifting in alternating directions. The poster pool is small, so
-// every row carries all twelve in its own interleaved order: contiguous slices
-// would put the same run of posters in two rows at once. Durations differ too,
-// otherwise the rows stay in phase and the repeats line up vertically.
-const order = (pattern: [Poster[], number][]) => pattern.map(([set, i]) => set[i]);
-const s = trendingShows;
-const m = moviePosters;
-
-const catalogRows: {
-  items: Poster[];
-  direction: "left" | "right";
-  duration: number;
-}[] = [
-  {
-    items: order([
-      [s, 0], [m, 0], [s, 2], [m, 2], [s, 4], [m, 4],
-      [s, 1], [m, 1], [s, 3], [m, 3], [s, 5], [m, 5],
-    ]),
-    direction: "left",
-    duration: 46,
-  },
-  {
-    items: order([
-      [m, 4], [s, 3], [m, 1], [s, 5], [m, 3], [s, 0],
-      [m, 5], [s, 2], [m, 0], [s, 4], [m, 2], [s, 1],
-    ]),
-    direction: "right",
-    duration: 37,
-  },
-  {
-    items: order([
-      [s, 1], [m, 5], [s, 4], [m, 2], [s, 0], [m, 3],
-      [s, 5], [m, 0], [s, 3], [m, 4], [s, 2], [m, 1],
-    ]),
-    direction: "left",
-    duration: 53,
-  },
+// One rail, shows and movies interleaved. A single row shows about as many
+// posters as we have, so nothing visibly repeats; stacking rows would put the
+// same twelve titles on screen three times over.
+const catalogPosters: Poster[] = [
+  trendingShows[0], moviePosters[0],
+  trendingShows[2], moviePosters[2],
+  trendingShows[4], moviePosters[4],
+  trendingShows[1], moviePosters[1],
+  trendingShows[3], moviePosters[3],
+  trendingShows[5], moviePosters[5],
 ];
 
 export function HeroProductPreview() {
@@ -146,25 +118,15 @@ export function TrendingCatalogBand() {
         </div>
 
         <div className="relative">
-          <div className="space-y-3">
-            {catalogRows.map((row, index) => (
-              <MovingPosterRail
-                key={index}
-                items={row.items}
-                direction={row.direction}
-                duration={row.duration}
-                offset={index}
-              />
-            ))}
-          </div>
+          <MovingPosterRail items={catalogPosters} />
           <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#11100e] to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#11100e] to-transparent" />
         </div>
 
         <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-white/45">
-            Every poster opens the real title drawer in the app, with progress,
-            favorites, and lists in one place.
+            Shows, movies, anime, and K-dramas, with progress, favorites, and
+            lists in one place.
           </p>
           <Link
             href="/signup"
@@ -261,54 +223,21 @@ export function MobileAppSection() {
   );
 }
 
-function MovingPosterRail({
-  items,
-  direction,
-  duration,
-  offset = 0,
-}: {
-  items: Poster[];
-  direction: "left" | "right";
-  duration: number;
-  offset?: number;
-}) {
+function MovingPosterRail({ items }: { items: Poster[] }) {
   const loop = [...items, ...items];
   return (
     <div className="relative overflow-hidden">
-      <div
-        className={`${direction === "left" ? "poster-marquee" : "poster-marquee-reverse"} flex w-max gap-3`}
-        style={{ animationDuration: `${duration}s` }}
-      >
+      <div className="poster-marquee flex w-max gap-3">
         {loop.map((item, index) => (
           <div
             key={`${item.title}-${index}`}
-            className="relative w-[72px] shrink-0 overflow-hidden rounded-[10px] sm:w-[88px]"
+            className="relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]"
           >
-            <PosterImage item={item} sizes="(max-width: 640px) 72px, 88px" />
-            <PosterBadge checked={(index + offset) % 4 === 1} />
+            <PosterImage item={item} sizes="(max-width: 640px) 92px, 112px" />
           </div>
         ))}
       </div>
     </div>
-  );
-}
-
-function PosterBadge({ checked }: { checked: boolean }) {
-  return (
-    <span
-      className="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur"
-      aria-hidden
-    >
-      {checked ? (
-        <HugeiconsIcon
-          icon={Tick02Icon}
-          className="size-3.5"
-          style={{ color: "var(--accent-text)" }}
-        />
-      ) : (
-        <HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />
-      )}
-    </span>
   );
 }
 
