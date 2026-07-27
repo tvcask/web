@@ -68,27 +68,40 @@ export const moviePosters: Poster[] = [
   },
 ];
 
-// Three rails drifting in alternating directions. The pool of posters is small,
-// so each row gets its own order and its own duration: matching speeds would
-// keep the rows in phase and make the repeats obvious.
-const catalogRows: { items: Poster[]; direction: "left" | "right"; duration: number }[] = [
+// Three rails drifting in alternating directions. The poster pool is small, so
+// every row carries all twelve in its own interleaved order: contiguous slices
+// would put the same run of posters in two rows at once. Durations differ too,
+// otherwise the rows stay in phase and the repeats line up vertically.
+const order = (pattern: [Poster[], number][]) => pattern.map(([set, i]) => set[i]);
+const s = trendingShows;
+const m = moviePosters;
+
+const catalogRows: {
+  items: Poster[];
+  direction: "left" | "right";
+  duration: number;
+}[] = [
   {
-    items: [...trendingShows, ...moviePosters.slice(0, 3)],
+    items: order([
+      [s, 0], [m, 0], [s, 2], [m, 2], [s, 4], [m, 4],
+      [s, 1], [m, 1], [s, 3], [m, 3], [s, 5], [m, 5],
+    ]),
     direction: "left",
     duration: 46,
   },
   {
-    items: [...moviePosters, ...trendingShows.slice(2, 5)],
+    items: order([
+      [m, 4], [s, 3], [m, 1], [s, 5], [m, 3], [s, 0],
+      [m, 5], [s, 2], [m, 0], [s, 4], [m, 2], [s, 1],
+    ]),
     direction: "right",
     duration: 37,
   },
   {
-    items: [
-      ...trendingShows.slice(3),
-      ...moviePosters.slice(3),
-      ...trendingShows.slice(0, 2),
-      moviePosters[0],
-    ],
+    items: order([
+      [s, 1], [m, 5], [s, 4], [m, 2], [s, 0], [m, 3],
+      [s, 5], [m, 0], [s, 3], [m, 4], [s, 2], [m, 1],
+    ]),
     direction: "left",
     duration: 53,
   },
