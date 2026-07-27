@@ -167,10 +167,6 @@ button:disabled {
   animation: poster-marquee 42s linear infinite;
 }
 
-.poster-marquee:hover {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .poster-marquee {
     animation: none;

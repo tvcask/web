@@ -103,8 +103,8 @@ const exportOptions = [
 
 const faqs = [
   {
-    q: "How do I export my data from TV Time?",
-    a: "Open the official TV Time GDPR self-service page, sign in, request your data, and download gdpr-data.zip when it is ready. Keep the ZIP intact and upload it to tvcask.",
+    q: "Can I still export my data from TV Time?",
+    a: "No. TV Time closed on July 15, 2026 and its GDPR self-service export is no longer available. If you downloaded gdpr-data.zip or a TV Time Out export before the shutdown, you can still upload it to tvcask.",
   },
   {
     q: "Can I import my TV Time custom lists?",
@@ -167,34 +167,25 @@ export default function ImportTvTimePage() {
               Keep your shows, movies, watched episodes, favorites, and custom
               lists in a tracker you can continue using.
             </p>
+            <div className="rounded-[14px] border border-white/12 bg-white/[0.04] px-4 py-3.5 text-sm leading-6 text-white/62">
+              <span className="font-bold text-white">TV Time closed on July 15, 2026.</span>{" "}
+              New exports are no longer available. If you downloaded your GDPR ZIP
+              or a TV Time Out export before then, you can still import it here.
+            </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
-                <a href="https://gdpr.tvtime.com/gdpr/self-service" target="_blank" rel="noreferrer">
-                  Get TV Time export <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
-                </a>
+                <Link href="/signup?returnTo=%2Fapp%2Fimport">
+                  Import your export <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+                </Link>
               </Button>
               <Button
                 asChild
                 variant="secondary"
                 className="h-12 px-6 text-[15px]"
               >
-                <Link href="/signup?returnTo=%2Fapp%2Fimport">Import into tvcask</Link>
+                <Link href="/signup">Just start tracking</Link>
               </Button>
             </div>
-            <p className="text-sm font-semibold text-white/48">
-              TV Time shuts down on July 15, 2026. Save a local copy before then.
-            </p>
-            <p className="text-sm text-white/48">
-              Prefer the browser extension?{" "}
-              <a
-                href="https://chromewebstore.google.com/detail/tv-time-out-by-refract/pmejpdpjbkjklfceogdkolmgclldogbi"
-                target="_blank"
-                rel="noreferrer"
-                className="font-semibold text-[color:var(--accent-text)] underline underline-offset-2"
-              >
-                Open TV Time Out
-              </a>
-            </p>
             <div className="flex flex-wrap gap-2 pt-2">
               {["Shows", "Movies", "Episodes", "Favorites", "Custom lists"].map(
                 (item) => (

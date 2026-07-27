@@ -1,16 +1,12 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { getToken } from "@/lib/api";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { AppStoreBadge } from "@/components/marketing/app-store-badge";
-import {
-  moviePosters,
-  trendingShows,
-} from "@/components/marketing/product-showcase";
+import { Reveal } from "@/components/marketing/reveal";
 
 export const metadata: Metadata = {
   title: "Why tvcask Exists | tvcask",
@@ -43,32 +39,19 @@ export const metadata: Metadata = {
   },
 };
 
-const milestones = [
-  ["Import first", "Preserve TV Time histories before anything else."],
-  ["Web first", "Ship the migration workflow quickly, on every device."],
-  ["iOS shipped", "Everyday tracking on the phone, native and fast."],
-  ["Social later", "Add community once private libraries are solid."],
-];
-
 const timeline = [
-  ["July 15, 2026", "TV Time closes", "People need a safe home for years of history."],
-  ["Days later", "tvcask built", "A solo, focused rebuild begins."],
-  ["Then", "Web launch", "Accounts, import, and tracking live."],
-  ["Today", "iPhone app", "The same library on the App Store."],
+  ["July 15, 2026", "TV Time closes", "Years of watched episodes needed somewhere to go."],
+  ["Days later", "tvcask built", "A solo rebuild, starting with the import."],
+  ["Then", "Web launch", "Accounts, import, and everyday tracking."],
+  ["Today", "iPhone app", "The same library, native, on the App Store."],
+  ["Next", "Social", "Feed, profiles, and reactions on a library you already trust."],
 ];
 
 const proofPoints = [
-  "Shows and movies matched",
-  "Watched episodes restored",
-  "Favorites preserved",
-  "Custom lists imported",
-];
-
-const visualPosters = [
-  trendingShows[0],
-  trendingShows[4],
-  moviePosters[3],
-  moviePosters[4],
+  "Episode by episode tracking",
+  "Favorites and custom lists",
+  "Watch next and upcoming",
+  "One account on web and iPhone",
 ];
 
 export default async function AboutPage() {
@@ -77,8 +60,8 @@ export default async function AboutPage() {
   return (
     <>
       <MarketingHeader />
-      <main className="mx-auto max-w-6xl px-5 pb-16 pt-12 sm:pb-20 sm:pt-16">
-        <section className="grid items-start gap-10 lg:grid-cols-[1fr_0.78fr] lg:gap-14">
+      <main className="mx-auto max-w-3xl px-5 pb-16 pt-12 sm:pb-20 sm:pt-16">
+        <section>
           <div className="min-w-0">
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
               Why tvcask exists
@@ -108,69 +91,35 @@ export default async function AboutPage() {
                 import progress before building the rest of the product.
               </p>
               <p>
-                The goal is simple:{" "}
+                That foundation held, so the iPhone app followed and is now on the
+                App Store. TV Time has since closed for good, and tvcask carries
+                on as what it was always meant to be:{" "}
                 <strong className="font-extrabold text-white">
-                  preserve your data and keep watching
+                  a dependable place to track what you watch
                 </strong>
-                . That foundation held, so the iPhone app followed and is now on
-                the App Store. Next comes better discovery, social activity,
-                episode reactions, comments, and sharing.
+                .
               </p>
             </div>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/import-tv-time"
+                href={isAuthenticated ? "/app/shows" : "/signup"}
                 className="inline-flex h-12 items-center justify-center rounded-full px-6 text-[15px] font-bold"
                 style={{
                   background: "var(--accent)",
                   color: "var(--on-accent)",
                 }}
               >
-                Import TV Time <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
-              </Link>
-              <Link
-                href={isAuthenticated ? "/app/shows" : "/signup"}
-                className="inline-flex h-12 items-center justify-center rounded-full border border-white/12 px-6 text-[15px] font-bold text-white"
-              >
                 {isAuthenticated ? "Open app" : "Create account"}
+                <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
               </Link>
               <AppStoreBadge />
             </div>
           </div>
 
-          <div className="hero-glow relative lg:sticky lg:top-24">
-            <div className="surface overflow-hidden rounded-[20px] p-3 shadow-2xl shadow-black/30">
-              <div className="grid grid-cols-2 gap-3">
-                {visualPosters.map((poster) => (
-                  <div
-                    key={poster.title}
-                    className="relative overflow-hidden rounded-[14px]"
-                  >
-                    <div className="relative aspect-[2/3]">
-                      <Image
-                        src={poster.poster}
-                        alt=""
-                        fill
-                        sizes="(max-width: 640px) 44vw, 200px"
-                        className="object-cover"
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-                    </div>
-                    <p className="absolute inset-x-3 bottom-3 text-[11px] font-extrabold uppercase leading-tight text-white drop-shadow-lg">
-                      {poster.title}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <p className="mt-3 text-center text-xs font-semibold text-white/45">
-              A slice of a real imported library.
-            </p>
-          </div>
         </section>
 
-        <section className="mt-14 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+        <Reveal className="mt-14 grid gap-2.5 sm:grid-cols-2">
           {proofPoints.map((item) => (
             <div
               key={item}
@@ -188,39 +137,32 @@ export default async function AboutPage() {
               <span className="text-sm font-bold text-white/80">{item}</span>
             </div>
           ))}
-        </section>
+        </Reveal>
 
-        <section className="mt-16 sm:mt-20">
+        <Reveal className="mt-16 sm:mt-20">
           <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
             How we got here
           </p>
           <h2 className="display mt-2 text-2xl text-white sm:text-3xl">
             From shutdown to a new home.
           </h2>
-          <ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {timeline.map(([when, title, copy], i) => (
-              <li key={title} className="card relative rounded-[16px] p-5">
-                <span className="absolute right-4 top-4 text-xs font-bold text-white/25">
-                  0{i + 1}
-                </span>
-                <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+          <ol className="mt-6 space-y-0">
+            {timeline.map(([when, title, copy]) => (
+              <li
+                key={title}
+                className="grid gap-1 border-t border-white/[0.07] py-5 sm:grid-cols-[140px_minmax(0,1fr)] sm:gap-6"
+              >
+                <p className="eyebrow pt-0.5" style={{ color: "var(--accent-text)" }}>
                   {when}
                 </p>
-                <p className="display mt-2 text-lg text-white">{title}</p>
-                <p className="mt-1.5 text-sm leading-6 text-white/60">{copy}</p>
+                <div>
+                  <p className="display text-lg text-white">{title}</p>
+                  <p className="mt-1 text-sm leading-6 text-white/60">{copy}</p>
+                </div>
               </li>
             ))}
           </ol>
-        </section>
-
-        <section className="mt-10 grid gap-3 sm:grid-cols-2">
-          {milestones.map(([title, copy]) => (
-            <div key={title} className="card rounded-[16px] p-5">
-              <p className="text-sm font-extrabold text-white">{title}</p>
-              <p className="mt-1.5 text-sm leading-6 text-white/60">{copy}</p>
-            </div>
-          ))}
-        </section>
+        </Reveal>
       </main>
       <MarketingFooter />
     </>

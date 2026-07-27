@@ -2,7 +2,7 @@
 
 > Your watch history, kept.
 
-[tvcask](https://tvcask.com) is a watch tracker for shows, movies, anime, and K-dramas. It gives people leaving TV Time a reliable way to bring their history with them and keep tracking without starting over.
+[tvcask](https://tvcask.com) is a watch tracker for shows, movies, anime, and K-dramas. It gives people leaving TV Time a reliable way to bring their history with them and keep tracking without starting over. Available on the web and on [iPhone](https://apps.apple.com/us/app/tvcask/id6789895702).
 
 This repository contains the public web application. The native mobile app and Go API are maintained in private repositories within the [tvcask organization](https://github.com/tvcask).
 
@@ -15,24 +15,24 @@ This repository contains the public web application. The native mobile app and G
 - Surfaces the next unwatched episode and upcoming releases
 - Organizes favorites and custom lists
 - Builds personal stats, progress, and achievement badges
-- Works as an installable web app, with a native iOS app in development
+- Works as an installable web app, with a native iOS app on the App Store
 
-The web app and upcoming mobile app share the same account and library through the tvcask API.
+The web app and the iOS app share the same account and library through the tvcask API.
 
 The shared voice, positioning, and launch messaging for both products live in [docs/positioning.md](docs/positioning.md).
 
 ## Product status
 
-The web app is under active development. Core tracking and TV Time import are available today. Social features and the native iOS app are in progress.
+The web app is under active development. Core tracking and TV Time import are available today, and the iOS app is on the App Store. Social features are in progress.
 
-Visit [tvcask.com](https://tvcask.com) to use the product.
+Visit [tvcask.com](https://tvcask.com) to use the product, or download it on the [App Store](https://apps.apple.com/us/app/tvcask/id6789895702).
 
 ## How the pieces fit together
 
 | Project | Role | Availability |
 | --- | --- | --- |
 | `tvcask/web` | Next.js web app and public product site | Public, this repository |
-| `tvcask/app` | Native mobile app | Private, coming to the App Store |
+| `tvcask/app` | Native mobile app | Private, [on the App Store](https://apps.apple.com/us/app/tvcask/id6789895702) |
 | `tvcask/api` | Go API for accounts, catalog data, imports, and tracking | Private |
 
 This repository does not contain the database or business API. A running tvcask API is required for authenticated product features, so a clone of this repository cannot provide the complete local experience on its own.

@@ -1,13 +1,12 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowRight02Icon, CircleIcon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { ArrowRight02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { MarketingHeader } from "@/components/marketing/header";
 import { HeroProductPreview, MobileAppSection, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { AppStoreBadge } from "@/components/marketing/app-store-badge";
+import { Reveal } from "@/components/marketing/reveal";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter } from "@/components/marketing/footer";
-
-const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites", "Lists"];
 
 const worksToday = [
   "Track shows and movies episode by episode",
@@ -18,35 +17,23 @@ const worksToday = [
   "Full TV Time import"
 ];
 
-const comingNext = [
-  "Social feed, groups, and friend activity",
-  "Public profiles and following",
-  "Episode reactions, comments, and sharing"
-];
-
-const steps = [
-  { n: "01", title: "Upload your export", copy: "Drop in your TV Time ZIP export and keep the files intact." },
-  { n: "02", title: "Match your history", copy: "Shows, movies, episodes, favorites, and lists are matched to real metadata." },
-  { n: "03", title: "Keep watching", copy: "Confirm, and pick up the next episode right where you left off." }
-];
-
 export default function HomePage() {
   return (
     <>
       <MarketingHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-12 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,0.95fr)]">
-          <div className="min-w-0 space-y-6">
+        <section className="mx-auto max-w-6xl px-5 pb-16 pt-8 sm:pb-20 sm:pt-12">
+          <div className="mx-auto max-w-3xl text-center">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
               Now on web and iPhone
             </span>
-            <h1 className="display max-w-[680px] text-4xl leading-[1.05] sm:text-5xl md:text-[58px] xl:text-[64px]">
+            <h1 className="display mt-4 text-4xl leading-[1.05] sm:text-5xl md:text-[58px] xl:text-[64px]">
               Your watch history, kept.
             </h1>
-            <p className="max-w-lg text-lg leading-8 text-white/55">
-              Bring your TV Time history with you, track every show and movie, and pick up exactly where you left off.
+            <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-white/55">
+              Track every show and movie, see what airs next, and pick up exactly where you left off.
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild className="h-12 px-6 text-[15px]">
                 <Link href="/signup">
                   Get started <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
@@ -54,20 +41,15 @@ export default function HomePage() {
               </Button>
               <AppStoreBadge />
             </div>
-            <div className="flex flex-wrap gap-2 pt-2">
-              {brings.map((item) => (
-                <span key={item} className="whitespace-nowrap rounded-full bg-white/5 px-3 py-1 text-[13px] font-semibold text-white/60">
-                  {item}
-                </span>
-              ))}
-            </div>
           </div>
 
-          <HeroProductPreview />
+          <div className="mx-auto mt-10 max-w-5xl">
+            <HeroProductPreview />
+          </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 pb-16">
-          <div className="mb-7 max-w-2xl">
+        <Reveal className="mx-auto max-w-6xl px-5 pb-16">
+          <div className="max-w-2xl">
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
               Why tvcask
             </p>
@@ -75,80 +57,41 @@ export default function HomePage() {
               Your history is the foundation.
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/60">
-              tvcask started with one promise: your years of tracking should move with you. That history now lives in the web app and the iPhone app, on one account, with social features building on the same library.
+              tvcask started with one promise: your years of tracking should move with you. That history now lives in the web app and the iPhone app, on one account.
             </p>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="surface rounded-[16px] p-5 sm:p-6">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-full bg-emerald-500/12 text-emerald-300">
-                  <HugeiconsIcon icon={Tick02Icon} className="size-4" />
-                </span>
-                <h3 className="display text-lg text-white">Works today</h3>
-              </div>
-              <div className="space-y-3">
-                {worksToday.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
-                    <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0 text-emerald-300" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="surface rounded-[16px] p-5 sm:p-6">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-full" style={{ background: "rgba(211,158,94,0.12)", color: "var(--accent-text)" }}>
-                  <HugeiconsIcon icon={CircleIcon} className="size-3.5" />
-                </span>
-                <h3 className="display text-lg text-white">Coming next</h3>
-              </div>
-              <div className="space-y-3">
-                {comingNext.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/60">
-                    <HugeiconsIcon icon={CircleIcon} className="size-3.5 shrink-0" style={{ color: "var(--accent-text)", opacity: 0.5 }} />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <MobileAppSection />
-        <TrendingCatalogBand />
-
-        <section className="mx-auto max-w-6xl px-5 pb-10">
-          <Link href="/import-tv-time" className="surface flex flex-col gap-4 rounded-[16px] p-5 transition hover:bg-white/[0.04] sm:flex-row sm:items-center">
-            <div className="min-w-0 flex-1">
-              <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-                TV Time import
-              </p>
-              <h2 className="display mt-2 text-2xl text-white">Move your TV Time history, episodes, favorites, and custom lists.</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">
-                Preserve years of tracking and continue with one library across web and mobile.
-              </p>
-            </div>
-            <span className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white">
-              Learn more <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
-            </span>
-          </Link>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 pb-24">
-          <div className="grid gap-4 md:grid-cols-3">
-            {steps.map((step) => (
-              <div key={step.n} className="surface rounded-[16px] p-6">
-                <span className="display text-sm" style={{ color: "var(--accent-text)" }}>
-                  {step.n}
-                </span>
-                <h3 className="display mt-3 text-lg text-white">{step.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/60">{step.copy}</p>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {worksToday.map((item) => (
+              <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
+                <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0 text-emerald-300" />
+                <span>{item}</span>
               </div>
             ))}
           </div>
-        </section>
+        </Reveal>
+
+        <Reveal>
+          <MobileAppSection />
+        </Reveal>
+
+        <Reveal>
+          <TrendingCatalogBand />
+        </Reveal>
+
+        <Reveal className="mx-auto max-w-6xl px-5 pb-24">
+          <Link
+            href="/import-tv-time"
+            className="flex flex-col gap-2 rounded-[14px] border border-white/[0.07] px-5 py-4 text-sm transition hover:bg-white/[0.03] sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span className="text-white/55">
+              <span className="font-bold text-white/80">Coming from TV Time?</span> If you exported your data before the shutdown, you can still import it.
+            </span>
+            <span className="inline-flex shrink-0 items-center font-bold text-white">
+              Import your export <HugeiconsIcon icon={ArrowRight02Icon} className="ml-1.5 size-4" />
+            </span>
+          </Link>
+        </Reveal>
       </main>
       <MarketingFooter />
     </>
