@@ -45,6 +45,9 @@ export const metadata: Metadata = {
     description: site.description,
     images: ["/og-brand.png"],
   },
+  itunes: {
+    appId: site.appStoreId,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

@@ -24,6 +24,9 @@ export async function MarketingFooter() {
             <Link href="/import-tv-time" className="block font-bold text-white/55 transition hover:text-white">
               TV Time import
             </Link>
+            <a href={site.appStore} target="_blank" rel="noreferrer" className="block font-bold text-white/55 transition hover:text-white">
+              iPhone app
+            </a>
             {isAuthenticated ? (
               <Link href="/app/shows" className="block font-bold text-white/55 transition hover:text-white">
                 Open app

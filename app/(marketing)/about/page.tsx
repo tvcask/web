@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getToken } from "@/lib/api";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
+import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import {
   moviePosters,
   trendingShows,
@@ -45,15 +46,15 @@ export const metadata: Metadata = {
 const milestones = [
   ["Import first", "Preserve TV Time histories before anything else."],
   ["Web first", "Ship the migration workflow quickly, on every device."],
-  ["iOS next", "Make everyday tracking feel native and fast."],
+  ["iOS shipped", "Everyday tracking on the phone, native and fast."],
   ["Social later", "Add community once private libraries are solid."],
 ];
 
 const timeline = [
   ["July 15, 2026", "TV Time closes", "People need a safe home for years of history."],
   ["Days later", "tvcask built", "A solo, focused rebuild begins."],
-  ["Today", "Web launch", "Accounts, import, and tracking live."],
-  ["Next", "iOS and social", "Native app and community features."],
+  ["Then", "Web launch", "Accounts, import, and tracking live."],
+  ["Today", "iPhone app", "The same library on the App Store."],
 ];
 
 const proofPoints = [
@@ -111,9 +112,9 @@ export default async function AboutPage() {
                 <strong className="font-extrabold text-white">
                   preserve your data and keep watching
                 </strong>
-                . Once that foundation is stable, tvcask can grow into native
-                iOS, better discovery, personal lists, social activity, episode
-                reactions, comments, and sharing.
+                . That foundation held, so the iPhone app followed and is now on
+                the App Store. Next comes better discovery, social activity,
+                episode reactions, comments, and sharing.
               </p>
             </div>
 
@@ -134,6 +135,7 @@ export default async function AboutPage() {
               >
                 {isAuthenticated ? "Open app" : "Create account"}
               </Link>
+              <AppStoreBadge />
             </div>
           </div>
 
