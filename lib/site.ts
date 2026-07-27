@@ -4,7 +4,7 @@ export const site = {
   name: "tvcask",
   displayName: "tvcask",
   tagline: "Your watch history, kept.",
-  description: "Import your TV Time history, track shows and movies, and pick up where you left off.",
+  description: "Track shows and movies, see what airs next, and pick up where you left off. On the web and on iPhone.",
   logo: "/logo-horizontal.png",
   icon: "/logo-vertical.png",
   instagram: "https://www.instagram.com/tvcask/",

@@ -1,9 +1,13 @@
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowRight02Icon, CheckListIcon, PlusSignIcon, Tick02Icon, Upload01Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowRight02Icon,
+  PlusSignIcon,
+  Tick02Icon,
+} from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { AppStoreBadge } from "@/components/marketing/app-store-badge";
-import { cn } from "@/lib/utils";
+import { PhoneFan } from "@/components/marketing/phone-fan";
 
 type Poster = {
   title: string;
@@ -11,89 +15,86 @@ type Poster = {
 };
 
 export const trendingShows: Poster[] = [
-  { title: "House of the Dragon", poster: "https://image.tmdb.org/t/p/w342/t9XkeE7HzOsdQcDDDapDYh8Rrmt.jpg" },
-  { title: "The Bear", poster: "https://image.tmdb.org/t/p/w342/sHFlbKS3WLqMnp9t2ghADIJFnuQ.jpg" },
-  { title: "Severance", poster: "https://image.tmdb.org/t/p/w342/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg" },
-  { title: "The Last of Us", poster: "https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg" },
-  { title: "Jujutsu Kaisen", poster: "https://image.tmdb.org/t/p/w342/fHpKWq9ayzSk8nSwqRuaAUemRKh.jpg" },
-  { title: "Demon Slayer", poster: "https://image.tmdb.org/t/p/w342/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg" }
+  {
+    title: "House of the Dragon",
+    poster: "https://image.tmdb.org/t/p/w342/t9XkeE7HzOsdQcDDDapDYh8Rrmt.jpg",
+  },
+  {
+    title: "The Bear",
+    poster: "https://image.tmdb.org/t/p/w342/sHFlbKS3WLqMnp9t2ghADIJFnuQ.jpg",
+  },
+  {
+    title: "Severance",
+    poster: "https://image.tmdb.org/t/p/w342/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg",
+  },
+  {
+    title: "The Last of Us",
+    poster: "https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
+  },
+  {
+    title: "Jujutsu Kaisen",
+    poster: "https://image.tmdb.org/t/p/w342/fHpKWq9ayzSk8nSwqRuaAUemRKh.jpg",
+  },
+  {
+    title: "Demon Slayer",
+    poster: "https://image.tmdb.org/t/p/w342/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg",
+  },
 ];
 
 export const moviePosters: Poster[] = [
-  { title: "Dune: Part Two", poster: "https://image.tmdb.org/t/p/w342/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" },
-  { title: "The Social Network", poster: "https://image.tmdb.org/t/p/w342/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg" },
-  { title: "Interstellar", poster: "https://image.tmdb.org/t/p/w342/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
-  { title: "John Wick: Chapter 4", poster: "https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg" },
-  { title: "Knives Out", poster: "https://image.tmdb.org/t/p/w342/pThyQovXQrw2m0s9x82twj48Jq4.jpg" },
-  { title: "The Lord of the Rings", poster: "https://image.tmdb.org/t/p/w342/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg" }
+  {
+    title: "Dune: Part Two",
+    poster: "https://image.tmdb.org/t/p/w342/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+  },
+  {
+    title: "The Social Network",
+    poster: "https://image.tmdb.org/t/p/w342/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg",
+  },
+  {
+    title: "Interstellar",
+    poster: "https://image.tmdb.org/t/p/w342/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+  },
+  {
+    title: "John Wick: Chapter 4",
+    poster: "https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg",
+  },
+  {
+    title: "Knives Out",
+    poster: "https://image.tmdb.org/t/p/w342/pThyQovXQrw2m0s9x82twj48Jq4.jpg",
+  },
+  {
+    title: "The Lord of the Rings",
+    poster: "https://image.tmdb.org/t/p/w342/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg",
+  },
 ];
 
-const importedPosters = [
-  trendingShows[4],
-  trendingShows[5],
-  moviePosters[3],
-  moviePosters[4]
+// Three rails drifting in alternating directions. Each row uses a different
+// order so the repeats across rows are not obvious.
+const catalogRows: Poster[][] = [
+  [...trendingShows, ...moviePosters.slice(0, 3)],
+  [...moviePosters, ...trendingShows.slice(2, 5)],
+  [
+    ...trendingShows.slice(3),
+    ...moviePosters.slice(3),
+    ...trendingShows.slice(0, 2),
+    moviePosters[0],
+  ],
 ];
-
-const catalogPosters = [...trendingShows.slice(0, 5), ...moviePosters.slice(0, 5)];
 
 export function HeroProductPreview() {
   return (
-    <div className="hero-glow relative min-w-0">
-      <div className="surface overflow-hidden rounded-[20px] p-3 shadow-2xl shadow-black/30">
-        <div className="rounded-[16px] border border-white/[0.08] bg-[#11100e] p-3">
-          <div className="flex items-start justify-between gap-4 px-1 pb-3">
-            <div>
-              <p className="eyebrow whitespace-nowrap">Imported from TV Time</p>
-              <p className="display mt-1 text-xl text-white">Your library</p>
-            </div>
-            <span className="whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: "rgba(211,158,94,0.14)", color: "var(--accent-text)" }}>
-              3,812 episodes
-            </span>
-          </div>
-          <PosterRail items={trendingShows.slice(0, 5)} size="hero" />
+    <div className="hero-glow relative">
+      <div className="surface overflow-hidden rounded-[18px] p-2 shadow-2xl shadow-black/40">
+        <div className="relative aspect-[1968/1186] overflow-hidden rounded-[12px] bg-black">
+          <Image
+            src="/screens/web-lib-6.png"
+            alt="A tvcask profile on the web with rows of tracked shows, favorite shows, and movies"
+            fill
+            sizes="(max-width: 1024px) 100vw, 990px"
+            className="object-cover"
+            priority
+          />
         </div>
-
-        <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_0.86fr]">
-          <div className="rounded-[16px] border border-white/[0.08] bg-white/[0.035] p-3">
-            <div className="mb-3 flex items-center gap-2">
-              <HugeiconsIcon icon={CheckListIcon} className="size-4" style={{ color: "var(--accent-text)" }} />
-              <p className="text-sm font-bold text-white">Animes</p>
-              <span className="ml-auto text-xs font-semibold text-white/38">19 titles</span>
-            </div>
-            <div className="flex -space-x-4 overflow-hidden pb-1">
-              {importedPosters.map((item) => (
-                <div key={item.title} className="w-[54px] shrink-0 overflow-hidden rounded-[9px] ring-2 ring-[#11100e]">
-                  <PosterImage item={item} sizes="54px" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[16px] border border-white/[0.08] bg-white/[0.035] p-3">
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Upload01Icon} className="size-4" style={{ color: "var(--accent-text)" }} />
-              <p className="text-sm font-bold text-white">Import complete</p>
-            </div>
-            <div className="mt-3 space-y-2">
-              {[
-                ["Shows", "428"],
-                ["Movies", "96"],
-                ["Lists", "12"]
-              ].map(([label, value]) => (
-                <div key={label} className="flex items-center justify-between text-sm">
-                  <span className="text-white/45">{label}</span>
-                  <span className="font-bold text-white">{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="pointer-events-none absolute -bottom-5 left-6 hidden rounded-full border border-white/[0.08] bg-[#15120f] px-4 py-2 text-sm font-bold text-white shadow-xl shadow-black/30 sm:flex">
-        <HugeiconsIcon icon={Tick02Icon} className="mr-2 size-4" style={{ color: "var(--accent-text)" }} />
-        Progress restored
       </div>
     </div>
   );
@@ -108,19 +109,43 @@ export function TrendingCatalogBand() {
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
               Browse what to watch next
             </p>
-            <h2 className="display mt-2 text-3xl text-white">Track shows and movies visually.</h2>
+            <h2 className="display mt-2 text-3xl text-white">
+              Track shows and movies visually.
+            </h2>
           </div>
           <p className="max-w-md text-sm leading-6 text-white/48">
-            Browse a poster-first catalog with the same actions people use every day: track, favorite, and save titles to personal lists.
+            Browse a poster-first catalog with the same actions people use every
+            day: track, favorite, and save titles to personal lists.
           </p>
         </div>
 
-        <MovingPosterRail items={catalogPosters} />
+        <div className="relative">
+          <div className="space-y-3">
+            {catalogRows.map((row, index) => (
+              <MovingPosterRail
+                key={index}
+                items={row}
+                direction={index % 2 === 0 ? "left" : "right"}
+                offset={index}
+              />
+            ))}
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#11100e] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#11100e] to-transparent" />
+        </div>
 
         <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-semibold text-white/45">Every poster opens the real title drawer in the app, with progress, favorites, and lists in one place.</p>
-          <Link href="/signup" className="inline-flex h-10 shrink-0 items-center justify-center rounded-full px-4 text-sm font-bold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-            Start tracking <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
+          <p className="text-sm font-semibold text-white/45">
+            Every poster opens the real title drawer in the app, with progress,
+            favorites, and lists in one place.
+          </p>
+          <Link
+            href="/signup"
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-full px-4 text-sm font-bold"
+            style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+          >
+            Start tracking{" "}
+            <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
           </Link>
         </div>
       </div>
@@ -132,20 +157,32 @@ const iosHighlights = [
   "Watch next and upcoming episodes",
   "Full catalog, search, and title pages",
   "Badges, levels, and profile stats",
-  "Same account and library as the web"
+  "Same account and library as the web",
 ];
 
 const iosScreens = [
-  { src: "/screens/ios-detail.jpg", alt: "tvcask on iPhone showing a show page with rating, where to watch, and cast" },
-  { src: "/screens/ios-shows.jpg", alt: "tvcask on iPhone showing the watch list with the next episode for each show" },
-  { src: "/screens/ios-explore.jpg", alt: "tvcask on iPhone showing trending shows and movies" }
+  {
+    src: "/screens/ios-detail.jpg",
+    alt: "tvcask on iPhone showing a show page with rating, where to watch, and cast",
+  },
+  {
+    src: "/screens/ios-shows.jpg",
+    alt: "tvcask on iPhone showing the watch list with the next episode for each show",
+  },
+  {
+    src: "/screens/ios-explore.jpg",
+    alt: "tvcask on iPhone showing trending shows and movies",
+  },
 ];
 
 export function MobileAppSection() {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-10">
       <div className="surface relative overflow-hidden rounded-[18px] p-5 sm:p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(211,158,94,0.14),transparent_38%)]" aria-hidden />
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(211,158,94,0.14),transparent_38%)]"
+          aria-hidden
+        />
         <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-center">
           <div className="min-w-0">
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
@@ -155,13 +192,21 @@ export function MobileAppSection() {
               tvcask for iPhone is out.
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-white/52">
-              Same account, same library. Mark episodes on the couch, see what airs this week, and browse the catalog from your phone.
+              Same account, same library. Mark episodes on the couch, see what
+              airs this week, and browse the catalog from your phone.
             </p>
 
             <div className="mt-5 space-y-2.5">
               {iosHighlights.map((item) => (
-                <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
-                  <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0" style={{ color: "var(--accent-text)" }} />
+                <div
+                  key={item}
+                  className="flex items-center gap-3 text-sm font-semibold text-white/62"
+                >
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="size-4 shrink-0"
+                    style={{ color: "var(--accent-text)" }}
+                  />
                   <span>{item}</span>
                 </div>
               ))}
@@ -169,91 +214,49 @@ export function MobileAppSection() {
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <AppStoreBadge />
-              <Link href="/signup" className="inline-flex h-12 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white">
-                Start on the web <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
+              <Link
+                href="/signup"
+                className="inline-flex h-12 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white"
+              >
+                Start on the web{" "}
+                <HugeiconsIcon
+                  icon={ArrowRight02Icon}
+                  className="ml-2 size-4"
+                />
               </Link>
             </div>
           </div>
 
-          <PhoneFan />
+          <PhoneFan screens={iosScreens} />
         </div>
       </div>
     </section>
   );
 }
 
-function PhoneFan() {
-  const [left, center, right] = iosScreens;
-  return (
-    <div className="relative flex items-center justify-center">
-      <PhoneFrame screen={left} className="hidden w-[168px] -mr-10 translate-y-5 -rotate-[7deg] sm:block" />
-      <PhoneFrame screen={center} className="z-10" priority />
-      <PhoneFrame screen={right} className="hidden w-[168px] -ml-10 translate-y-5 rotate-[7deg] sm:block" />
-    </div>
-  );
-}
-
-function PhoneFrame({
-  screen,
-  className,
-  priority = false
+function MovingPosterRail({
+  items,
+  direction,
+  offset = 0,
 }: {
-  screen: { src: string; alt: string };
-  className?: string;
-  priority?: boolean;
+  items: Poster[];
+  direction: "left" | "right";
+  offset?: number;
 }) {
-  return (
-    <div className={cn("relative w-[190px] shrink-0 rounded-[30px] border border-white/12 bg-[#1a1714] p-[5px] shadow-2xl shadow-black/50", className)}>
-      <div className="relative aspect-[780/1600] overflow-hidden rounded-[26px] bg-black">
-        <Image src={screen.src} alt={screen.alt} fill sizes="190px" className="object-cover" priority={priority} />
-      </div>
-    </div>
-  );
-}
-
-function PosterRail({ items, size, interactive = false }: { items: Poster[]; size: "hero" | "catalog"; interactive?: boolean }) {
-  return (
-    <div className="nos flex gap-3 overflow-x-auto pb-1">
-      {items.map((item, index) => (
-        <div
-          key={item.title}
-          className={size === "hero" ? "relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]" : "group relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]"}
-        >
-          <PosterImage item={item} sizes={size === "hero" ? "(max-width: 640px) 92px, 112px" : "(max-width: 640px) 118px, 148px"} />
-          {interactive ? <PosterBadge checked={index % 3 === 1} /> : null}
-          {size === "hero" ? (
-            <p className="absolute inset-x-2 bottom-2 line-clamp-2 text-[9px] font-extrabold uppercase leading-[1.05] text-white drop-shadow-lg">
-              {item.title}
-            </p>
-          ) : null}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function MovingPosterRail({ items }: { items: Poster[] }) {
   const loop = [...items, ...items];
   return (
-    <div>
-      <h3 className="display mb-3 text-lg text-white">Trending now</h3>
-      <div className="relative overflow-hidden">
-        <div className="poster-marquee flex w-max gap-3 pb-1">
-          {loop.map((item, index) => (
-            <div key={`${item.title}-${index}`} className="relative w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:w-[112px]">
-              <PosterImage item={item} sizes="(max-width: 640px) 92px, 112px" />
-              <PosterBadge checked={index % 4 === 1} />
-            </div>
-          ))}
-        </div>
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#11100e] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#11100e] to-transparent" />
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {["Poster-first browsing", "Title drawers", "Progress tracking", "Personal lists"].map((item) => (
-          <span key={item} className="rounded-full bg-white/[0.06] px-3 py-1.5 text-xs font-bold text-white/52">
-            {item}
-          </span>
+    <div className="relative overflow-hidden">
+      <div
+        className={`${direction === "left" ? "poster-marquee" : "poster-marquee-reverse"} flex w-max gap-3`}
+      >
+        {loop.map((item, index) => (
+          <div
+            key={`${item.title}-${index}`}
+            className="relative w-[72px] shrink-0 overflow-hidden rounded-[10px] sm:w-[88px]"
+          >
+            <PosterImage item={item} sizes="(max-width: 640px) 72px, 88px" />
+            <PosterBadge checked={(index + offset) % 4 === 1} />
+          </div>
         ))}
       </div>
     </div>
@@ -262,8 +265,19 @@ function MovingPosterRail({ items }: { items: Poster[] }) {
 
 function PosterBadge({ checked }: { checked: boolean }) {
   return (
-    <span className="absolute right-2 top-2 grid size-7 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur" aria-hidden>
-      {checked ? <HugeiconsIcon icon={Tick02Icon} className="size-3.5" style={{ color: "var(--accent-text)" }} /> : <HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />}
+    <span
+      className="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg shadow-black/25 backdrop-blur"
+      aria-hidden
+    >
+      {checked ? (
+        <HugeiconsIcon
+          icon={Tick02Icon}
+          className="size-3.5"
+          style={{ color: "var(--accent-text)" }}
+        />
+      ) : (
+        <HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />
+      )}
     </span>
   );
 }
@@ -271,7 +285,13 @@ function PosterBadge({ checked }: { checked: boolean }) {
 function PosterImage({ item, sizes }: { item: Poster; sizes: string }) {
   return (
     <div className="relative aspect-[2/3] w-full overflow-hidden bg-white/5">
-      <Image src={item.poster} alt="" fill sizes={sizes} className="object-cover" />
+      <Image
+        src={item.poster}
+        alt=""
+        fill
+        sizes={sizes}
+        className="object-cover"
+      />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
     </div>
   );
