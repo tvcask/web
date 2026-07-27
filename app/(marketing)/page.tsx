@@ -2,7 +2,8 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight02Icon, CircleIcon, Tick02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { MarketingHeader } from "@/components/marketing/header";
-import { HeroProductPreview, MobileComingSoonBanner, TrendingCatalogBand } from "@/components/marketing/product-showcase";
+import { HeroProductPreview, MobileAppSection, TrendingCatalogBand } from "@/components/marketing/product-showcase";
+import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter } from "@/components/marketing/footer";
 
@@ -10,6 +11,7 @@ const brings = ["Shows", "Movies", "Anime", "K-Dramas", "Episodes", "Favorites",
 
 const worksToday = [
   "Track shows and movies episode by episode",
+  "iPhone app on the App Store",
   "Favorites and unlimited custom lists",
   "Watch next and unwatched sections",
   "Upcoming release calendar",
@@ -17,7 +19,6 @@ const worksToday = [
 ];
 
 const comingNext = [
-  "Native iOS app",
   "Social feed, groups, and friend activity",
   "Public profiles and following",
   "Episode reactions, comments, and sharing"
@@ -37,7 +38,7 @@ export default function HomePage() {
         <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-12 sm:gap-12 sm:pb-20 sm:pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(460px,0.95fr)]">
           <div className="min-w-0 space-y-6">
             <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              Your history. Your next episode.
+              Now on web and iPhone
             </span>
             <h1 className="display max-w-[680px] text-4xl leading-[1.05] sm:text-5xl md:text-[58px] xl:text-[64px]">
               Your watch history, kept.
@@ -51,9 +52,7 @@ export default function HomePage() {
                   Get started <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="secondary" className="h-12 px-6 text-[15px]">
-                <Link href="/import-tv-time">Import TV Time</Link>
-              </Button>
+              <AppStoreBadge />
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {brings.map((item) => (
@@ -76,7 +75,7 @@ export default function HomePage() {
               Your history is the foundation.
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/60">
-              tvcask started with one promise: your years of tracking should move with you. The web app protects that history today, while native mobile and social experiences build on the same library.
+              tvcask started with one promise: your years of tracking should move with you. That history now lives in the web app and the iPhone app, on one account, with social features building on the same library.
             </p>
           </div>
 
@@ -117,8 +116,8 @@ export default function HomePage() {
           </div>
         </section>
 
+        <MobileAppSection />
         <TrendingCatalogBand />
-        <MobileComingSoonBanner />
 
         <section className="mx-auto max-w-6xl px-5 pb-10">
           <Link href="/import-tv-time" className="surface flex flex-col gap-4 rounded-[16px] p-5 transition hover:bg-white/[0.04] sm:flex-row sm:items-center">

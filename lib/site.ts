@@ -8,6 +8,8 @@ export const site = {
   logo: "/logo-horizontal.png",
   icon: "/logo-vertical.png",
   instagram: "https://www.instagram.com/tvcask/",
+  appStore: "https://apps.apple.com/us/app/tvcask/id6789895702",
+  appStoreId: "6789895702",
   tmdb: "https://www.themoviedb.org/",
   tvdb: "https://thetvdb.com/",
   justwatch: "https://www.justwatch.com/",

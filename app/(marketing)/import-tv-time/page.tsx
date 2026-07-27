@@ -416,7 +416,7 @@ export default function ImportTvTimePage() {
             <p className="mt-3 text-sm leading-7 text-white/62">
               Your imported TV Time data becomes working tvcask data: profile
               counts, episode progress, title details, lists, and continued
-              tracking across the web app and the upcoming iOS app.
+              tracking across the web app and the iPhone app.
             </p>
             <div className="mt-5 flex items-center gap-2 text-sm font-semibold text-white/58">
               <HugeiconsIcon icon={SquareLock01Icon}

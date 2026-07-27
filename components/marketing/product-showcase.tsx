@@ -1,7 +1,9 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowRight02Icon, CheckListIcon, PlusSignIcon, SmartPhone01Icon, Tick02Icon, Upload01Icon } from '@hugeicons/core-free-icons';
+import { ArrowRight02Icon, CheckListIcon, PlusSignIcon, Tick02Icon, Upload01Icon } from '@hugeicons/core-free-icons';
 import Image from "next/image";
 import Link from "next/link";
+import { AppStoreBadge } from "@/components/marketing/app-store-badge";
+import { cn } from "@/lib/utils";
 
 type Poster = {
   title: string;
@@ -126,46 +128,86 @@ export function TrendingCatalogBand() {
   );
 }
 
-export function MobileComingSoonBanner() {
+const iosHighlights = [
+  "Watch next and upcoming episodes",
+  "Full catalog, search, and title pages",
+  "Badges, levels, and profile stats",
+  "Same account and library as the web"
+];
+
+const iosScreens = [
+  { src: "/screens/ios-detail.jpg", alt: "tvcask on iPhone showing a show page with rating, where to watch, and cast" },
+  { src: "/screens/ios-shows.jpg", alt: "tvcask on iPhone showing the watch list with the next episode for each show" },
+  { src: "/screens/ios-explore.jpg", alt: "tvcask on iPhone showing trending shows and movies" }
+];
+
+export function MobileAppSection() {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-10">
-      <div className="surface relative overflow-hidden rounded-[18px] p-5 sm:p-6">
+      <div className="surface relative overflow-hidden rounded-[18px] p-5 sm:p-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(211,158,94,0.14),transparent_38%)]" aria-hidden />
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
+        <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-center">
+          <div className="min-w-0">
             <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              Coming next
+              Now on iPhone
             </p>
-            <h2 className="display mt-2 max-w-2xl text-2xl leading-tight text-white md:text-3xl">
-              tvcask for iPhone is on the way.
+            <h2 className="display mt-2 max-w-xl text-2xl leading-tight text-white md:text-3xl">
+              tvcask for iPhone is out.
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">
-              The same history, progress, favorites, and lists will move with you from the web to a native everyday tracking experience.
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/52">
+              Same account, same library. Mark episodes on the couch, see what airs this week, and browse the catalog from your phone.
             </p>
-            <Link href="/about" className="mt-5 inline-flex h-10 items-center justify-center rounded-full border border-white/12 px-4 text-sm font-bold text-white">
-              Why I built this <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
-            </Link>
-          </div>
 
-          <div className="sm:w-[250px]">
-            <div className="rounded-[18px] border border-white/[0.08] bg-black/18 p-5">
-              <div className="flex items-center gap-3">
-                <div className="grid size-12 place-items-center rounded-full bg-white/[0.06] text-white/70">
-                  <HugeiconsIcon icon={SmartPhone01Icon} className="size-5" />
+            <div className="mt-5 space-y-2.5">
+              {iosHighlights.map((item) => (
+                <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
+                  <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0" style={{ color: "var(--accent-text)" }} />
+                  <span>{item}</span>
                 </div>
-                <div>
-                  <p className="text-sm font-extrabold text-white">iOS app</p>
-                  <p className="text-xs font-bold uppercase text-white/45">Coming soon</p>
-                </div>
-              </div>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
-                <div className="h-full w-2/3 rounded-full" style={{ background: "var(--accent)" }} />
-              </div>
+              ))}
+            </div>
+
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <AppStoreBadge />
+              <Link href="/signup" className="inline-flex h-12 items-center justify-center rounded-full border border-white/12 px-5 text-sm font-bold text-white">
+                Start on the web <HugeiconsIcon icon={ArrowRight02Icon} className="ml-2 size-4" />
+              </Link>
             </div>
           </div>
+
+          <PhoneFan />
         </div>
       </div>
     </section>
+  );
+}
+
+function PhoneFan() {
+  const [left, center, right] = iosScreens;
+  return (
+    <div className="relative flex items-center justify-center">
+      <PhoneFrame screen={left} className="hidden w-[168px] -mr-10 translate-y-5 -rotate-[7deg] sm:block" />
+      <PhoneFrame screen={center} className="z-10" priority />
+      <PhoneFrame screen={right} className="hidden w-[168px] -ml-10 translate-y-5 rotate-[7deg] sm:block" />
+    </div>
+  );
+}
+
+function PhoneFrame({
+  screen,
+  className,
+  priority = false
+}: {
+  screen: { src: string; alt: string };
+  className?: string;
+  priority?: boolean;
+}) {
+  return (
+    <div className={cn("relative w-[190px] shrink-0 rounded-[30px] border border-white/12 bg-[#1a1714] p-[5px] shadow-2xl shadow-black/50", className)}>
+      <div className="relative aspect-[780/1600] overflow-hidden rounded-[26px] bg-black">
+        <Image src={screen.src} alt={screen.alt} fill sizes="190px" className="object-cover" priority={priority} />
+      </div>
+    </div>
   );
 }
 
