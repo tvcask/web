@@ -209,6 +209,16 @@ export async function getTitleDetail(id: string, region = "US"): Promise<TitleDe
   }
 }
 
+// Backs the shareable /titles/[id] page. Skips the auth cookie so the page
+// renders the same whether or not the reader has an account.
+export async function getPublicTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
+  try {
+    return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`, { auth: false });
+  } catch {
+    return null;
+  }
+}
+
 export type ImportRecord = {
   id: string;
   status: "processing" | "completed" | "failed";
