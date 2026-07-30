@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Account, login, or password help
+    url: mailto:tvcask@protonmail.com
+    about: Email us so you can share the address you signed up with privately. Public issues are the wrong place for account details.
+  - name: Feature ideas and feedback
+    url: https://tvcask.userjot.com/
+    about: Suggest and vote on features here rather than opening an issue.
+  - name: Privacy or data requests
+    url: mailto:tvcask@protonmail.com
+    about: Data export and deletion requests go to email.
