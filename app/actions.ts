@@ -51,8 +51,10 @@ export async function loginAction(formData: FormData) {
   try {
     const res = await api<AuthResponse>("/v1/auth/login", { method: "POST", body, auth: false });
     await setSession(res);
-  } catch {
-    redirect(`/login?error=1&returnTo=${encodeURIComponent(returnTo)}`);
+  } catch (e) {
+    // Blaming the password for a 5xx sends people into a reset loop that cannot work.
+    const error = e instanceof ApiError && e.status === 401 ? "1" : "unavailable";
+    redirect(`/login?error=${error}&returnTo=${encodeURIComponent(returnTo)}`);
   }
   redirect(returnTo);
 }
@@ -67,8 +69,11 @@ export async function forgotPasswordAction(formData: FormData) {
   const email = String(formData.get("email"));
   try {
     await api("/v1/auth/forgot-password", { method: "POST", body: { email }, auth: false });
-  } catch {
-    // ignore — the endpoint always succeeds; never leak whether the email exists
+  } catch (e) {
+    // Message stays generic so we never leak whether the address exists, but a
+    // failure here means no mail was queued and that has to be visible to us.
+    const status = e instanceof ApiError ? e.status : "network";
+    console.error(`[forgot-password] request failed (${status}), no reset mail was queued`);
   }
   redirect("/forgot-password?sent=1");
 }

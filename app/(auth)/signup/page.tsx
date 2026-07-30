@@ -4,11 +4,11 @@ import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { getCurrentUser } from "@/lib/auth/session";
+import { hasActiveSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string; returnTo?: string }> }) {
-  if (await getCurrentUser()) {
+  if (await hasActiveSession()) {
     redirect("/app/shows");
   }
 

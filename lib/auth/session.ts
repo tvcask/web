@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { api, getToken } from "@/lib/api";
+import { api, getToken, ApiError } from "@/lib/api";
 
 export type SessionUser = {
   id: string;
@@ -15,10 +15,24 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   if (!token) {
     return null;
   }
+  // Only a rejected token means logged out. Treating a 5xx the same signs people out mid-outage.
   try {
     return await api<SessionUser>("/v1/me");
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 401) {
+      return null;
+    }
+    throw e;
+  }
+}
+
+// Auth pages only bounce people who are already signed in. A broken session check
+// must not block the way back in, so a failure here falls through to the form.
+export async function hasActiveSession(): Promise<boolean> {
+  try {
+    return (await getCurrentUser()) !== null;
   } catch {
-    return null;
+    return false;
   }
 }
 
