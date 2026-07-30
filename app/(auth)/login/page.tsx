@@ -4,11 +4,11 @@ import { AuthCard, Banner, Field } from "@/components/auth/auth-card";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { getCurrentUser } from "@/lib/auth/session";
+import { hasActiveSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; reset?: string; returnTo?: string }> }) {
-  if (await getCurrentUser()) {
+  if (await hasActiveSession()) {
     redirect("/app/shows");
   }
 
@@ -28,7 +28,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       }
     >
       {reset ? <Banner tone="ok">Password updated. Log in with your new one.</Banner> : null}
-      {error ? <Banner tone="err">Invalid email or password.</Banner> : null}
+      {error === "unavailable" ? (
+        <Banner tone="err">We couldn&apos;t reach the server. Your login is fine, please try again in a minute.</Banner>
+      ) : error ? (
+        <Banner tone="err">Invalid email or password.</Banner>
+      ) : null}
       <form action={loginAction} className="space-y-4">
         {safeReturnTo ? <input type="hidden" name="returnTo" value={safeReturnTo} /> : null}
         <Field label="Email" htmlFor="email">
