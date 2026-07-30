@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.8.0](https://github.com/tvcask/web/compare/tvcask-web-v0.7.0...tvcask-web-v0.8.0) (2026-07-30)
+
+
+### Features
+
+* **cast:** show actor biographies ([f96c0ab](https://github.com/tvcask/web/commit/f96c0ab19a37b6ef4a685d3f05ec94f345df1fbe))
+* **cast:** show actor biographies ([6514696](https://github.com/tvcask/web/commit/6514696fc888f912bdd2024413b86d31d5e32fd5))
+* **episodes:** add undo toast for mark-through ([9a8d9ee](https://github.com/tvcask/web/commit/9a8d9ee121a0a282f4c5d8791f63f9f96518c0f3))
+* **episodes:** mark prior episodes watched ([331b106](https://github.com/tvcask/web/commit/331b1061b2509cdc8ca45b7a1a4d68cd00722ba2))
+* **episodes:** mark prior episodes watched ([ac4e6f1](https://github.com/tvcask/web/commit/ac4e6f101c5f97850c6b4f61f909988f338308a2))
+* **marketing:** relaunch landing around the iOS app ([7a7963d](https://github.com/tvcask/web/commit/7a7963d495eabf9b350daf93f932c1b73223af93))
+* **marketing:** relaunch landing around the iOS app ([da269dd](https://github.com/tvcask/web/commit/da269ddf7934a555f0488780cc22a30f0a30591b))
+* **titles:** add public shareable title page ([2a07d02](https://github.com/tvcask/web/commit/2a07d020f6497b284453491a1a6a390fffb020be))
+* **titles:** add public shareable title page ([39f9233](https://github.com/tvcask/web/commit/39f9233bb966ca195834895f6402fbb7e77e489d))
+
+
+### Bug Fixes
+
+* **auth:** stop treating API failures as bad credentials ([14f1da3](https://github.com/tvcask/web/commit/14f1da37cdf44e50bcedb4447edf0337387682c9))
+* **auth:** stop treating API failures as bad credentials ([042174b](https://github.com/tvcask/web/commit/042174b861446691814ee790561db50c2d19c105))
+* **cast:** harden actor detail experience ([4c419dc](https://github.com/tvcask/web/commit/4c419dc3759b45b09c78ce95a699151120af8158))
+* **cast:** harden actor detail experience ([0754f91](https://github.com/tvcask/web/commit/0754f91d13c7ee08e23e54b6ef7f81e12bcb1f87))
+* **cast:** harden actor detail experience ([787899e](https://github.com/tvcask/web/commit/787899e49ef5b0bdd7b3a7ce4c6502c54e5dae88))
+* **cast:** improve actor detail navigation ([85a962a](https://github.com/tvcask/web/commit/85a962ab3971eb36df07ee9d06f43b3b2d022c71))
+* **marketing:** drop country code from app store links ([3a47609](https://github.com/tvcask/web/commit/3a476091d75c69e85b89db8e5ae4b3be30eff78b))
+* **marketing:** interleave catalog rails so rows stop sharing runs ([77fd599](https://github.com/tvcask/web/commit/77fd599e09519a8a300f3b36be337d9e24c79180))
+* **marketing:** serve hero as jpeg and vary catalog rail motion ([471e66e](https://github.com/tvcask/web/commit/471e66e5adfdc75e703ac9c78d46b2da89cee530))
+
 ## [0.7.0](https://github.com/tvcask/web/compare/tvcask-web-v0.6.0...tvcask-web-v0.7.0) (2026-07-17)
 
 
