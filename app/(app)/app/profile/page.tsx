@@ -1,11 +1,12 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon } from '@hugeicons/core-free-icons';
+import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon, UserAdd01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Avatar } from "@/components/ui/avatar";
 import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
+import { getUserProfile } from "@/lib/social";
 
 function duration(minutes: number) {
   const hours = Math.floor(minutes / 60);
@@ -29,6 +30,9 @@ export default async function ProfilePage() {
     getLists()
   ]);
   const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
+  // Follow counts live on the social profile endpoint. An account without a
+  // username has no profile to resolve, so the section simply does not render.
+  const social = user?.username ? await getUserProfile(user.username) : null;
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
   const allShows = showsPage.items;
@@ -91,6 +95,30 @@ export default async function ProfilePage() {
             Edit profile
           </Link>
         </div>
+      </section>
+
+      <section className="surface flex items-center gap-5 rounded-[16px] px-5 py-4">
+        {social ? (
+          <>
+            <Link href={`/app/u/${social.username}/followers`} className="group flex items-baseline gap-1.5">
+              <span className="display text-lg text-white">{social.followerCount.toLocaleString()}</span>
+              <span className="text-[13px] font-semibold text-white/45 group-hover:text-white/70">
+                {social.followerCount === 1 ? "Follower" : "Followers"}
+              </span>
+            </Link>
+            <Link href={`/app/u/${social.username}/following`} className="group flex items-baseline gap-1.5">
+              <span className="display text-lg text-white">{social.followingCount.toLocaleString()}</span>
+              <span className="text-[13px] font-semibold text-white/45 group-hover:text-white/70">Following</span>
+            </Link>
+          </>
+        ) : null}
+        <Link
+          href="/app/people"
+          className="ml-auto inline-flex h-9 items-center gap-2 rounded-full border border-white/12 px-4 text-[13px] font-bold text-white/80 transition hover:bg-white/5 hover:text-white"
+        >
+          <HugeiconsIcon icon={UserAdd01Icon} className="size-4" />
+          Find people
+        </Link>
       </section>
 
       <Link

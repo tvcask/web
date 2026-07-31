@@ -4,5 +4,8 @@ export const queryKeys = {
     ["library", type, status ?? null, favorite ?? false] as const,
   catalog: (kind: string) => ["catalog", kind] as const,
   titleLists: (titleId: string) => ["title-lists", titleId] as const,
-  notifications: ["notifications"] as const
+  notifications: ["notifications"] as const,
+  peopleSearch: (query: string) => ["people-search", query] as const,
+  userProfile: (handle: string) => ["user-profile", handle] as const,
+  followList: (handle: string, side: "followers" | "following") => ["follow-list", handle, side] as const
 };
