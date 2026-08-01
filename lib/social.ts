@@ -43,12 +43,27 @@ export type UserProfile = UserCard & {
   followingCount: number;
   viewerBlocked: boolean;
   isSelf: boolean;
-  stats: ProfileSummaryStats;
-  level: number;
-  badgesEarned: number;
-  favoriteShows: ProfileTitle[];
-  favoriteMovies: ProfileTitle[];
-  lists: ProfileListSummary[];
+  // Optional on purpose. The client can be talking to an API older than
+  // itself, so these are fields to cope with being absent rather than assume.
+  stats?: ProfileSummaryStats;
+  level?: number;
+  badgesEarned?: number;
+  shows?: ProfileTitle[];
+  movies?: ProfileTitle[];
+  favoriteShows?: ProfileTitle[];
+  favoriteMovies?: ProfileTitle[];
+  lists?: ProfileListSummary[];
+};
+
+// Zeroed stats for a response that predates them, so the page renders empty
+// rather than throwing.
+export const emptyProfileStats: ProfileSummaryStats = {
+  shows: 0,
+  movies: 0,
+  episodesWatched: 0,
+  completedTitles: 0,
+  tvTimeMinutes: 0,
+  movieTimeMinutes: 0
 };
 
 // Keyset paging: the cursor is opaque and only ever handed back as given.

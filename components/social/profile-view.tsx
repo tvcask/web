@@ -11,7 +11,7 @@ import { Poster } from "@/components/titles/poster";
 import { apiGet } from "@/lib/query/client";
 import { queryKeys } from "@/lib/query/keys";
 import { duration } from "@/lib/dates";
-import type { UserProfile } from "@/lib/social";
+import { emptyProfileStats, type UserProfile } from "@/lib/social";
 
 // Someone else's profile, laid out as your own is. Seeded from the server
 // render and kept in the query cache so following moves the counts here without
@@ -27,7 +27,8 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
   });
   const profile = data ?? initial;
   const base = `/app/u/${profile.username}`;
-  const stats = profile.stats;
+  const stats = profile.stats ?? emptyProfileStats;
+  const lists = profile.lists ?? [];
 
   const tiles = [
     { label: "Shows", value: stats.shows.toLocaleString(), accent: false },
@@ -60,7 +61,7 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
         name={profile.name || profile.username}
         username={profile.username}
         avatarUrl={profile.avatarUrl}
-        level={profile.level}
+        level={profile.level ?? 0}
         levelHref={`${base}/badges`}
         followerCount={profile.followerCount}
         followingCount={profile.followingCount}
@@ -90,31 +91,33 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
         </div>
       </Link>
 
+      <TitleRail title="Shows" items={profile.shows ?? []} href={`${base}/library?type=show`} returnTo={base} />
       <TitleRail
         title="Favorite shows"
         heart
-        items={profile.favoriteShows}
+        items={profile.favoriteShows ?? []}
         href={`${base}/library?type=show&favorite=true`}
         returnTo={base}
       />
+      <TitleRail title="Movies" items={profile.movies ?? []} href={`${base}/library?type=movie`} returnTo={base} />
       <TitleRail
         title="Favorite movies"
         heart
-        items={profile.favoriteMovies}
+        items={profile.favoriteMovies ?? []}
         href={`${base}/library?type=movie&favorite=true`}
         returnTo={base}
       />
 
-      {profile.lists.length > 0 ? (
+      {lists.length > 0 ? (
         <section>
           <div className="mb-3 flex items-center gap-2">
             <h2 className="display text-lg text-white">Lists</h2>
             <span className="rounded-full bg-white/8 px-2 py-0.5 text-[11px] font-bold text-white/45">
-              {profile.lists.length}
+              {lists.length}
             </span>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {profile.lists.map((list) => (
+            {lists.map((list) => (
               <Link
                 key={list.id}
                 href={`/app/lists/${list.id}`}
@@ -129,9 +132,9 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
                   </div>
                   <HugeiconsIcon icon={ArrowRight01Icon} className="mt-0.5 size-5 shrink-0 text-white/30" />
                 </div>
-                {list.titles.length > 0 ? (
+                {(list.titles ?? []).length > 0 ? (
                   <div className="mt-3 flex -space-x-3">
-                    {list.titles.map((title) => (
+                    {(list.titles ?? []).map((title) => (
                       <div key={title.id} className="w-[46px] overflow-hidden rounded-[8px] ring-2 ring-[#11100e]">
                         <Poster src={title.posterUrl} title={title.title} className="rounded-[8px]" />
                       </div>
