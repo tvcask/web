@@ -1,3 +1,6 @@
+// Server only: this module reaches for the request cookie through lib/api.
+// Client components may import its *types*, never a value from it, or the
+// server client follows the import into the browser bundle.
 import { api, ApiError } from "@/lib/api";
 import type { BadgesResult, LibraryPage, Stats } from "@/lib/data";
 
@@ -53,17 +56,6 @@ export type UserProfile = UserCard & {
   favoriteShows?: ProfileTitle[];
   favoriteMovies?: ProfileTitle[];
   lists?: ProfileListSummary[];
-};
-
-// Zeroed stats for a response that predates them, so the page renders empty
-// rather than throwing.
-export const emptyProfileStats: ProfileSummaryStats = {
-  shows: 0,
-  movies: 0,
-  episodesWatched: 0,
-  completedTitles: 0,
-  tvTimeMinutes: 0,
-  movieTimeMinutes: 0
 };
 
 // Keyset paging: the cursor is opaque and only ever handed back as given.

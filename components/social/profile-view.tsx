@@ -11,7 +11,18 @@ import { Poster } from "@/components/titles/poster";
 import { apiGet } from "@/lib/query/client";
 import { queryKeys } from "@/lib/query/keys";
 import { duration } from "@/lib/dates";
-import { emptyProfileStats, type UserProfile } from "@/lib/social";
+import type { ProfileSummaryStats, UserProfile } from "@/lib/social";
+
+// A payload from an API older than this build has no summary. Zeroes render an
+// empty profile instead of throwing.
+const emptyProfileStats: ProfileSummaryStats = {
+  shows: 0,
+  movies: 0,
+  episodesWatched: 0,
+  completedTitles: 0,
+  tvTimeMinutes: 0,
+  movieTimeMinutes: 0
+};
 
 // Someone else's profile, laid out as your own is. Seeded from the server
 // render and kept in the query cache so following moves the counts here without
