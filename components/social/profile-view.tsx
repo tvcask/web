@@ -7,6 +7,7 @@ import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { FollowButton } from "@/components/social/follow-button";
 import { ProfileHero } from "@/components/social/profile-hero";
 import { TitleRail } from "@/components/titles/title-rail";
+import { Poster } from "@/components/titles/poster";
 import { apiGet } from "@/lib/query/client";
 import { queryKeys } from "@/lib/query/keys";
 import { duration } from "@/lib/dates";
@@ -15,7 +16,7 @@ import type { UserProfile } from "@/lib/social";
 // Someone else's profile, laid out as your own is. Seeded from the server
 // render and kept in the query cache so following moves the counts here without
 // a refetch.
-export function ProfileView({ profile: initial }: { profile: UserProfile }) {
+export function ProfileView({ profile: initial, preview = false }: { profile: UserProfile; preview?: boolean }) {
   const { data } = useQuery({
     queryKey: queryKeys.userProfile(initial.username),
     queryFn: () => apiGet<UserProfile>(`/api/v1/users/${encodeURIComponent(initial.username)}`),
@@ -41,6 +42,20 @@ export function ProfileView({ profile: initial }: { profile: UserProfile }) {
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
+      {preview ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-[14px] border border-[color:var(--accent-text)]/25 bg-[color:var(--accent-text)]/[0.06] px-4 py-3">
+          <p className="text-sm font-semibold text-white/80">
+            This is your profile as other people see it.
+          </p>
+          <Link
+            href="/app/profile"
+            className="ml-auto text-sm font-bold text-[color:var(--accent-text)] hover:brightness-110"
+          >
+            Back to your profile
+          </Link>
+        </div>
+      ) : null}
+
       <ProfileHero
         name={profile.name || profile.username}
         username={profile.username}
@@ -49,7 +64,8 @@ export function ProfileView({ profile: initial }: { profile: UserProfile }) {
         levelHref={`${base}/badges`}
         followerCount={profile.followerCount}
         followingCount={profile.followingCount}
-        action={<FollowButton user={profile} size="lg" />}
+        // You cannot follow yourself, so the preview has no action to offer.
+        action={preview ? undefined : <FollowButton user={profile} size="lg" />}
       />
 
       <Link
@@ -113,6 +129,17 @@ export function ProfileView({ profile: initial }: { profile: UserProfile }) {
                   </div>
                   <HugeiconsIcon icon={ArrowRight01Icon} className="mt-0.5 size-5 shrink-0 text-white/30" />
                 </div>
+                {list.titles.length > 0 ? (
+                  <div className="mt-3 flex -space-x-3">
+                    {list.titles.map((title) => (
+                      <div key={title.id} className="w-[46px] overflow-hidden rounded-[8px] ring-2 ring-[#11100e]">
+                        <Poster src={title.posterUrl} title={title.title} className="rounded-[8px]" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-white/45">No titles yet.</p>
+                )}
               </Link>
             ))}
           </div>

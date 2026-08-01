@@ -34,6 +34,7 @@ export type ProfileListSummary = {
   id: string;
   name: string;
   itemCount: number;
+  titles: ProfileTitle[];
 };
 
 export type UserProfile = UserCard & {

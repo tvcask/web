@@ -11,12 +11,14 @@ export function StatsView({
   stats,
   backHref,
   backLabel = "Profile",
-  heading
+  heading,
+  owner = true
 }: {
   stats: Stats;
   backHref: string;
   backLabel?: string;
   heading?: string;
+  owner?: boolean;
 }) {
   const tiles = [
     { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
@@ -46,7 +48,7 @@ export function StatsView({
         ))}
       </section>
 
-      <StatsInsights stats={stats} />
+      <StatsInsights stats={stats} owner={owner} />
     </div>
   );
 }

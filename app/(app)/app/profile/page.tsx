@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon, UserAdd01Icon } from '@hugeicons/core-free-icons';
+import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon, UserAdd01Icon, ViewIcon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
@@ -63,6 +63,16 @@ export default async function ProfilePage() {
         }
         controls={
           <>
+            {user?.username ? (
+              <Link
+                href={`/app/u/${user.username}?preview=1`}
+                aria-label="See your profile as others see it"
+                title="See your profile as others see it"
+                className={heroControlClass}
+              >
+                <HugeiconsIcon icon={ViewIcon} className="size-[18px]" />
+              </Link>
+            ) : null}
             <Link href="/app/people" aria-label="Find people" className={heroControlClass}>
               <HugeiconsIcon icon={UserAdd01Icon} className="size-[18px]" />
             </Link>

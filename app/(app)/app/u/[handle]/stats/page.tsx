@@ -10,5 +10,5 @@ export default async function UserStatsPage({ params }: Params) {
   if (!stats) {
     notFound();
   }
-  return <StatsView stats={stats} backHref={`/app/u/${handle}`} backLabel={`@${handle}`} heading="Stats" />;
+  return <StatsView stats={stats} backHref={`/app/u/${handle}`} backLabel={`@${handle}`} heading="Stats" owner={false} />;
 }
