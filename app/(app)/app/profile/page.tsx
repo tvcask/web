@@ -7,7 +7,6 @@ import { TitleRail } from "@/components/titles/title-rail";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ProfileHero, heroActionClass, heroControlClass } from "@/components/social/profile-hero";
 import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
-import { getUserProfile } from "@/lib/social";
 import { duration } from "@/lib/dates";
 
 export default async function ProfilePage() {
@@ -23,9 +22,6 @@ export default async function ProfilePage() {
     getLists()
   ]);
   const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
-  // Follow counts live on the social profile endpoint. An account without a
-  // username has no profile to resolve, so the section simply does not render.
-  const social = user?.username ? await getUserProfile(user.username) : null;
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
   const allShows = showsPage.items;
@@ -54,8 +50,8 @@ export default async function ProfilePage() {
         username={user?.username}
         avatarUrl={user?.avatarUrl}
         level={badges.level}
-        followerCount={social?.followerCount}
-        followingCount={social?.followingCount}
+        followerCount={user?.followerCount}
+        followingCount={user?.followingCount}
         action={
           <Link href="/app/profile/edit" className={heroActionClass}>
             Edit profile

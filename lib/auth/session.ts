@@ -8,6 +8,10 @@ export type SessionUser = {
   username?: string;
   avatarUrl?: string;
   emailVerified?: boolean;
+  // Ride along on /v1/me so the profile header does not need a second request
+  // to the by-handle social endpoint just to render two numbers.
+  followerCount?: number;
+  followingCount?: number;
 };
 
 export async function getCurrentUser(): Promise<SessionUser | null> {

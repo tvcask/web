@@ -3,7 +3,7 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { mutate } from "@/lib/mutate";
 import { apiGet } from "@/lib/query/client";
-import { queryKeys } from "@/lib/query/keys";
+import { queryKeys, socialPrefix } from "@/lib/query/keys";
 import { toast } from "@/lib/toast";
 import type { FollowSide, UserCard, UserPage, UserProfile } from "@/lib/social";
 
@@ -38,7 +38,7 @@ export function useFollowList(handle: string, side: FollowSide, initial: UserPag
 // Query families a follow can touch. Cancelling and snapshotting is scoped to
 // these: an unscoped cancelQueries() would abort every request in the app on
 // each click.
-const TOUCHED = [["people-search"], ["follow-list"], ["user-profile"]] as const;
+const TOUCHED = [[socialPrefix.peopleSearch], [socialPrefix.followList], [socialPrefix.userProfile]] as const;
 
 // Following someone changes their follower count, the viewer's own following
 // count, and their card wherever it is currently rendered. Rather than
@@ -56,7 +56,7 @@ export function useToggleFollow() {
       await Promise.all(TOUCHED.map((queryKey) => queryClient.cancelQueries({ queryKey })));
       const snapshots = TOUCHED.flatMap((queryKey) => queryClient.getQueriesData({ queryKey }));
 
-      queryClient.setQueriesData<{ items: UserCard[] }>({ queryKey: ["people-search"] }, (old) =>
+      queryClient.setQueriesData<{ items: UserCard[] }>({ queryKey: [socialPrefix.peopleSearch] }, (old) =>
         old
           ? {
               items: old.items.map((item) =>
@@ -66,7 +66,7 @@ export function useToggleFollow() {
           : old
       );
 
-      queryClient.setQueriesData<InfiniteData<UserPage>>({ queryKey: ["follow-list"] }, (old) =>
+      queryClient.setQueriesData<InfiniteData<UserPage>>({ queryKey: [socialPrefix.followList] }, (old) =>
         old
           ? {
               ...old,
@@ -84,7 +84,7 @@ export function useToggleFollow() {
       // follower; the viewer's own profile, whichever handle it is cached
       // under, gains or loses a following. Deriving both from isSelf avoids
       // having to be told who the viewer is.
-      queryClient.setQueriesData<UserProfile>({ queryKey: ["user-profile"] }, (old) => {
+      queryClient.setQueriesData<UserProfile>({ queryKey: [socialPrefix.userProfile] }, (old) => {
         if (!old) {
           return old;
         }

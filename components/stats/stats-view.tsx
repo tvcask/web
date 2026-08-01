@@ -20,13 +20,15 @@ export function StatsView({
   heading?: string;
   owner?: boolean;
 }) {
+  // Grouped by medium: television first, then film. Shows was missing
+  // entirely, which made the movie count look arbitrary next to it.
   const tiles = [
-    { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
+    { label: "Shows", value: stats.showsWatched.toLocaleString(), accent: false },
     { label: "Episodes", value: stats.episodesWatched.toLocaleString(), accent: false },
-    { label: "Movie time", value: duration(stats.movieTimeMinutes), accent: false },
+    { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
     { label: "Movies", value: stats.moviesWatched.toLocaleString(), accent: false },
-    { label: "Completed", value: stats.completedTitles.toLocaleString(), accent: false },
-    { label: "Favorites", value: stats.favorites.toLocaleString(), accent: true }
+    { label: "Movie time", value: duration(stats.movieTimeMinutes), accent: false },
+    { label: "Completed", value: stats.completedTitles.toLocaleString(), accent: true }
   ];
 
   return (
