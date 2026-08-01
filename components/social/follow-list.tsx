@@ -44,7 +44,7 @@ export function FollowList({
   return (
     <div className="-mx-3">
       {users.map((user) => (
-        <UserRow key={user.id} user={user} contextHandle={handle} />
+        <UserRow key={user.id} user={user} />
       ))}
       <div ref={sentinel} aria-hidden className="h-px" />
     </div>

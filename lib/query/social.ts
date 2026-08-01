@@ -35,29 +35,35 @@ export function useFollowList(handle: string, side: FollowSide, initial: UserPag
   });
 }
 
-// Following someone changes their follower count, the viewer's following count,
-// and their card wherever it is currently rendered. Rather than invalidate and
-// flash, patch each cache in place and roll the whole set back together.
-export function useToggleFollow(handle?: string) {
-  const queryClient = useQueryClient();
+// Query families a follow can touch. Cancelling and snapshotting is scoped to
+// these: an unscoped cancelQueries() would abort every request in the app on
+// each click.
+const TOUCHED = [["people-search"], ["follow-list"], ["user-profile"]] as const;
 
-  function patchCard(user: UserCard, following: boolean): UserCard {
-    return { ...user, viewerFollows: following };
-  }
+// Following someone changes their follower count, the viewer's own following
+// count, and their card wherever it is currently rendered. Rather than
+// invalidate and flash, patch each cache in place and roll the set back
+// together if the write fails.
+export function useToggleFollow() {
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ user, following }: { user: UserCard; following: boolean }) =>
       following ? mutate(`me/following/${user.id}`, "POST") : mutate(`me/following/${user.id}`, "DELETE"),
 
     onMutate: async ({ user, following }) => {
-      await queryClient.cancelQueries();
-      const snapshot = queryClient.getQueriesData({ queryKey: ["people-search"] });
-      const listSnapshot = queryClient.getQueriesData({ queryKey: ["follow-list"] });
-      const profileKey = queryKeys.userProfile(user.username);
-      const previousProfile = queryClient.getQueryData<UserProfile>(profileKey);
+      const step = following ? 1 : -1;
+      await Promise.all(TOUCHED.map((queryKey) => queryClient.cancelQueries({ queryKey })));
+      const snapshots = TOUCHED.flatMap((queryKey) => queryClient.getQueriesData({ queryKey }));
 
       queryClient.setQueriesData<{ items: UserCard[] }>({ queryKey: ["people-search"] }, (old) =>
-        old ? { items: old.items.map((item) => (item.id === user.id ? patchCard(item, following) : item)) } : old
+        old
+          ? {
+              items: old.items.map((item) =>
+                item.id === user.id ? { ...item, viewerFollows: following } : item
+              )
+            }
+          : old
       );
 
       queryClient.setQueriesData<InfiniteData<UserPage>>({ queryKey: ["follow-list"] }, (old) =>
@@ -66,36 +72,36 @@ export function useToggleFollow(handle?: string) {
               ...old,
               pages: old.pages.map((page) => ({
                 ...page,
-                items: page.items.map((item) => (item.id === user.id ? patchCard(item, following) : item))
+                items: page.items.map((item) =>
+                  item.id === user.id ? { ...item, viewerFollows: following } : item
+                )
               }))
             }
           : old
       );
 
-      queryClient.setQueryData<UserProfile>(profileKey, (old) =>
-        old
-          ? { ...old, viewerFollows: following, followerCount: Math.max(0, old.followerCount + (following ? 1 : -1)) }
-          : old
-      );
+      // One pass over every cached profile. The target gains or loses a
+      // follower; the viewer's own profile, whichever handle it is cached
+      // under, gains or loses a following. Deriving both from isSelf avoids
+      // having to be told who the viewer is.
+      queryClient.setQueriesData<UserProfile>({ queryKey: ["user-profile"] }, (old) => {
+        if (!old) {
+          return old;
+        }
+        if (old.id === user.id) {
+          return { ...old, viewerFollows: following, followerCount: Math.max(0, old.followerCount + step) };
+        }
+        if (old.isSelf) {
+          return { ...old, followingCount: Math.max(0, old.followingCount + step) };
+        }
+        return old;
+      });
 
-      // The viewer's own following count moved too, if their profile is open.
-      if (handle) {
-        queryClient.setQueryData<UserProfile>(queryKeys.userProfile(handle), (old) =>
-          old?.isSelf
-            ? { ...old, followingCount: Math.max(0, old.followingCount + (following ? 1 : -1)) }
-            : old
-        );
-      }
-
-      return { snapshot, listSnapshot, previousProfile, profileKey };
+      return { snapshots };
     },
 
     onError: (_error, _vars, context) => {
-      context?.snapshot.forEach(([key, data]) => queryClient.setQueryData(key, data));
-      context?.listSnapshot.forEach(([key, data]) => queryClient.setQueryData(key, data));
-      if (context?.previousProfile) {
-        queryClient.setQueryData(context.profileKey, context.previousProfile);
-      }
+      context?.snapshots.forEach(([key, data]) => queryClient.setQueryData(key, data));
       toast("Couldn't update. Try again.");
     }
   });

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ProfileHeader } from "@/components/social/profile-header";
 import { getUserProfile } from "@/lib/social";
 
@@ -22,9 +22,16 @@ export default async function UserProfilePage({ params }: Params) {
   if (!profile) {
     notFound();
   }
+  // Your own profile lives at /app/profile, where your library and stats are.
+  // Without this, following your own handle lands on a stripped-down copy of
+  // your page, and Back from your follower list goes there instead of home.
+  if (profile.isSelf) {
+    redirect("/app/profile");
+  }
 
+  // Same width as your own profile, so moving between the two does not shift.
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-[1300px] space-y-7">
       <ProfileHeader profile={profile} />
     </div>
   );

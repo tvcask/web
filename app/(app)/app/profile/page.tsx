@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getCurrentUser } from "@/lib/auth/session";
-import { Avatar } from "@/components/ui/avatar";
+import { ProfileHero, heroActionClass, heroControlClass } from "@/components/social/profile-hero";
 import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
 import { getUserProfile } from "@/lib/social";
 
@@ -43,90 +43,49 @@ export default async function ProfilePage() {
   const movieCount = moviesPage.total;
   const hasLibrary = showsPage.total + moviesPage.total > 0;
 
+  // Shows and movies moved here when the hero took on follower counts. They are
+  // library totals, which is what this row is for.
   const statTiles = [
-    { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
+    { label: "Shows", value: showCount.toLocaleString(), accent: false },
+    { label: "Movies", value: movieCount.toLocaleString(), accent: false },
     { label: "Episodes", value: stats.episodesWatched.toLocaleString(), accent: false },
+    { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
     { label: "Movie time", value: duration(stats.movieTimeMinutes), accent: false },
     { label: "Completed", value: String(stats.completedTitles), accent: true }
   ];
 
   return (
     <div className="mx-auto max-w-[1300px] space-y-7">
-      <section className="relative overflow-hidden rounded-[18px]" style={{ background: "linear-gradient(120deg,#2a2016,#14110d 52%,#3a2418)" }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-        <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
-          <Link
-            href="/app/settings"
-            aria-label="Settings"
-            className="grid size-9 place-items-center rounded-full bg-black/40 text-white"
-          >
-            <HugeiconsIcon icon={Settings01Icon} className="size-[18px]" />
-          </Link>
-        </div>
-        <div className="relative grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-4 px-5 pb-5 pt-20 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:px-6 sm:pt-24">
-          <div className="relative shrink-0">
-            <Avatar src={user?.avatarUrl} name={user?.name} size={78} className="ring-[3px] ring-white/90" />
-            <Link
-              href="/app/profile/badges"
-              aria-label={`Level ${badges.level}, see your progress`}
-              className="absolute -bottom-1 -right-1 grid h-7 min-w-7 place-items-center rounded-full border-2 border-black px-1.5 text-[11px] font-extrabold transition hover:brightness-110"
-              style={{ backgroundColor: "#ca9a65", color: "#000000" }}
-            >
-              {badges.level}
-            </Link>
-          </div>
-          <div className="min-w-0">
-            <p className="display truncate text-[22px] leading-tight text-white sm:text-[26px]">{displayName}</p>
-            {user?.username ? <p className="truncate text-sm font-semibold text-white/50">@{user.username}</p> : null}
-            <div className="mt-2">
-              <ProfileCounts showCount={showCount} movieCount={movieCount} />
-            </div>
-          </div>
-          <Link
-            href="/app/profile/edit"
-            className="hidden h-10 items-center justify-center self-end rounded-full border border-white/50 px-5 text-sm font-bold text-white transition hover:bg-white/[0.06] sm:inline-flex"
-          >
+      <ProfileHero
+        name={displayName}
+        username={user?.username}
+        avatarUrl={user?.avatarUrl}
+        level={badges.level}
+        followerCount={social?.followerCount}
+        followingCount={social?.followingCount}
+        action={
+          <Link href="/app/profile/edit" className={heroActionClass}>
             Edit profile
           </Link>
-          <Link
-            href="/app/profile/edit"
-            className="col-span-2 inline-flex h-10 items-center justify-center rounded-full border border-white/50 text-sm font-bold text-white transition hover:bg-white/[0.06] sm:hidden"
-          >
-            Edit profile
-          </Link>
-        </div>
-      </section>
-
-      <section className="surface flex items-center gap-5 rounded-[16px] px-5 py-4">
-        {social ? (
+        }
+        controls={
           <>
-            <Link href={`/app/u/${social.username}/followers`} className="group flex items-baseline gap-1.5">
-              <span className="display text-lg text-white">{social.followerCount.toLocaleString()}</span>
-              <span className="text-[13px] font-semibold text-white/45 group-hover:text-white/70">
-                {social.followerCount === 1 ? "Follower" : "Followers"}
-              </span>
+            <Link href="/app/people" aria-label="Find people" className={heroControlClass}>
+              <HugeiconsIcon icon={UserAdd01Icon} className="size-[18px]" />
             </Link>
-            <Link href={`/app/u/${social.username}/following`} className="group flex items-baseline gap-1.5">
-              <span className="display text-lg text-white">{social.followingCount.toLocaleString()}</span>
-              <span className="text-[13px] font-semibold text-white/45 group-hover:text-white/70">Following</span>
+            <Link href="/app/settings" aria-label="Settings" className={heroControlClass}>
+              <HugeiconsIcon icon={Settings01Icon} className="size-[18px]" />
             </Link>
           </>
-        ) : null}
-        <Link
-          href="/app/people"
-          className="ml-auto inline-flex h-9 items-center gap-2 rounded-full border border-white/12 px-4 text-[13px] font-bold text-white/80 transition hover:bg-white/5 hover:text-white"
-        >
-          <HugeiconsIcon icon={UserAdd01Icon} className="size-4" />
-          Find people
-        </Link>
-      </section>
+        }
+      />
 
       <Link
         href="/app/profile/stats"
         className="group surface block rounded-[16px] px-5 py-4 transition-colors hover:border-white/[0.14]"
       >
         <div className="flex items-center gap-3">
-          <div className="grid min-w-0 flex-1 grid-cols-2 gap-y-4 sm:grid-cols-4 sm:gap-y-0">
+          <div className="grid min-w-0 flex-1 grid-cols-3 gap-y-4 sm:grid-cols-6 sm:gap-y-0">
             {statTiles.map((tile, i) => (
               <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5" : ""}>
                 <p className="eyebrow">{tile.label}</p>
@@ -159,15 +118,6 @@ export default async function ProfilePage() {
           </Button>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function ProfileCounts({ showCount, movieCount }: { showCount: number; movieCount: number }) {
-  return (
-    <div className="flex items-center gap-4 text-[13px] font-semibold text-white/70">
-      <span><b className="text-white">{showCount}</b> Shows</span>
-      <span><b className="text-white">{movieCount}</b> Movies</span>
     </div>
   );
 }

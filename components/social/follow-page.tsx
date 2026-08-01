@@ -15,12 +15,15 @@ export async function FollowPage({ handle, side }: { handle: string; side: Follo
 
   const initial = await getFollowList(handle, side);
   const total = side === "followers" ? profile.followerCount : profile.followingCount;
+  // Your own profile is /app/profile; /app/u/<you> redirects there. Point Back
+  // at the real destination rather than bouncing through a redirect.
+  const backHref = profile.isSelf ? "/app/profile" : `/app/u/${profile.username}`;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
+    <div className="mx-auto max-w-2xl space-y-5 pt-1">
       <div className="flex items-center gap-3">
         <Link
-          href={`/app/u/${profile.username}`}
+          href={backHref}
           aria-label="Back to profile"
           className="grid size-9 shrink-0 place-items-center rounded-full border border-white/12 text-white/70 transition hover:bg-white/5 hover:text-white"
         >
