@@ -8,8 +8,9 @@ type Props = {
   avatarUrl?: string;
   followerCount?: number;
   followingCount?: number;
-  /** Level medallion on the avatar. Only your own profile exposes one today. */
+  /** Level medallion on the avatar, linking to that person's progress. */
   level?: number;
+  levelHref?: string;
   /** Primary action: Edit profile on your own page, Follow on someone else's. */
   action?: ReactNode;
   /** Small circular controls in the top corner. */
@@ -26,6 +27,7 @@ export function ProfileHero({
   followerCount,
   followingCount,
   level,
+  levelHref = "/app/profile/badges",
   action,
   controls
 }: Props) {
@@ -44,8 +46,8 @@ export function ProfileHero({
           <Avatar src={avatarUrl} name={name} size={78} className="ring-[3px] ring-white/90" />
           {level !== undefined ? (
             <Link
-              href="/app/profile/badges"
-              aria-label={`Level ${level}, see your progress`}
+              href={levelHref}
+              aria-label={`Level ${level}, see progress`}
               className="absolute -bottom-1 -right-1 grid h-7 min-w-7 place-items-center rounded-full border-2 border-black px-1.5 text-[11px] font-extrabold transition hover:brightness-110"
               style={{ backgroundColor: "#ca9a65", color: "#000000" }}
             >

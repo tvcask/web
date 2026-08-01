@@ -1,0 +1,132 @@
+"use client";
+
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import { FollowButton } from "@/components/social/follow-button";
+import { ProfileHero } from "@/components/social/profile-hero";
+import { TitleRail } from "@/components/titles/title-rail";
+import { apiGet } from "@/lib/query/client";
+import { queryKeys } from "@/lib/query/keys";
+import { duration } from "@/lib/dates";
+import type { UserProfile } from "@/lib/social";
+
+// Someone else's profile, laid out as your own is. Seeded from the server
+// render and kept in the query cache so following moves the counts here without
+// a refetch.
+export function ProfileView({ profile: initial }: { profile: UserProfile }) {
+  const { data } = useQuery({
+    queryKey: queryKeys.userProfile(initial.username),
+    queryFn: () => apiGet<UserProfile>(`/api/v1/users/${encodeURIComponent(initial.username)}`),
+    initialData: initial,
+    // Without this, React Query treats server-provided initialData as stale and
+    // refetches on every mount, duplicating the render's own request.
+    staleTime: 60_000
+  });
+  const profile = data ?? initial;
+  const base = `/app/u/${profile.username}`;
+  const stats = profile.stats;
+
+  const tiles = [
+    { label: "Shows", value: stats.shows.toLocaleString(), accent: false },
+    { label: "Movies", value: stats.movies.toLocaleString(), accent: false },
+    { label: "Episodes", value: stats.episodesWatched.toLocaleString(), accent: false },
+    { label: "TV time", value: duration(stats.tvTimeMinutes), accent: false },
+    { label: "Movie time", value: duration(stats.movieTimeMinutes), accent: false },
+    { label: "Completed", value: String(stats.completedTitles), accent: true }
+  ];
+
+  const hasLibrary = stats.shows + stats.movies > 0;
+
+  return (
+    <div className="mx-auto max-w-[1300px] space-y-7">
+      <ProfileHero
+        name={profile.name || profile.username}
+        username={profile.username}
+        avatarUrl={profile.avatarUrl}
+        level={profile.level}
+        levelHref={`${base}/badges`}
+        followerCount={profile.followerCount}
+        followingCount={profile.followingCount}
+        action={<FollowButton user={profile} size="lg" />}
+      />
+
+      <Link
+        href={`${base}/stats`}
+        className="group surface block rounded-[16px] px-5 py-4 transition-colors hover:border-white/[0.14]"
+      >
+        <div className="flex items-center gap-3">
+          <div className="grid min-w-0 flex-1 grid-cols-3 gap-y-4 sm:grid-cols-6 sm:gap-y-0">
+            {tiles.map((tile, i) => (
+              <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5" : ""}>
+                <p className="eyebrow">{tile.label}</p>
+                <p className="display mt-1 text-xl" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
+                  {tile.value}
+                </p>
+              </div>
+            ))}
+          </div>
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-white/60"
+          />
+        </div>
+      </Link>
+
+      <TitleRail
+        title="Favorite shows"
+        heart
+        items={profile.favoriteShows}
+        href={`${base}/library?type=show&favorite=true`}
+        returnTo={base}
+      />
+      <TitleRail
+        title="Favorite movies"
+        heart
+        items={profile.favoriteMovies}
+        href={`${base}/library?type=movie&favorite=true`}
+        returnTo={base}
+      />
+
+      {profile.lists.length > 0 ? (
+        <section>
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="display text-lg text-white">Lists</h2>
+            <span className="rounded-full bg-white/8 px-2 py-0.5 text-[11px] font-bold text-white/45">
+              {profile.lists.length}
+            </span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {profile.lists.map((list) => (
+              <Link
+                key={list.id}
+                href={`/app/lists/${list.id}`}
+                className="surface rounded-[14px] p-4 transition hover:bg-white/[0.04]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold text-white">{list.name}</p>
+                    <p className="mt-1 text-xs font-semibold text-white/40">
+                      {list.itemCount.toLocaleString()} titles
+                    </p>
+                  </div>
+                  <HugeiconsIcon icon={ArrowRight01Icon} className="mt-0.5 size-5 shrink-0 text-white/30" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {!hasLibrary ? (
+        <div className="surface rounded-[16px] p-8">
+          <h2 className="display text-xl text-white">Nothing here yet.</h2>
+          <p className="mt-2 max-w-md text-white/50">
+            {profile.name || profile.username} hasn&apos;t tracked any shows or movies.
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}

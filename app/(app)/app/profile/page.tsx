@@ -3,19 +3,12 @@ import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon, UserAdd0
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
+import { TitleRail } from "@/components/titles/title-rail";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ProfileHero, heroActionClass, heroControlClass } from "@/components/social/profile-hero";
 import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
 import { getUserProfile } from "@/lib/social";
-
-function duration(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const months = Math.floor(days / 30);
-  if (months > 0) return `${months}m ${days % 30}d`;
-  if (days > 0) return `${days}d ${hours % 24}h`;
-  return `${hours}h`;
-}
+import { duration } from "@/lib/dates";
 
 export default async function ProfilePage() {
   // Fetch shows and movies separately so neither type is starved by a shared
@@ -99,13 +92,13 @@ export default async function ProfilePage() {
         </div>
       </Link>
 
-      {allShows.length > 0 ? <Rail title="Shows" href="/app/library?type=show" items={allShows.map((i) => i.title)} /> : null}
+      {allShows.length > 0 ? <TitleRail returnTo="/app/profile" title="Shows" href="/app/library?type=show" items={allShows.map((i) => i.title)} /> : null}
       {favShows.length > 0 ? (
-        <Rail title="Favorite shows" heart href="/app/library?type=show&favorite=true" items={favShows.map((i) => i.title)} />
+        <TitleRail returnTo="/app/profile" title="Favorite shows" heart href="/app/library?type=show&favorite=true" items={favShows.map((i) => i.title)} />
       ) : null}
-      {allMovies.length > 0 ? <Rail title="Movies" href="/app/library?type=movie" items={allMovies.map((i) => i.title)} /> : null}
+      {allMovies.length > 0 ? <TitleRail returnTo="/app/profile" title="Movies" href="/app/library?type=movie" items={allMovies.map((i) => i.title)} /> : null}
       {favMovies.length > 0 ? (
-        <Rail title="Favorite movies" heart href="/app/library?type=movie&favorite=true" items={favMovies.map((i) => i.title)} />
+        <TitleRail returnTo="/app/profile" title="Favorite movies" heart href="/app/library?type=movie&favorite=true" items={favMovies.map((i) => i.title)} />
       ) : null}
       <ListsSection lists={listDetails} total={lists.length} />
 
@@ -174,35 +167,3 @@ function ListsSection({ lists, total }: { lists: UserListDetail[]; total: number
   );
 }
 
-function Rail({
-  title,
-  items,
-  heart = false,
-  href
-}: {
-  title: string;
-  items: { id: string; title: string; posterUrl?: string | null }[];
-  heart?: boolean;
-  href?: string;
-}) {
-  return (
-    <section>
-      <div className="mb-3 flex items-center gap-2">
-        {heart ? <HugeiconsIcon icon={FavouriteIcon} className="size-4 fill-current" style={{ color: "var(--accent-text)" }} aria-hidden /> : null}
-        <h2 className="display text-lg text-white">{title}</h2>
-        {href ? (
-          <Link href={href} className="ml-auto text-white/40 transition hover:text-white" aria-label={`All ${title}`}>
-            <HugeiconsIcon icon={ArrowRight01Icon} className="size-5" />
-          </Link>
-        ) : null}
-      </div>
-      <div className="nos flex gap-3 overflow-x-auto pb-1">
-        {items.map((item) => (
-          <Link key={item.id} href={`/app/titles/${item.id}?returnTo=/app/profile`} className="w-[100px] shrink-0 overflow-hidden rounded-[12px] lift">
-            <Poster src={item.posterUrl} title={item.title} className="rounded-[12px]" />
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}

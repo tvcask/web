@@ -31,7 +31,20 @@ const targetProfile: UserProfile = {
   followerCount: 10,
   followingCount: 4,
   viewerBlocked: false,
-  isSelf: false
+  isSelf: false,
+  stats: {
+    shows: 0,
+    movies: 0,
+    episodesWatched: 0,
+    completedTitles: 0,
+    tvTimeMinutes: 0,
+    movieTimeMinutes: 0
+  },
+  level: 1,
+  badgesEarned: 0,
+  favoriteShows: [],
+  favoriteMovies: [],
+  lists: []
 };
 
 describe("useToggleFollow", () => {

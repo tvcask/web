@@ -126,9 +126,12 @@ export async function getLists(): Promise<UserList[]> {
   return res.lists ?? [];
 }
 
+// Resolves through the shared endpoint rather than /v1/me/lists/:id, so one
+// route serves both your own lists and the public ones on someone else's
+// profile. The API decides: yours, or public and its owner visible to you.
 export async function getList(id: string): Promise<UserListDetail | null> {
   try {
-    return await api<UserListDetail>(`/v1/me/lists/${id}`);
+    return await api<UserListDetail>(`/v1/lists/${id}`);
   } catch {
     return null;
   }

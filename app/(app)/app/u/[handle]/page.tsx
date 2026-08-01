@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { ProfileHeader } from "@/components/social/profile-header";
+import { ProfileView } from "@/components/social/profile-view";
 import { getUserProfile } from "@/lib/social";
 
 type Params = { params: Promise<{ handle: string }> };
@@ -29,10 +29,5 @@ export default async function UserProfilePage({ params }: Params) {
     redirect("/app/profile");
   }
 
-  // Same width as your own profile, so moving between the two does not shift.
-  return (
-    <div className="mx-auto max-w-[1300px] space-y-7">
-      <ProfileHeader profile={profile} />
-    </div>
-  );
+  return <ProfileView profile={profile} />;
 }

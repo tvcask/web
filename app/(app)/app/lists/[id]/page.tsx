@@ -7,7 +7,8 @@ import { Poster } from "@/components/titles/poster";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { getList } from "@/lib/data";
+import { getList, type UserListDetail } from "@/lib/data";
+import { getCurrentUser } from "@/lib/auth/session";
 
 export default async function ListPage({
   params,
@@ -16,9 +17,15 @@ export default async function ListPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [{ id }, { saved }] = await Promise.all([params, searchParams]);
+  const [{ id }, { saved }, viewer] = await Promise.all([params, searchParams, getCurrentUser()]);
   const list = await getList(id);
   if (!list) notFound();
+
+  // The same route serves your own lists and the public ones on someone else's
+  // profile. Everything that mutates belongs to the owner only.
+  if (list.userId !== viewer?.id) {
+    return <PublicListView list={list} />;
+  }
 
   return (
     <div className="mx-auto max-w-[980px] space-y-6">
@@ -109,6 +116,39 @@ export default async function ListPage({
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+// Someone else's public list: the titles, and nothing that changes them.
+function PublicListView({ list }: { list: UserListDetail }) {
+  return (
+    <div className="mx-auto max-w-[980px] space-y-6">
+      <section className="surface rounded-[16px] p-5">
+        <h1 className="display text-2xl text-white">{list.name}</h1>
+        {list.description ? <p className="mt-2 max-w-2xl text-white/60">{list.description}</p> : null}
+        <p className="mt-3 text-sm font-semibold text-white/40">{list.items.length.toLocaleString()} titles</p>
+      </section>
+
+      {list.items.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {list.items.map((item) => (
+            <div key={item.id}>
+              <Link
+                href={`/app/titles/${item.title.id}?returnTo=/app/lists/${list.id}`}
+                className="lift block overflow-hidden rounded-[14px]"
+              >
+                <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[14px]" />
+              </Link>
+              <p className="mt-2 truncate text-sm font-bold text-white">{item.title.title}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="surface rounded-[14px] p-6">
+          <p className="text-sm text-white/55">This list is empty.</p>
+        </div>
+      )}
     </div>
   );
 }
