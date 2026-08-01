@@ -15,16 +15,16 @@ export default async function ListPage({
   searchParams
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; returnTo?: string }>;
 }) {
-  const [{ id }, { saved }, viewer] = await Promise.all([params, searchParams, getCurrentUser()]);
+  const [{ id }, { saved, returnTo }, viewer] = await Promise.all([params, searchParams, getCurrentUser()]);
   const list = await getList(id);
   if (!list) notFound();
 
   // The same route serves your own lists and the public ones on someone else's
   // profile. Everything that mutates belongs to the owner only.
   if (list.userId !== viewer?.id) {
-    return <PublicListView list={list} />;
+    return <PublicListView list={list} returnTo={returnTo} />;
   }
 
   return (
@@ -121,9 +121,18 @@ export default async function ListPage({
 }
 
 // Someone else's public list: the titles, and nothing that changes them.
-function PublicListView({ list }: { list: UserListDetail }) {
+function PublicListView({ list, returnTo }: { list: UserListDetail; returnTo?: string }) {
+  // Only follow a return target that stays inside the app.
+  const back = returnTo?.startsWith("/app/") ? returnTo : null;
+
   return (
     <div className="mx-auto max-w-[980px] space-y-6">
+      {back ? (
+        <Link href={back} className="inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white">
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Back
+        </Link>
+      ) : null}
+
       <section className="surface rounded-[16px] p-5">
         <h1 className="display text-2xl text-white">{list.name}</h1>
         {list.description ? <p className="mt-2 max-w-2xl text-white/60">{list.description}</p> : null}

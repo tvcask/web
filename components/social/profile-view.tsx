@@ -80,27 +80,21 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
         action={preview ? undefined : <FollowButton user={profile} size="lg" />}
       />
 
-      <Link
-        href={`${base}/stats`}
-        className="group surface block rounded-[16px] px-5 py-4 transition-colors hover:border-white/[0.14]"
-      >
-        <div className="flex items-center gap-3">
-          <div className="grid min-w-0 flex-1 grid-cols-3 gap-y-4 sm:grid-cols-6 sm:gap-y-0">
-            {tiles.map((tile, i) => (
-              <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5" : ""}>
-                <p className="eyebrow">{tile.label}</p>
-                <p className="display mt-1 text-xl" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
-                  {tile.value}
-                </p>
-              </div>
-            ))}
-          </div>
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:text-white/60"
-          />
+      {/* Tiles only. The detailed breakdown behind them is personal analytics
+          for the owner, not something a visitor needs, so there is no page to
+          navigate to and no arrow suggesting there is. */}
+      <section className="surface rounded-[16px] px-5 py-4">
+        <div className="grid grid-cols-3 gap-y-4 sm:grid-cols-6 sm:gap-y-0">
+          {tiles.map((tile, i) => (
+            <div key={tile.label} className={i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5" : ""}>
+              <p className="eyebrow">{tile.label}</p>
+              <p className="display mt-1 text-xl" style={{ color: tile.accent ? "var(--accent-text)" : "#fff" }}>
+                {tile.value}
+              </p>
+            </div>
+          ))}
         </div>
-      </Link>
+      </section>
 
       <TitleRail title="Shows" items={profile.shows ?? []} href={`${base}/library?type=show`} returnTo={base} />
       <TitleRail
@@ -131,7 +125,7 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
             {lists.map((list) => (
               <Link
                 key={list.id}
-                href={`/app/lists/${list.id}`}
+                href={`/app/lists/${list.id}?returnTo=${encodeURIComponent(base)}`}
                 className="surface rounded-[14px] p-4 transition hover:bg-white/[0.04]"
               >
                 <div className="flex items-start justify-between gap-3">
