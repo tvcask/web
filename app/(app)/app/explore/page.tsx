@@ -77,7 +77,7 @@ export default async function ExplorePage({
           <TabsNav tabs={tabs} active={following ? "following" : "discover"} base="/app/explore" />
 
           {following ? (
-            <FeedList initial={feed} />
+            <FeedList initial={feed} trackedTitleIds={trackedTitleIds} />
           ) : sections.some((section) => section.items.length > 0) ? (
             <div className="space-y-7">
               {sections

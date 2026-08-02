@@ -6,7 +6,7 @@ import { FeedCard } from "@/components/social/feed-card";
 import { useFeed } from "@/lib/query/social";
 import type { FeedPage } from "@/lib/social";
 
-export function FeedList({ initial }: { initial: FeedPage }) {
+export function FeedList({ initial, trackedTitleIds }: { initial: FeedPage; trackedTitleIds: string[] }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFeed(initial);
   const sentinel = useRef<HTMLDivElement>(null);
 
@@ -47,9 +47,16 @@ export function FeedList({ initial }: { initial: FeedPage }) {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-x-3.5 gap-y-6 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+      {/* A single column even on desktop. A feed is something you scroll down,
+          and two columns of wide cards reads as a gallery again. */}
+      <div className="mx-auto max-w-[640px] space-y-5">
         {items.map((item) => (
-          <FeedCard key={item.id} item={item} returnTo="/app/explore?tab=following" />
+          <FeedCard
+            key={item.id}
+            item={item}
+            returnTo="/app/explore?tab=following"
+            tracked={trackedTitleIds.includes(item.title.id)}
+          />
         ))}
       </div>
       <div ref={sentinel} aria-hidden className="h-px" />

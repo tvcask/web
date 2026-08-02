@@ -81,7 +81,7 @@ export type FeedActor = UserCard & {
 // into a single card without a client change.
 export type FeedItem = {
   id: string;
-  title: { id: string; title: string; type: string; year?: number; posterUrl?: string };
+  title: { id: string; title: string; type: string; year?: number; posterUrl?: string; backdropUrl?: string };
   actors: FeedActor[];
   updatedAt: string;
 };
