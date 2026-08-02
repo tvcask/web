@@ -76,12 +76,35 @@ export type FeedActor = UserCard & {
   updatedAt: string;
 };
 
-// One title plus everyone who moved on it. Actors always holds one today; the
-// API returns a list so that two people watching the same show can collapse
-// into a single card without a client change.
+export type FeedTitle = {
+  id: string;
+  title: string;
+  type: string;
+  year?: number;
+  posterUrl?: string;
+  backdropUrl?: string;
+};
+
+// A public list someone made, with enough of its contents to show what it is
+// about.
+export type FeedList = {
+  id: string;
+  name: string;
+  itemCount: number;
+  titles: FeedTitle[];
+};
+
+// One thing that happened. Kind says which of title and list is populated;
+// exactly one of them always is.
+//
+// Actors always holds one today. The API returns a list so that two people
+// watching the same show can collapse into a single card without a client
+// change.
 export type FeedItem = {
   id: string;
-  title: { id: string; title: string; type: string; year?: number; posterUrl?: string; backdropUrl?: string };
+  kind: "title" | "list";
+  title?: FeedTitle;
+  list?: FeedList;
   actors: FeedActor[];
   updatedAt: string;
 };
