@@ -99,3 +99,25 @@ export function getAdminUsers(filters: AdminUserFilters = {}): Promise<AdminUser
 export function getAdminUser(id: string): Promise<AdminUserDetail> {
   return api<AdminUserDetail>(`/v1/admin/users/${encodeURIComponent(id)}`);
 }
+
+export type AdminReportQueueItem = {
+  id: string;
+  reason: string;
+  note?: string;
+  createdAt: string;
+  resolvedAt?: string;
+  subjectId: string;
+  subjectName: string;
+  subjectUsername: string;
+  subjectSuspended: boolean;
+  subjectOpenReports: number;
+};
+
+// Oldest first: a queue is worked front to back, and the longest-waiting
+// report is the most overdue.
+export async function getAdminReports(resolved = false): Promise<AdminReportQueueItem[]> {
+  const res = await api<{ items: AdminReportQueueItem[] }>(
+    `/v1/admin/reports${resolved ? "?resolved=true" : ""}`
+  );
+  return res.items ?? [];
+}
