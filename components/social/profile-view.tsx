@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { FollowButton } from "@/components/social/follow-button";
-import { ReportButton } from "@/components/social/report-button";
+import { ProfileMenu } from "@/components/social/profile-menu";
 import { ProfileHero } from "@/components/social/profile-hero";
 import { TitleRail } from "@/components/titles/title-rail";
 import { Poster } from "@/components/titles/poster";
@@ -79,6 +79,7 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
         followingCount={profile.followingCount}
         // You cannot follow yourself, so the preview has no action to offer.
         action={preview ? undefined : <FollowButton user={profile} size="lg" />}
+        controls={preview ? undefined : <ProfileMenu userId={profile.id} username={profile.username} />}
       />
 
       {/* Tiles only. The detailed breakdown behind them is personal analytics
@@ -154,14 +155,6 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
           </div>
         </section>
       ) : null}
-
-      {/* Reporting sits at the end: it is the least common thing anyone comes
-          here to do, and it should not compete with Follow. */}
-      {preview ? null : (
-        <div className="flex justify-end pt-2">
-          <ReportButton userId={profile.id} username={profile.username} />
-        </div>
-      )}
 
       {!hasLibrary ? (
         <div className="surface rounded-[16px] p-8">
