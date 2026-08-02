@@ -55,7 +55,7 @@ export function FeedList({ initial, trackedTitleIds }: { initial: FeedPage; trac
             key={item.id}
             item={item}
             returnTo="/app/explore?tab=feed"
-            tracked={trackedTitleIds.includes(item.title.id)}
+            tracked={item.title ? trackedTitleIds.includes(item.title.id) : false}
           />
         ))}
       </div>

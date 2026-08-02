@@ -31,4 +31,8 @@ describe("activityLabel", () => {
     expect(activityLabel(actor({ status: "watching", season: 2 }))).toBe("is watching this");
     expect(activityLabel(actor({ status: "completed", season: 1, episode: 3 }))).toBe("finished this");
   });
+
+  it("says what a watchlist add is", () => {
+    expect(activityLabel(actor({ status: "watchlist" }))).toBe("wants to watch this");
+  });
 });
