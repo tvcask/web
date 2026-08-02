@@ -133,7 +133,12 @@ export async function getLists(): Promise<UserList[]> {
 export async function getList(id: string): Promise<UserListDetail | null> {
   try {
     return await api<UserListDetail>(`/v1/lists/${id}`);
-  } catch {
+  } catch (e) {
+    // Only a 404 means "no such list", which includes one that is private and
+    // not yours. A 500 or a timeout must not render as "page not found".
+    if (!(e instanceof ApiError) || e.status !== 404) {
+      throw e;
+    }
     return null;
   }
 }
@@ -208,7 +213,10 @@ export async function searchTitles(query: string): Promise<Title[]> {
 export async function getTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
   try {
     return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`);
-  } catch {
+  } catch (e) {
+    if (!(e instanceof ApiError) || e.status !== 404) {
+      throw e;
+    }
     return null;
   }
 }
