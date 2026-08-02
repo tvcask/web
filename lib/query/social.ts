@@ -5,7 +5,7 @@ import { mutate } from "@/lib/mutate";
 import { apiGet } from "@/lib/query/client";
 import { queryKeys, socialPrefix } from "@/lib/query/keys";
 import { toast } from "@/lib/toast";
-import type { FollowSide, UserCard, UserPage, UserProfile } from "@/lib/social";
+import type { FeedPage, FollowSide, UserCard, UserPage, UserProfile } from "@/lib/social";
 
 // The API rejects anything shorter, so there is no point spending a request.
 export const MIN_SEARCH_CHARS = 2;
@@ -30,6 +30,19 @@ export function useFollowList(handle: string, side: FollowSide, initial: UserPag
     },
     initialPageParam: "",
     // An absent cursor is the end of the list, which is what the API omits it for.
+    getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
+    initialData: { pageParams: [""], pages: [initial] }
+  });
+}
+
+export function useFeed(initial: FeedPage) {
+  return useInfiniteQuery({
+    queryKey: queryKeys.feed(),
+    queryFn: ({ pageParam }) => {
+      const query = pageParam ? `?cursor=${encodeURIComponent(pageParam)}` : "";
+      return apiGet<FeedPage>(`/api/v1/me/feed${query}`);
+    },
+    initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
     initialData: { pageParams: [""], pages: [initial] }
   });

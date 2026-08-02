@@ -1,0 +1,58 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef } from "react";
+import { FeedCard } from "@/components/social/feed-card";
+import { useFeed } from "@/lib/query/social";
+import type { FeedPage } from "@/lib/social";
+
+export function FeedList({ initial }: { initial: FeedPage }) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFeed(initial);
+  const sentinel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = sentinel.current;
+    if (!node || !hasNextPage) {
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting && !isFetchingNextPage) {
+        void fetchNextPage();
+      }
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const items = data?.pages.flatMap((page) => page.items) ?? [];
+
+  // A feed with nobody in it is the main way this feature dies, so the empty
+  // state is a route into finding people rather than a sentence.
+  if (items.length === 0) {
+    return (
+      <div className="surface rounded-[16px] p-10 text-center">
+        <p className="display text-lg text-white">Nothing here yet</p>
+        <p className="mx-auto mt-2 max-w-[38ch] text-sm text-white/50">
+          Once you follow a few people, what they are watching shows up here.
+        </p>
+        <Link
+          href="/app/people"
+          className="mt-5 inline-flex h-10 items-center rounded-full bg-[var(--accent)] px-5 text-[13px] font-bold text-[var(--on-accent)] transition hover:opacity-90"
+        >
+          Find people
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-x-3.5 gap-y-6 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+        {items.map((item) => (
+          <FeedCard key={item.id} item={item} returnTo="/app/explore?tab=following" />
+        ))}
+      </div>
+      <div ref={sentinel} aria-hidden className="h-px" />
+    </>
+  );
+}
