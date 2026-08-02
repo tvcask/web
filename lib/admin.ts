@@ -61,6 +61,20 @@ export type AdminUserDetail = {
   completedImports: number;
   failedImports: number;
   recentImports: AdminUserImport[];
+  // Set when this account is banned. Nothing is deleted, so clearing it
+  // restores the account whole.
+  suspendedAt?: string;
+  reports: AdminReport[];
+};
+
+export type AdminReport = {
+  id: string;
+  reporterId: string;
+  subjectId: string;
+  reason: string;
+  note?: string;
+  resolvedAt?: string;
+  createdAt: string;
 };
 
 export type AdminUserFilters = {

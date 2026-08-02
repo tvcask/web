@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { FollowButton } from "@/components/social/follow-button";
+import { ReportButton } from "@/components/social/report-button";
 import { ProfileHero } from "@/components/social/profile-hero";
 import { TitleRail } from "@/components/titles/title-rail";
 import { Poster } from "@/components/titles/poster";
@@ -153,6 +154,14 @@ export function ProfileView({ profile: initial, preview = false }: { profile: Us
           </div>
         </section>
       ) : null}
+
+      {/* Reporting sits at the end: it is the least common thing anyone comes
+          here to do, and it should not compete with Follow. */}
+      {preview ? null : (
+        <div className="flex justify-end pt-2">
+          <ReportButton userId={profile.id} username={profile.username} />
+        </div>
+      )}
 
       {!hasLibrary ? (
         <div className="surface rounded-[16px] p-8">

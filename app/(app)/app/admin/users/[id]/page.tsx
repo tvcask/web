@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAdminUser, type AdminUserDetail } from "@/lib/admin";
 import { ApiError } from "@/lib/api";
+import { ModerationActions } from "@/components/admin/moderation-actions";
 
 export const metadata: Metadata = { title: "User | Admin | tvcask" };
 
@@ -54,6 +55,8 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
           {stats.map((stat) => <div key={stat.label} className="surface rounded-[14px] px-5 py-4"><p className="eyebrow">{stat.label}</p><p className="display mt-2 text-[22px] text-white">{stat.value.toLocaleString()}</p></div>)}
         </div>
       </section>
+
+      <ModerationActions userId={user.id} suspendedAt={user.suspendedAt} reports={user.reports ?? []} />
 
       <section className="space-y-3">
         <div>
