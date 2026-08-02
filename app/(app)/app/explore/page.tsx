@@ -38,10 +38,20 @@ export default async function ExplorePage({
   const trackedTitleIds = library.map((item) => item.titleId);
 
   return (
-    <div className="mx-auto max-w-[1300px] space-y-7">
-      <div className="md:hidden">
-        <SearchBox initialQuery={query} size="md" className="w-full" />
-      </div>
+    <div className="mx-auto max-w-[1300px]">
+      {/* Pinned under the top nav so search and the tabs stay reachable while
+          the feed scrolls. -mx/-mt swallow main's padding so cards cannot peek
+          through the gap when stuck. */}
+      <header className="sticky top-16 z-20 -mx-5 -mt-8 mb-6 border-b border-white/[0.06] bg-[#0d0c0b]/95 px-5 pb-3 pt-6 backdrop-blur-xl sm:-mx-8 sm:px-8">
+        {/* The nav pill already names the page; a visible title would repeat it. */}
+        <h1 className="sr-only">Explore</h1>
+        <div className="mb-3 md:hidden">
+          <SearchBox initialQuery={query} size="md" className="w-full" />
+        </div>
+        {!query ? (
+          <TabsNav tabs={tabs} active={following ? "feed" : "discover"} base="/app/explore" />
+        ) : null}
+      </header>
 
       {query ? (
         <div className="space-y-5">
@@ -74,8 +84,6 @@ export default async function ExplorePage({
         </div>
       ) : (
         <div className="space-y-7">
-          <TabsNav tabs={tabs} active={following ? "feed" : "discover"} base="/app/explore" />
-
           {following ? (
             <FeedList initial={feed} trackedTitleIds={trackedTitleIds} />
           ) : sections.some((section) => section.items.length > 0) ? (
