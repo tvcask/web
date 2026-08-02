@@ -12,7 +12,8 @@ import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
 import { toast } from "@/lib/toast";
-import type { Person, TitleDetail } from "@/lib/data";
+import Link from "next/link";
+import type { CreditedTitle, Person, TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import type { CastMember, Episode } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
@@ -33,12 +34,14 @@ function formatPersonDates(person: Person): string {
 export function PersonDialog({
   castMember,
   person,
+  credits,
   error,
   titleName,
   onClose
 }: {
   castMember: CastMember;
   person: Person | null;
+  credits: CreditedTitle[] | null;
   error: boolean;
   titleName?: string;
   onClose: () => void;
@@ -138,6 +141,31 @@ export function PersonDialog({
                   {["w-full", "w-11/12", "w-full", "w-4/5"].map((width, index) => <div key={index} className={`h-3 animate-pulse rounded-full bg-white/[0.06] ${width}`} />)}
                 </div>
               )}
+
+              {credits && credits.length > 0 ? (
+                <section className="mt-8">
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="h-px w-7 bg-[var(--accent)]/70" aria-hidden />
+                    <p className="eyebrow">Also in</p>
+                  </div>
+                  <div className="nos flex gap-3 overflow-x-auto pb-1">
+                    {credits.map((credit) => (
+                      <Link
+                        key={credit.id}
+                        href={`/app/titles/${credit.id}`}
+                        onClick={onClose}
+                        className="lift w-[104px] shrink-0"
+                      >
+                        <Poster src={credit.posterUrl} title={credit.title} className="rounded-[12px]" />
+                        <p className="mt-2 truncate text-xs font-bold text-white">{credit.title}</p>
+                        {credit.character ? (
+                          <p className="truncate text-[11px] text-white/40">{credit.character}</p>
+                        ) : null}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
             </main>
             </div>
         </div>
@@ -189,6 +217,8 @@ export function TitleDetailClient({
   const [person, setPerson] = useState<Person | null>(null);
   const [personError, setPersonError] = useState(false);
   const personCache = useRef(new Map<number, Person>());
+  const [credits, setCredits] = useState<CreditedTitle[] | null>(null);
+  const creditsCache = useRef(new Map<number, CreditedTitle[]>());
   const personTrigger = useRef<HTMLButtonElement | null>(null);
   const closePerson = useCallback(() => {
     setSelectedPerson(null);
@@ -236,6 +266,33 @@ export function TitleDetailClient({
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) setPersonError(true);
+      });
+    return () => controller.abort();
+  }, [selectedPerson]);
+
+  // Fetched separately from the biography so a slow or failed filmography never
+  // holds up the text someone opened the dialog to read.
+  useEffect(() => {
+    if (!selectedPerson) return;
+    const cached = creditsCache.current.get(selectedPerson.id);
+    if (cached) {
+      setCredits(cached);
+      return;
+    }
+    const controller = new AbortController();
+    setCredits(null);
+    fetch(`/api/v1/people/${selectedPerson.id}/credits`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("credits request failed");
+        const result = (await response.json()) as { items?: CreditedTitle[] };
+        const items = result.items ?? [];
+        creditsCache.current.set(selectedPerson.id, items);
+        setCredits(items);
+      })
+      .catch((error: unknown) => {
+        // An empty list and a failed request look the same here on purpose:
+        // the section simply does not appear.
+        if (!(error instanceof DOMException && error.name === "AbortError")) setCredits([]);
       });
     return () => controller.abort();
   }, [selectedPerson]);
@@ -582,7 +639,7 @@ export function TitleDetailClient({
           </div>
         ) : null}
 
-        {selectedPerson ? <PersonDialog castMember={selectedPerson} person={person} error={personError} titleName={title.title} onClose={closePerson} /> : null}
+        {selectedPerson ? <PersonDialog castMember={selectedPerson} person={person} credits={credits ? credits.filter((credit) => credit.id !== title.id) : null} error={personError} titleName={title.title} onClose={closePerson} /> : null}
 
         {!isMovie ? (
           <div>
