@@ -12,6 +12,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { getCatalogStatus, getSettings } from "@/lib/data";
 import { WATCH_REGIONS } from "@/lib/regions";
 import { NotificationToggles } from "@/components/settings/notification-toggles";
+import { PrivacyToggle } from "@/components/settings/privacy-toggle";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -127,10 +128,20 @@ export default async function SettingsPage({
         </form>
       </Section>
 
+      {/* Privacy sits above notifications: whether people can find you at all
+          comes before what you hear about. */}
+      <Section title="Privacy">
+        <PrivacyToggle initial={settings.privateProfile ?? false} />
+      </Section>
+
       {/* Notifications */}
       <Section title="Notifications">
         <NotificationToggles
-          initial={{ newEpisodeAlerts: settings.newEpisodeAlerts ?? true, badgeAlerts: settings.badgeAlerts ?? true }}
+          initial={{
+            newEpisodeAlerts: settings.newEpisodeAlerts ?? true,
+            badgeAlerts: settings.badgeAlerts ?? true,
+            followAlerts: settings.followAlerts ?? true
+          }}
         />
       </Section>
 
