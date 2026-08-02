@@ -33,7 +33,7 @@ export function FeedList({ initial, trackedTitleIds }: { initial: FeedPage; trac
       <div className="surface rounded-[16px] p-10 text-center">
         <p className="display text-lg text-white">Nothing here yet</p>
         <p className="mx-auto mt-2 max-w-[38ch] text-sm text-white/50">
-          Once you follow a few people, what they are watching shows up here.
+          Follow a few people to see what they watch.
         </p>
         <Link
           href="/app/people"
@@ -54,7 +54,7 @@ export function FeedList({ initial, trackedTitleIds }: { initial: FeedPage; trac
           <FeedCard
             key={item.id}
             item={item}
-            returnTo="/app/explore?tab=following"
+            returnTo="/app/explore?tab=feed"
             tracked={trackedTitleIds.includes(item.title.id)}
           />
         ))}

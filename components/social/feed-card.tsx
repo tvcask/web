@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Film01Icon, Tv01Icon } from "@hugeicons/core-free-icons";
+import { FavouriteIcon, Film01Icon, StarIcon, Tv01Icon } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { AddToLibraryButton } from "@/components/titles/add-to-library-button";
@@ -83,12 +83,30 @@ export function FeedCard({
         <Link href={`/app/u/${actor.username}`} className="shrink-0">
           <Avatar src={actor.avatarUrl} name={actor.name || actor.username} size={26} />
         </Link>
-        <p className="min-w-0 truncate text-[13px] text-white/45">
+        <p className="min-w-0 flex-1 truncate text-[13px] text-white/45">
           <Link href={`/app/u/${actor.username}`} className="font-bold text-white/75 transition hover:text-white">
             {actor.name || actor.username}
           </Link>{" "}
           {activityLabel(actor)}
         </p>
+        {/* Rating and favourite ride beside the sentence rather than inside it.
+            Someone can finish a show, rate it and favourite it in one go, and
+            three clauses would read worse than three marks. */}
+        {actor.favorite ? (
+          <HugeiconsIcon
+            icon={FavouriteIcon}
+            size={15}
+            strokeWidth={2.2}
+            className="shrink-0 text-[var(--accent-text)]"
+            aria-label="Favourite"
+          />
+        ) : null}
+        {actor.rating ? (
+          <span className="flex shrink-0 items-center gap-1 text-[12px] font-bold text-white/70">
+            <HugeiconsIcon icon={StarIcon} size={13} strokeWidth={2.2} className="text-[var(--accent-text)]" />
+            {actor.rating}
+          </span>
+        ) : null}
       </div>
     </article>
   );

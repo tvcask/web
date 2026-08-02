@@ -10,7 +10,7 @@ import { getFeed } from "@/lib/social";
 
 const tabs = [
   { value: "discover", label: "Discover" },
-  { value: "following", label: "Following" }
+  { value: "feed", label: "Feed" }
 ];
 
 export default async function ExplorePage({
@@ -20,11 +20,11 @@ export default async function ExplorePage({
 }) {
   const { q = "", tab } = await searchParams;
   const query = q.trim();
-  const following = tab === "following";
+  const following = tab === "feed";
   const returnTo = query
     ? `/app/explore?q=${encodeURIComponent(query)}`
     : following
-      ? "/app/explore?tab=following"
+      ? "/app/explore?tab=feed"
       : "/app/explore";
 
   // Only the mode being rendered pays for its data. Searching overrides the
@@ -74,7 +74,7 @@ export default async function ExplorePage({
         </div>
       ) : (
         <div className="space-y-7">
-          <TabsNav tabs={tabs} active={following ? "following" : "discover"} base="/app/explore" />
+          <TabsNav tabs={tabs} active={following ? "feed" : "discover"} base="/app/explore" />
 
           {following ? (
             <FeedList initial={feed} trackedTitleIds={trackedTitleIds} />
