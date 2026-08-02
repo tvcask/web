@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowLeft01Icon } from '@hugeicons/core-free-icons';
+import { ArrowLeft01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -41,6 +41,18 @@ export default async function AdminPage() {
         </Link>
         <h1 className="display mt-5 text-2xl text-white">Admin</h1>
         <p className="mt-2 text-sm leading-6 text-white/50">Live aggregate account statistics. No personal user data is displayed.</p>
+        {/* Reports are the one thing here that needs acting on rather than
+            reading, so they get their own way in rather than a stat tile. */}
+        <Link
+          href="/app/admin/reports"
+          className="surface mt-5 flex items-center gap-3 rounded-[14px] p-4 transition hover:bg-white/[0.04]"
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-white">Reports</p>
+            <p className="text-xs text-white/45">Accounts flagged by other people, oldest first.</p>
+          </div>
+          <HugeiconsIcon icon={ArrowRight01Icon} className="size-5 shrink-0 text-white/30" />
+        </Link>
       </div>
 
       <UserGrowthChart data={stats.userGrowth} />
