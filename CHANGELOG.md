@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.9.0](https://github.com/tvcask/web/compare/tvcask-web-v0.8.0...tvcask-web-v0.9.0) (2026-08-02)
+
+
+### Features
+
+* **admin:** add a reports queue ([3a88389](https://github.com/tvcask/web/commit/3a88389a399db1b5ecf819a10ec604ecfdca6377))
+* **library:** let a show be dropped ([b9246ae](https://github.com/tvcask/web/commit/b9246aee473f5de04265bebaa59ef6d8ff288bd8))
+* **library:** let a show be dropped ([64e0ffe](https://github.com/tvcask/web/commit/64e0ffe33400a210a88284de1001d5c1fd1100ad))
+* **moderation:** add report button and admin ban controls ([3a3226f](https://github.com/tvcask/web/commit/3a3226f17439bda918c2db14a01a70115f2166a8))
+* **moderation:** add report button and admin ban controls ([c0aa109](https://github.com/tvcask/web/commit/c0aa109ec3fa50ed200b7012ccad7d9c0e66282b))
+* **settings:** add privacy and new-follower controls ([f22f77a](https://github.com/tvcask/web/commit/f22f77a6a038f01a924dee056bdbc69c9e7a4763))
+* **social:** add list previews, visitor copy and profile preview mode ([c11b5c1](https://github.com/tvcask/web/commit/c11b5c104c88fb16032569dde40c09d653ecd8d6))
+* **social:** add people search, following and profiles ([0b1de1b](https://github.com/tvcask/web/commit/0b1de1b22d0afbe21f17754e6405547278a1af8d))
+* **social:** mirror stats, badges, library and lists on visited profiles ([9290c86](https://github.com/tvcask/web/commit/9290c86709bee0c99e23a4b4be8c527542c56b99))
+* **social:** share the profile hero and fix self-profile routing ([9f10195](https://github.com/tvcask/web/commit/9f10195dcaec03332f25d495f89dafbe7f64cb1a))
+
+
+### Bug Fixes
+
+* **data:** only treat a 404 as not found ([2292d31](https://github.com/tvcask/web/commit/2292d31847dad6ee17c486e590298703cc9a038d))
+* **profile:** move reporting into a hero overflow menu ([45ecb25](https://github.com/tvcask/web/commit/45ecb25ecc9e569c47a626773a1772435df07efb))
+* **social:** drop the visitor stats page, add a way back from a list ([7deeea6](https://github.com/tvcask/web/commit/7deeea648e19a32c64112441fa9878d4112d917b))
+* **social:** keep runtime values out of the server-only module ([634ce73](https://github.com/tvcask/web/commit/634ce73c983da6d897dc11a2d2536fdbbf3c7c98))
+* **social:** tolerate a profile payload without the summary fields ([5ab2d42](https://github.com/tvcask/web/commit/5ab2d42e5a791c9d2a30c5e09236cb631ff4c92f))
+
 ## [0.8.0](https://github.com/tvcask/web/compare/tvcask-web-v0.7.0...tvcask-web-v0.8.0) (2026-07-30)
 
 
