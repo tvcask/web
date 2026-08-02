@@ -243,10 +243,13 @@ export function TitleDetailClient({
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
 
+  // Ordered as a title moves through a library: queued, started, finished, or
+  // abandoned. Dropped sits last because it is the exit, not a step.
   const statuses = [
     { value: "watchlist", label: "Watch list" },
     { value: "watching", label: "Watching" },
-    { value: "completed", label: isMovie ? "Watched" : "Completed" }
+    { value: "completed", label: isMovie ? "Watched" : "Completed" },
+    { value: "dropped", label: "Dropped" }
   ] as const;
 
   // Completion needs every episode, not just aired ones — a series still to air can't be finished.
