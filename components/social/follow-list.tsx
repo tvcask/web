@@ -3,16 +3,27 @@
 import { useEffect, useRef } from "react";
 import { UserRow } from "@/components/social/user-row";
 import { useFollowList } from "@/lib/query/social";
-import type { FollowSide, UserPage } from "@/lib/social";
+import type { FollowSide, UserCard, UserPage } from "@/lib/social";
+
+// Your own following list is the follow edge, so unfollowing has to take the
+// row with it. Leaving a row that says Follow contradicts the count above it.
+// Everywhere else the row stays and only the button flips, which is what makes
+// an accidental click undoable.
+export function visibleFollowRows(users: UserCard[], side: FollowSide, isSelf: boolean) {
+  return isSelf && side === "following" ? users.filter((user) => user.viewerFollows) : users;
+}
 
 export function FollowList({
   handle,
   side,
-  initial
+  initial,
+  isSelf = false
 }: {
   handle: string;
   side: FollowSide;
   initial: UserPage;
+  /** Whether the list being viewed belongs to the signed-in viewer. */
+  isSelf?: boolean;
 }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFollowList(handle, side, initial);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -31,7 +42,7 @@ export function FollowList({
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const users = data?.pages.flatMap((page) => page.items) ?? [];
+  const users = visibleFollowRows(data?.pages.flatMap((page) => page.items) ?? [], side, isSelf);
 
   if (users.length === 0) {
     return (

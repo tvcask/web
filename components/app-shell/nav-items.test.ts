@@ -17,6 +17,10 @@ describe("title detail navigation context", () => {
     expect(activeLabel("/app/titles/123", returnTo)).toBe(label);
   });
 
+  it("keeps people search under Explore", () => {
+    expect(activeLabel("/app/people")).toBe("Explore");
+  });
+
   it("keeps Shows as the fallback for a direct title link", () => {
     expect(activeLabel("/app/titles/123")).toBe("Shows");
   });

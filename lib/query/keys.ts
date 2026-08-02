@@ -8,7 +8,8 @@ export const queryKeys = {
   peopleSearch: (query: string) => [socialPrefix.peopleSearch, query] as const,
   userProfile: (handle: string) => [socialPrefix.userProfile, handle] as const,
   followList: (handle: string, side: "followers" | "following") =>
-    [socialPrefix.followList, handle, side] as const
+    [socialPrefix.followList, handle, side] as const,
+  feed: () => [socialPrefix.feed] as const
 };
 
 // Prefixes, so a partial-match invalidation cannot drift from the keys it is
@@ -16,5 +17,6 @@ export const queryKeys = {
 export const socialPrefix = {
   peopleSearch: "people-search",
   userProfile: "user-profile",
-  followList: "follow-list"
+  followList: "follow-list",
+  feed: "activity-feed"
 } as const;

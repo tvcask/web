@@ -12,7 +12,7 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { href: "/app/shows", label: "Shows", icon: Tv01Icon, match: ["/app", "/app/titles"] },
   { href: "/app/movies", label: "Movies", icon: Film01Icon },
-  { href: "/app/explore", label: "Explore", icon: Search01Icon },
+  { href: "/app/explore", label: "Explore", icon: Search01Icon, match: ["/app/people"] },
   { href: "/app/profile", label: "Profile", icon: UserIcon, match: ["/app/settings", "/app/import"] }
 ];
 

@@ -39,7 +39,7 @@ export async function FollowPage({ handle, side }: { handle: string; side: Follo
         </div>
       </div>
 
-      <FollowList handle={profile.username} side={side} initial={initial} />
+      <FollowList handle={profile.username} side={side} initial={initial} isSelf={profile.isSelf} />
     </div>
   );
 }

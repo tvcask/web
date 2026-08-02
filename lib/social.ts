@@ -66,6 +66,31 @@ export type UserPage = {
 
 export type FollowSide = "followers" | "following";
 
+// Someone you follow, and what they did to a title. Mirrors the API's feedActor.
+export type FeedActor = UserCard & {
+  status: string;
+  favorite: boolean;
+  rating?: number;
+  season?: number;
+  episode?: number;
+  updatedAt: string;
+};
+
+// One title plus everyone who moved on it. Actors always holds one today; the
+// API returns a list so that two people watching the same show can collapse
+// into a single card without a client change.
+export type FeedItem = {
+  id: string;
+  title: { id: string; title: string; type: string; year?: number; posterUrl?: string; backdropUrl?: string };
+  actors: FeedActor[];
+  updatedAt: string;
+};
+
+export type FeedPage = {
+  items: FeedItem[];
+  nextCursor?: string;
+};
+
 // A handle is a username or a user id; the API resolves both. Pages link by
 // username because those URLs are shareable, notifications deep-link by id
 // because usernames can change.
@@ -116,6 +141,14 @@ async function byHandle<T>(path: string): Promise<T | null> {
     }
     throw e;
   }
+}
+
+export async function getFeed(cursor?: string, limit?: number): Promise<FeedPage> {
+  const params = new URLSearchParams();
+  if (cursor) params.set("cursor", cursor);
+  if (limit != null) params.set("limit", String(limit));
+  const query = params.size ? `?${params}` : "";
+  return api<FeedPage>(`/v1/me/feed${query}`);
 }
 
 export async function getFollowList(handle: string, side: FollowSide, cursor?: string): Promise<UserPage> {
