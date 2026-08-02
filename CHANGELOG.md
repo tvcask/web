@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.0](https://github.com/tvcask/web/compare/tvcask-web-v0.9.0...tvcask-web-v0.10.0) (2026-08-02)
+
+
+### Features
+
+* **explore:** add a Following tab with activity from people you follow ([fecd7e1](https://github.com/tvcask/web/commit/fecd7e17b3314a4bfedcb8cec0ac9fb7e5c6cbff))
+* **explore:** add a Following tab with activity from people you follow ([1a9476d](https://github.com/tvcask/web/commit/1a9476d789d1873769be81abdae2e6a9cfc09c64))
+* **explore:** make the feed a column of backdrop cards ([73d4bfd](https://github.com/tvcask/web/commit/73d4bfdc32b2cf760c946e95113e0e7b5f0ff1ca))
+* **explore:** pin the search and tabs while content scrolls ([f5f2d6a](https://github.com/tvcask/web/commit/f5f2d6aa898a9ff3873c4df573ee595daa96f6db))
+* **feed:** rename the tab to Feed and show ratings and favourites ([133fa05](https://github.com/tvcask/web/commit/133fa05f4ac23c5ac0b28139f2f9efcdd4c8728c))
+* **feed:** render list cards and label watchlist adds ([3db6575](https://github.com/tvcask/web/commit/3db657530f98d2e1178ecfd2db251feba833dd07))
+* **feed:** render list cards and label watchlist adds ([83195ee](https://github.com/tvcask/web/commit/83195ee8b114ae7be8b11d06c1b6046e4ec2ec95))
+* **titles:** show an actor's other work in the cast dialog ([f627b02](https://github.com/tvcask/web/commit/f627b02289ea846934a6cd3f6a5fb669cd8efcac))
+* **titles:** show an actor's other work in the cast dialog ([260553a](https://github.com/tvcask/web/commit/260553af6293e485492301ebf60fc6918f8d3821))
+
+
+### Bug Fixes
+
+* **social:** drop unfollowed people from your own following list ([c86754a](https://github.com/tvcask/web/commit/c86754a495a5944f8897934b2605f6749f0e6b46))
+
 ## [0.9.0](https://github.com/tvcask/web/compare/tvcask-web-v0.8.0...tvcask-web-v0.9.0) (2026-08-02)
 
 
