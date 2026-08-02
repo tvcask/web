@@ -186,6 +186,13 @@ export async function getBadges(): Promise<BadgesResult> {
   return api<BadgesResult>("/v1/me/badges");
 }
 
+// A title someone appeared in. It is a full catalog title, so it opens a real
+// title page and can be tracked from there.
+export type CreditedTitle = Title & {
+  character?: string;
+  episodeCount?: number;
+};
+
 export type CatalogStatus = {
   tmdbConfigured: boolean;
   titles: number;
