@@ -74,3 +74,14 @@ export function timeAgo(iso: string): string {
   if (hours < 24) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
 }
+
+// "3m 12d", "5d 4h", "18h". Used wherever watch time is shown, so your own
+// profile and anyone else's format it the same way.
+export function duration(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  if (months > 0) return `${months}m ${days % 30}d`;
+  if (days > 0) return `${days}d ${hours % 24}h`;
+  return `${hours}h`;
+}

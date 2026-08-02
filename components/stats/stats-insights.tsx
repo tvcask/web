@@ -5,16 +5,19 @@ import type { Stats } from "@/lib/data";
 
 type GenreMode = "count" | "shows" | "movies";
 
-export function StatsInsights({ stats }: { stats: Stats }) {
+// `owner` false means these are someone else's numbers, so the copy stops
+// addressing the reader as though the library were theirs.
+export function StatsInsights({ stats, owner = true }: { stats: Stats; owner?: boolean }) {
   const [genreMode, setGenreMode] = useState<GenreMode>("count");
   const genres = useMemo(
     () => [...(stats.topGenres ?? [])].sort((a, b) => b[genreMode] - a[genreMode]).slice(0, 5),
     [genreMode, stats.topGenres]
   );
+  const watches = owner ? "Based on what you watch" : "Based on what they watch";
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <ChartCard title="Top genres" subtitle="Based on what you watch">
+      <ChartCard title="Top genres" subtitle={watches}>
         <div className="mb-5 mt-4 inline-flex rounded-full bg-white/[0.05] p-1">
           {([[
             "count", "All"
@@ -32,12 +35,12 @@ export function StatsInsights({ stats }: { stats: Stats }) {
         <HorizontalBars items={genres.map((genre) => ({ label: genre.name, value: genre[genreMode] }))} />
       </ChartCard>
 
-      <ChartCard title="Library breakdown" subtitle="Everything you have saved">
+      <ChartCard title="Library breakdown" subtitle={owner ? "Everything you have saved" : "Everything they have saved"}>
         <StatusBreakdown items={stats.libraryStatus ?? []} />
       </ChartCard>
 
       <div className="md:col-span-2">
-        <ChartCard title="Your eras" subtitle="Based on what you watch">
+        <ChartCard title={owner ? "Your eras" : "Their eras"} subtitle={watches}>
           <DecadeChart items={stats.releaseDecades ?? []} />
         </ChartCard>
       </div>
@@ -57,7 +60,7 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle: str
 
 function HorizontalBars({ items }: { items: { label: string; value: number }[] }) {
   const max = Math.max(...items.map((item) => item.value), 1);
-  if (items.length === 0) return <Empty>Track titles to discover your top genres.</Empty>;
+  if (items.length === 0) return <Empty>Top genres appear once titles are tracked.</Empty>;
   return (
     <div className="space-y-4">
       {items.map((item) => (
@@ -88,7 +91,7 @@ function StatusBreakdown({ items }: { items: { status: string; count: number }[]
   };
   const visible = items.filter((item) => item.count > 0).sort((a, b) => rank(a.status) - rank(b.status));
   const total = visible.reduce((sum, item) => sum + item.count, 0);
-  if (total === 0) return <Empty>Your library breakdown will appear here.</Empty>;
+  if (total === 0) return <Empty>The library breakdown appears here.</Empty>;
   return (
     <div className="mt-6">
       <div className="flex h-3.5 overflow-hidden rounded-full bg-white/[0.06]">
@@ -115,7 +118,7 @@ function StatusBreakdown({ items }: { items: { status: string; count: number }[]
 function DecadeChart({ items }: { items: { decade: number; count: number }[] }) {
   const selected = [...items].sort((a, b) => b.count - a.count).slice(0, 8).sort((a, b) => a.decade - b.decade);
   const max = Math.max(...selected.map((item) => item.count), 1);
-  if (selected.length === 0) return <Empty>Your viewing eras will appear as your library grows.</Empty>;
+  if (selected.length === 0) return <Empty>Viewing eras appear as the library grows.</Empty>;
   return (
     <div className="mt-6 flex h-44 items-end gap-3 sm:gap-5">
       {selected.map((item) => (

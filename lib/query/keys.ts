@@ -4,5 +4,17 @@ export const queryKeys = {
     ["library", type, status ?? null, favorite ?? false] as const,
   catalog: (kind: string) => ["catalog", kind] as const,
   titleLists: (titleId: string) => ["title-lists", titleId] as const,
-  notifications: ["notifications"] as const
+  notifications: ["notifications"] as const,
+  peopleSearch: (query: string) => [socialPrefix.peopleSearch, query] as const,
+  userProfile: (handle: string) => [socialPrefix.userProfile, handle] as const,
+  followList: (handle: string, side: "followers" | "following") =>
+    [socialPrefix.followList, handle, side] as const
 };
+
+// Prefixes, so a partial-match invalidation cannot drift from the keys it is
+// meant to match. Following someone patches every one of these families.
+export const socialPrefix = {
+  peopleSearch: "people-search",
+  userProfile: "user-profile",
+  followList: "follow-list"
+} as const;

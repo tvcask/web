@@ -7,6 +7,7 @@ import { toast } from "@/lib/toast";
 type Alerts = {
   newEpisodeAlerts: boolean;
   badgeAlerts: boolean;
+  followAlerts: boolean;
 };
 
 /**
@@ -48,11 +49,19 @@ export function NotificationToggles({ initial }: { initial: Alerts }) {
         disabled={saving}
         onToggle={() => toggle("badgeAlerts")}
       />
+      <div className="border-t border-white/[0.06]" />
+      <ToggleRow
+        label="New followers"
+        hint="When someone starts following you"
+        checked={alerts.followAlerts}
+        disabled={saving}
+        onToggle={() => toggle("followAlerts")}
+      />
     </div>
   );
 }
 
-function ToggleRow({
+export function ToggleRow({
   label,
   hint,
   checked,

@@ -49,6 +49,7 @@ export type Settings = {
   theme: string;
   titlesInLanguage: boolean;
   privateProfile: boolean;
+  followAlerts: boolean;
   newEpisodeAlerts: boolean;
   badgeAlerts: boolean;
   premiereReminders: boolean;
@@ -126,10 +127,18 @@ export async function getLists(): Promise<UserList[]> {
   return res.lists ?? [];
 }
 
+// Resolves through the shared endpoint rather than /v1/me/lists/:id, so one
+// route serves both your own lists and the public ones on someone else's
+// profile. The API decides: yours, or public and its owner visible to you.
 export async function getList(id: string): Promise<UserListDetail | null> {
   try {
-    return await api<UserListDetail>(`/v1/me/lists/${id}`);
-  } catch {
+    return await api<UserListDetail>(`/v1/lists/${id}`);
+  } catch (e) {
+    // Only a 404 means "no such list", which includes one that is private and
+    // not yours. A 500 or a timeout must not render as "page not found".
+    if (!(e instanceof ApiError) || e.status !== 404) {
+      throw e;
+    }
     return null;
   }
 }
@@ -204,7 +213,10 @@ export async function searchTitles(query: string): Promise<Title[]> {
 export async function getTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
   try {
     return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`);
-  } catch {
+  } catch (e) {
+    if (!(e instanceof ApiError) || e.status !== 404) {
+      throw e;
+    }
     return null;
   }
 }
