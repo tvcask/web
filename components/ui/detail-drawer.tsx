@@ -59,8 +59,8 @@ export function DetailDrawer({
         <DrawerTitle className="sr-only">{label}</DrawerTitle>
 
         <DrawerClose
-          className="absolute left-4 top-4 z-30 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:left-5 sm:top-5"
-          aria-label="Close"
+          className="absolute right-4 top-4 z-30 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:right-5 sm:top-5"
+          aria-label="Close details"
         >
           <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
         </DrawerClose>
