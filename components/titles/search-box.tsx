@@ -6,9 +6,14 @@ import { Loading03Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import Link from "next/link";
 import { apiGet } from "@/lib/query/client";
 import type { Title } from "@/lib/services/types";
+import type { Person } from "@/lib/data";
 import { Poster } from "@/components/titles/poster";
+
+type SearchResults = { titles: Title[]; actors: Person[] };
 
 export function SearchBox({
   initialQuery = "",
@@ -34,20 +39,23 @@ export function SearchBox({
   }, [value]);
 
   const enabled = debounced.length >= 2;
-  const { data: results = [], isFetching: loading } = useQuery({
-    queryKey: ["search", debounced],
-    queryFn: () =>
-      apiGet<{ results: Title[] }>(`/api/search?q=${encodeURIComponent(debounced)}`).then((data) => data.results ?? []),
+  const { data, isFetching: loading } = useQuery({
+    queryKey: ["search", "all", debounced],
+    queryFn: ({ signal }) =>
+      apiGet<SearchResults>(`/api/search?q=${encodeURIComponent(debounced)}`, { signal }),
     enabled,
     staleTime: 60_000
   });
+  const titles = data?.titles ?? [];
+  const actors = data?.actors ?? [];
+  const hasResults = titles.length > 0 || actors.length > 0;
 
   // Reveal the dropdown once a fresh query settles with results.
   useEffect(() => {
-    if (enabled && results.length > 0) {
+    if (enabled && hasResults) {
       setOpen(true);
     }
-  }, [enabled, results]);
+  }, [enabled, hasResults]);
 
   // Close on outside click.
   useEffect(() => {
@@ -59,11 +67,6 @@ export function SearchBox({
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
-
-  function goto(id: string) {
-    setOpen(false);
-    router.push(`/app/titles/${id}?returnTo=/app/explore`);
-  }
 
   const compact = size === "md";
   const inputCls = compact
@@ -88,7 +91,7 @@ export function SearchBox({
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onFocus={() => results.length > 0 && setOpen(true)}
+          onFocus={() => hasResults && setOpen(true)}
           autoComplete="off"
           placeholder={compact ? "Search" : "Search shows, movies, anime, K-dramas"}
           className={`cask-focus w-full rounded-full bg-white/5 text-white outline-none placeholder:text-white/40 ${inputCls}`}
@@ -98,28 +101,56 @@ export function SearchBox({
         ) : null}
       </form>
 
-      {open && results.length > 0 ? (
+      {open && hasResults ? (
         <div className={`absolute z-40 mt-2 overflow-hidden rounded-[14px] border border-white/10 bg-[#14110d] shadow-2xl ${dropdownCls}`}>
-          <ul className="nos max-h-[380px] overflow-y-auto py-1.5">
-            {results.slice(0, 8).map((t) => (
-              <li key={t.id}>
-                <button
-                  onClick={() => goto(t.id)}
-                  className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-white/[0.05]"
-                >
-                  <div className="relative h-[54px] w-[38px] shrink-0 overflow-hidden rounded-[6px] bg-white/5">
-                    <Poster src={t.posterUrl} title={t.title} className="h-full rounded-[6px] p-1" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-white">{t.title}</p>
-                    <p className="mt-0.5 text-xs font-medium text-white/45">
-                      {[t.year || null, t.type === "movie" ? "Movie" : "Series"].filter(Boolean).join(" · ")}
-                    </p>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div className="nos max-h-[min(520px,72vh)] overflow-y-auto py-1.5">
+            {titles.length > 0 ? <p className="px-3 pb-1 pt-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white/35">Shows &amp; movies</p> : null}
+            <ul>
+              {titles.slice(0, 5).map((t) => (
+                <li key={t.id}>
+                  <Link
+                    href={`/app/titles/${t.id}?returnTo=/app/explore`}
+                    onClick={() => setOpen(false)}
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-white/[0.05]"
+                  >
+                    <div className="relative h-[54px] w-[38px] shrink-0 overflow-hidden rounded-[6px] bg-white/5">
+                      <Poster src={t.posterUrl} title={t.title} className="h-full rounded-[6px] p-1" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold text-white">{t.title}</p>
+                      <p className="mt-0.5 text-xs font-medium text-white/45">
+                        {[t.year || null, t.type === "movie" ? "Movie" : "Series"].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {actors.length > 0 ? <p className="border-t border-white/[0.06] px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white/35">Actors</p> : null}
+            <ul>
+              {actors.slice(0, 5).map((actor) => (
+                <li key={actor.id}>
+                  <Link
+                    href={`/app/people/${actor.id}?returnTo=/app/explore`}
+                    onClick={() => setOpen(false)}
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-white/[0.05]"
+                  >
+                    <div className="relative size-[46px] shrink-0 overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10">
+                      {actor.profileUrl ? (
+                        <Image src={actor.profileUrl} alt="" fill sizes="46px" className="object-cover" />
+                      ) : (
+                        <div className="grid h-full place-items-center text-sm font-extrabold text-white/45">{(actor.name.trim()[0] ?? "?").toUpperCase()}</div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold text-white">{actor.name}</p>
+                      <p className="mt-0.5 text-xs font-medium text-white/45">Actor</p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : null}
     </div>

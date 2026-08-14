@@ -1,5 +1,5 @@
-import { TitleDrawer } from "@/components/titles/title-drawer";
+import { DetailDrawer } from "@/components/ui/detail-drawer";
 
 export default function TitleModalLayout({ children }: { children: React.ReactNode }) {
-  return <TitleDrawer>{children}</TitleDrawer>;
+  return <DetailDrawer label="Title details">{children}</DetailDrawer>;
 }

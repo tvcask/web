@@ -1,10 +1,15 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PersonDialog } from "@/components/titles/title-detail-client";
+import { PersonDetail } from "@/components/people/person-detail";
+import { getPerson, getPersonCredits } from "@/lib/data";
 
-const castMember = { id: 42, name: "Actor Name", character: "Lead" };
+vi.mock("@/lib/data", () => ({
+  getPerson: vi.fn(),
+  getPersonCredits: vi.fn()
+}));
 
+const person = { id: "42", name: "Actor Name", biography: "A real biography." };
 const credit = {
   id: "t1",
   title: "Another Show",
@@ -14,45 +19,32 @@ const credit = {
   character: "Someone Else"
 };
 
-describe("PersonDialog", () => {
-  it("closes from its close button", () => {
-    const onClose = vi.fn();
-    render(<PersonDialog castMember={castMember} person={null} credits={null} error={false} onClose={onClose} />);
-
-    fireEvent.pointerDown(screen.getByRole("button", { name: "Close cast details" }));
-
-    expect(onClose).toHaveBeenCalledOnce();
+describe("PersonDetail", () => {
+  beforeEach(() => {
+    vi.mocked(getPerson).mockResolvedValue(person);
+    vi.mocked(getPersonCredits).mockResolvedValue([credit]);
   });
 
-  it("closes with Escape", () => {
-    const onClose = vi.fn();
-    render(<PersonDialog castMember={castMember} person={null} credits={null} error={false} onClose={onClose} />);
+  it("renders biography and URL-backed app filmography links", async () => {
+    render(await PersonDetail({ id: "42", mode: "app", returnTo: "/app/explore" }));
 
-    fireEvent.keyDown(window, { key: "Escape" });
-
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it("links each credit to its title page", () => {
-    render(
-      <PersonDialog castMember={castMember} person={null} credits={[credit]} error={false} onClose={vi.fn()} />
+    expect(screen.getByRole("heading", { name: "Actor Name" })).toBeInTheDocument();
+    expect(screen.getByText("A real biography.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Another Show/ })).toHaveAttribute(
+      "href",
+      "/app/titles/t1?returnTo=%2Fapp%2Fexplore"
     );
-
-    expect(screen.getByRole("link", { name: /Another Show/ })).toHaveAttribute("href", "/app/titles/t1");
   });
 
-  it("hides the filmography when there are no credits", () => {
-    render(<PersonDialog castMember={castMember} person={null} credits={[]} error={false} onClose={vi.fn()} />);
+  it("uses public title links on shareable actor pages", async () => {
+    render(await PersonDetail({ id: "42", mode: "public" }));
 
-    expect(screen.queryByText("Also in")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Another Show/ })).toHaveAttribute("href", "/titles/t1");
   });
 
-  it("does not close when the dialog content is pressed", () => {
-    const onClose = vi.fn();
-    render(<PersonDialog castMember={castMember} person={null} credits={null} error={false} onClose={onClose} />);
+  it("does not repeat the title used to open the actor", async () => {
+    render(await PersonDetail({ id: "42", mode: "public", titleId: "t1" }));
 
-    fireEvent.pointerDown(screen.getByRole("dialog"));
-
-    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.queryByText("Filmography")).not.toBeInTheDocument();
   });
 });

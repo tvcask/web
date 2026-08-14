@@ -20,6 +20,7 @@ type ApiOptions = {
   body?: unknown;
   token?: string | null;
   auth?: boolean; // set false for public endpoints
+  signal?: AbortSignal;
 };
 
 export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
@@ -35,7 +36,9 @@ export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
       body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
       cache: "no-store",
       // Fail a hung request instead of freezing the page render forever.
-      signal: AbortSignal.timeout(15000)
+      signal: opts.signal
+        ? AbortSignal.any([opts.signal, AbortSignal.timeout(15000)])
+        : AbortSignal.timeout(15000)
     });
   } catch (e) {
     if (e instanceof DOMException && e.name === "TimeoutError") {

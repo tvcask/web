@@ -77,6 +77,12 @@ export type Person = {
   placeOfBirth?: string;
   knownFor?: string;
 };
+export type EpisodeDetail = {
+  episode: Episode;
+  title: Title;
+  metadataAttribution?: string;
+  metadataUrl?: string;
+};
 export type MyTitle = { tracked: boolean; userTitle?: UserTitle; watched: string[] };
 
 export type LibraryQuery = { type?: "show" | "movie"; status?: string; favorite?: boolean; limit?: number; offset?: number };
@@ -217,6 +223,11 @@ export async function searchTitles(query: string): Promise<Title[]> {
   return res.results ?? [];
 }
 
+export async function searchActors(query: string): Promise<Person[]> {
+  const res = await api<{ items: Person[] }>(`/v1/people/search?q=${encodeURIComponent(query)}`);
+  return res.items ?? [];
+}
+
 export async function getTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
   try {
     return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`);
@@ -235,6 +246,48 @@ export async function getPublicTitleDetail(id: string, region = "US"): Promise<T
     return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`, { auth: false });
   } catch {
     return null;
+  }
+}
+
+export async function getRelatedTitles(id: string): Promise<Title[]> {
+  try {
+    const res = await api<{ items: Title[] }>(`/v1/titles/${encodeURIComponent(id)}/related`, { auth: false });
+    return res.items ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getEpisodeDetail(titleId: string, episodeId: string): Promise<EpisodeDetail | null> {
+  try {
+    return await api<EpisodeDetail>(
+      `/v1/titles/${encodeURIComponent(titleId)}/episodes/${encodeURIComponent(episodeId)}`,
+      { auth: false }
+    );
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function getPerson(id: string): Promise<Person | null> {
+  try {
+    return await api<Person>(`/v1/people/${encodeURIComponent(id)}`, { auth: false });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function getPersonCredits(id: string): Promise<CreditedTitle[]> {
+  try {
+    const res = await api<{ items: CreditedTitle[] }>(
+      `/v1/people/${encodeURIComponent(id)}/credits`,
+      { auth: false }
+    );
+    return res.items ?? [];
+  } catch {
+    return [];
   }
 }
 
