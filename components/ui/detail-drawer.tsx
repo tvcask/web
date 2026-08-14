@@ -4,14 +4,23 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon } from '@hugeicons/core-free-icons';
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 
-// Detail modal for the intercepting `@modal/(.)titles/[id]` route. Bottom sheet
-// on mobile, right-hand drawer on desktop. The heavy lifting (focus trap, scroll
-// lock, aria, drag-to-dismiss) lives in the shadcn/vaul Drawer primitive.
-export function TitleDrawer({ children }: { children: React.ReactNode }) {
+// Shared shell for URL-backed entity details. It is a bottom sheet on mobile
+// and a side drawer on desktop; focus trapping, scroll lock, aria, and drag to
+// dismiss are provided by the vaul primitive.
+export function DetailDrawer({
+  children,
+  label = "Details"
+}: {
+  children: React.ReactNode;
+  label?: string;
+}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
+  const closeHref = returnTo?.startsWith("/app/") ? returnTo : null;
   const [open, setOpen] = useState(false);
   const [mobile, setMobile] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches
@@ -39,16 +48,19 @@ export function TitleDrawer({ children }: { children: React.ReactNode }) {
       // Navigate back only once the close animation finishes, so the sheet
       // slides out instead of vanishing.
       onAnimationEnd={(isOpen) => {
-        if (!isOpen) router.back();
+        if (!isOpen) {
+          if (closeHref) router.replace(closeHref);
+          else router.back();
+        }
       }}
       direction={mobile ? "bottom" : "right"}
     >
       <DrawerContent aria-describedby={undefined}>
-        <DrawerTitle className="sr-only">Title details</DrawerTitle>
+        <DrawerTitle className="sr-only">{label}</DrawerTitle>
 
         <DrawerClose
-          className="absolute left-4 top-4 z-30 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:left-5 sm:top-5"
-          aria-label="Close"
+          className="absolute right-4 top-4 z-30 grid size-9 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition hover:bg-black/75 sm:right-5 sm:top-5"
+          aria-label="Close details"
         >
           <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
         </DrawerClose>

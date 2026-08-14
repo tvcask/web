@@ -43,7 +43,7 @@ export function Upcoming({ calendar }: { calendar: Calendar }) {
             </div>
             <div className="flex flex-col gap-3">
               {items.map((episode) => (
-                <Link href={`/app/titles/${episode.titleId}?returnTo=${encodeURIComponent("/app/shows?tab=upcoming")}#${encodeURIComponent(episode.id)}`} key={episode.id} className="group flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4 transition hover:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
+                <Link href={`/app/titles/${episode.titleId}/episodes/${episode.id}?returnTo=${encodeURIComponent("/app/shows?tab=upcoming")}`} key={episode.id} className="group flex items-center gap-4 overflow-hidden rounded-[20px] bg-white/5 pr-4 transition hover:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
                   <div
                     className="relative h-[88px] w-[116px] shrink-0 self-stretch overflow-hidden"
                     style={{ background: episode.title?.backdropUrl ? undefined : "linear-gradient(140deg,#2a2f3a,#14110d)" }}

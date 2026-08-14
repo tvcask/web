@@ -7,8 +7,9 @@ import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
+import { Poster } from "@/components/titles/poster";
 import { getToken } from "@/lib/api";
-import { getPublicTitleDetail } from "@/lib/data";
+import { getPublicTitleDetail, getRelatedTitles } from "@/lib/data";
 import { site } from "@/lib/site";
 import type { TitleDetail } from "@/lib/data";
 
@@ -75,7 +76,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function PublicTitlePage({ params }: Params) {
   const { id } = await params;
-  const detail = await getPublicTitleDetail(id);
+  const [detail, related] = await Promise.all([getPublicTitleDetail(id), getRelatedTitles(id)]);
   if (!detail) {
     notFound();
   }
@@ -100,6 +101,14 @@ export default async function PublicTitlePage({ params }: Params) {
           </div>
 
           <div className="p-5 sm:p-7">
+            {typeof detail.rating === "number" && detail.rating > 0 ? (
+              <div className="mb-6 flex items-end gap-2">
+                <span className="display text-3xl text-[var(--accent-text)]">{detail.rating.toFixed(1)}</span>
+                <span className="pb-1 text-xs font-bold uppercase tracking-[0.1em] text-white/40">
+                  Catalog rating{detail.ratingCount ? ` · ${detail.ratingCount.toLocaleString()} votes` : ""}
+                </span>
+              </div>
+            ) : null}
             {detail.overview ? (
               <p className="max-w-2xl text-[15px] leading-relaxed text-white/70">{detail.overview}</p>
             ) : null}
@@ -136,8 +145,11 @@ export default async function PublicTitlePage({ params }: Params) {
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2.5">
               {detail.watchProviders.map((provider) => (
-                <div
+                <a
                   key={provider.id}
+                  href={detail.watchProviderLink || undefined}
+                  target={detail.watchProviderLink ? "_blank" : undefined}
+                  rel={detail.watchProviderLink ? "noreferrer" : undefined}
                   className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] py-1.5 pl-1.5 pr-3.5"
                 >
                   {provider.logoUrl ? (
@@ -150,7 +162,7 @@ export default async function PublicTitlePage({ params }: Params) {
                     />
                   ) : null}
                   <span className="text-sm font-semibold text-white/80">{provider.name}</span>
-                </div>
+                </a>
               ))}
             </div>
             <p className="mt-3 text-xs text-white/35">{detail.watchProviderAttribution}</p>
@@ -165,7 +177,8 @@ export default async function PublicTitlePage({ params }: Params) {
             <ul className="nos mt-3 flex gap-4 overflow-x-auto pb-2">
               {cast.map((member) => (
                 <li key={member.id} className="w-[92px] shrink-0">
-                  <div className="relative aspect-square w-full overflow-hidden rounded-full bg-white/5">
+                  <Link href={`/people/${member.id}`} className="group block">
+                  <div className="relative aspect-square w-full overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10 transition group-hover:ring-white/25">
                     {member.profileUrl ? (
                       <Image src={member.profileUrl} alt="" fill sizes="92px" className="object-cover" />
                     ) : null}
@@ -174,9 +187,51 @@ export default async function PublicTitlePage({ params }: Params) {
                   {member.character ? (
                     <p className="mt-0.5 text-center text-[11px] leading-tight text-white/40">{member.character}</p>
                   ) : null}
+                  </Link>
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {detail.type !== "movie" && detail.episodes.length > 0 ? (
+          <section className="mt-9">
+            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>Episodes</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {detail.episodes
+                .filter((episode) => episode.seasonNumber > 0)
+                .slice(0, 12)
+                .map((episode) => (
+                  <Link
+                    key={episode.id}
+                    href={`/titles/${detail.id}/episodes/${episode.id}`}
+                    className="group flex min-w-0 items-center gap-3 rounded-[14px] border border-white/[0.07] bg-white/[0.025] p-2 transition hover:bg-white/[0.05]"
+                  >
+                    <div className="relative h-[54px] w-24 shrink-0 overflow-hidden rounded-[8px] bg-white/5">
+                      {episode.stillUrl ? <Image src={episode.stillUrl} alt="" fill sizes="96px" className="object-cover" /> : null}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-extrabold text-[var(--accent-text)]">S{episode.seasonNumber} · E{episode.episodeNumber}</p>
+                      <p className="mt-1 truncate text-sm font-bold text-white/80 transition group-hover:text-white">{episode.name || "Episode details"}</p>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </section>
+        ) : null}
+
+        {related.length > 0 ? (
+          <section className="mt-9">
+            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>More like this</p>
+            <div className="nos mt-3 flex gap-4 overflow-x-auto pb-2">
+              {related.slice(0, 12).map((item) => (
+                <Link key={item.id} href={`/titles/${item.id}`} className="lift w-[124px] shrink-0">
+                  <Poster src={item.posterUrl} title={item.title} className="rounded-[14px]" />
+                  <p className="mt-2 truncate text-sm font-bold text-white/85">{item.title}</p>
+                  {item.year ? <p className="mt-0.5 text-xs text-white/40">{item.year}</p> : null}
+                </Link>
+              ))}
+            </div>
           </section>
         ) : null}
       </main>
