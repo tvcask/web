@@ -3,6 +3,7 @@ export const queryKeys = {
   library: (type: "show" | "movie", status?: string, favorite?: boolean) =>
     ["library", type, status ?? null, favorite ?? false] as const,
   catalog: (kind: string) => ["catalog", kind] as const,
+  titleCast: (titleId: string) => ["title", titleId, "cast"] as const,
   titleLists: (titleId: string) => ["title-lists", titleId] as const,
   notifications: ["notifications"] as const,
   peopleSearch: (query: string) => [socialPrefix.peopleSearch, query] as const,

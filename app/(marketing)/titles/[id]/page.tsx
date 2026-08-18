@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import { MarketingFooter } from "@/components/marketing/footer";
@@ -9,9 +10,10 @@ import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
 import { Poster } from "@/components/titles/poster";
 import { getToken } from "@/lib/api";
-import { getPublicTitleDetail, getRelatedTitles } from "@/lib/data";
+import { getPublicTitleCast, getPublicTitleDetail, getRelatedTitles } from "@/lib/data";
 import { site } from "@/lib/site";
 import type { TitleDetail } from "@/lib/data";
+import type { CastMember } from "@/lib/services/types";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -38,6 +40,55 @@ function shareDescription(detail: TitleDetail): string {
     return detail.overview.length > 200 ? `${detail.overview.slice(0, 197).trimEnd()}...` : detail.overview;
   }
   return `${detail.title} on ${site.displayName}. ${site.description}`;
+}
+
+function PublicCastSection({ cast }: { cast: CastMember[] }) {
+  if (cast.length === 0) return null;
+  return (
+    <section className="mt-8">
+      <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+        Cast
+      </p>
+      <ul className="nos mt-3 flex gap-4 overflow-x-auto pb-2">
+        {cast.slice(0, 8).map((member) => (
+          <li key={member.id} className="w-[92px] shrink-0">
+            <Link href={`/people/${member.id}`} className="group block">
+              <div className="relative aspect-square w-full overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10 transition group-hover:ring-white/25">
+                {member.profileUrl ? (
+                  <Image src={member.profileUrl} alt="" fill sizes="92px" className="object-cover" />
+                ) : null}
+              </div>
+              <p className="mt-2 text-center text-[13px] font-semibold leading-tight text-white/85">{member.name}</p>
+              {member.character ? (
+                <p className="mt-0.5 text-center text-[11px] leading-tight text-white/40">{member.character}</p>
+              ) : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function PublicCastSkeleton() {
+  return (
+    <section className="mt-8 animate-pulse" aria-label="Loading cast" aria-busy="true">
+      <div className="h-3 w-12 rounded bg-white/[0.07]" />
+      <div className="mt-3 flex gap-4 overflow-hidden" aria-hidden="true">
+        {[0, 1, 2, 3].map((item) => (
+          <div key={item} className="w-[92px] shrink-0">
+            <div className="aspect-square w-full rounded-full bg-white/[0.06]" />
+            <div className="mx-auto mt-2 h-3 w-16 rounded bg-white/[0.05]" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+async function PublicTitleCast({ titleId, fallback }: { titleId: string; fallback: CastMember[] }) {
+  const result = await getPublicTitleCast(titleId);
+  return <PublicCastSection cast={result.status === "ready" ? result.items : fallback} />;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -82,8 +133,6 @@ export default async function PublicTitlePage({ params }: Params) {
   }
 
   const isAuthenticated = Boolean(await getToken());
-  const cast = detail.cast.slice(0, 8);
-
   return (
     <>
       <MarketingHeader />
@@ -169,30 +218,9 @@ export default async function PublicTitlePage({ params }: Params) {
           </section>
         ) : null}
 
-        {cast.length > 0 ? (
-          <section className="mt-8">
-            <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              Cast
-            </p>
-            <ul className="nos mt-3 flex gap-4 overflow-x-auto pb-2">
-              {cast.map((member) => (
-                <li key={member.id} className="w-[92px] shrink-0">
-                  <Link href={`/people/${member.id}`} className="group block">
-                  <div className="relative aspect-square w-full overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10 transition group-hover:ring-white/25">
-                    {member.profileUrl ? (
-                      <Image src={member.profileUrl} alt="" fill sizes="92px" className="object-cover" />
-                    ) : null}
-                  </div>
-                  <p className="mt-2 text-center text-[13px] font-semibold leading-tight text-white/85">{member.name}</p>
-                  {member.character ? (
-                    <p className="mt-0.5 text-center text-[11px] leading-tight text-white/40">{member.character}</p>
-                  ) : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+        <Suspense fallback={detail.cast.length > 0 ? <PublicCastSection cast={detail.cast} /> : <PublicCastSkeleton />}>
+          <PublicTitleCast titleId={detail.id} fallback={detail.cast} />
+        </Suspense>
 
         {detail.type !== "movie" && detail.episodes.length > 0 ? (
           <section className="mt-9">
