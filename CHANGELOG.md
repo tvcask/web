@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.0](https://github.com/tvcask/web/compare/tvcask-web-v0.10.0...tvcask-web-v0.11.0) (2026-08-18)
+
+
+### Features
+
+* add shareable detail navigation ([b391d2a](https://github.com/tvcask/web/commit/b391d2a16335de69395231f1f5b84dbc580d9e4e))
+* add shareable detail navigation ([59e1de3](https://github.com/tvcask/web/commit/59e1de38383898f0c18269eb9bdb3e3dbb1d0db6))
+* load title cast independently ([ad4b8b6](https://github.com/tvcask/web/commit/ad4b8b6d448f463868a3a5ad20f387f32ac8f4d9))
+
+
+### Bug Fixes
+
+* clarify nested detail controls ([957a19b](https://github.com/tvcask/web/commit/957a19b78f7e662bd51fcc1a5d2624b9d14f70f3))
+
 ## [0.10.0](https://github.com/tvcask/web/compare/tvcask-web-v0.9.0...tvcask-web-v0.10.0) (2026-08-02)
 
 
