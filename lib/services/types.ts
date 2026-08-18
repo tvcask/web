@@ -34,6 +34,11 @@ export type CastMember = {
   profileUrl?: string;
 };
 
+export type TitleCast = {
+  items: CastMember[];
+  status: "ready" | "pending";
+};
+
 export type Episode = {
   id: string;
   titleId: string;

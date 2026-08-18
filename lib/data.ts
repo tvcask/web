@@ -1,5 +1,5 @@
 import { api, ApiError } from "@/lib/api";
-import type { CastMember, Episode, Title, UserTitle, UserTitleWithTitle, WatchProvider } from "@/lib/services/types";
+import type { CastMember, Episode, Title, TitleCast, UserTitle, UserTitleWithTitle, WatchProvider } from "@/lib/services/types";
 
 export type DiscoverSection = { title: string; kind: string; items: Title[] };
 
@@ -246,6 +246,14 @@ export async function getPublicTitleDetail(id: string, region = "US"): Promise<T
     return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`, { auth: false });
   } catch {
     return null;
+  }
+}
+
+export async function getPublicTitleCast(id: string): Promise<TitleCast> {
+  try {
+    return await api<TitleCast>(`/v1/titles/${encodeURIComponent(id)}/cast`, { auth: false });
+  } catch {
+    return { items: [], status: "pending" };
   }
 }
 

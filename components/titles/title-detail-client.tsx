@@ -11,6 +11,7 @@ import { celebrate } from "@/lib/celebrate";
 import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
+import { useTitleCast } from "@/lib/query/titles";
 import { toast } from "@/lib/toast";
 import Link from "next/link";
 import type { TitleDetail } from "@/lib/data";
@@ -49,6 +50,7 @@ export function TitleDetailClient({
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const syncTracked = useSetTracked();
+  const titleCast = useTitleCast(title.id);
   const isMovie = title.type === "movie";
   const [tracked, setTrackedState] = useState(initial.tracked);
 
@@ -93,6 +95,8 @@ export function TitleDetailClient({
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
+  const cast = titleCast.data?.status === "ready" ? titleCast.data.items : (title.cast ?? []);
+  const castPending = cast.length === 0 && (titleCast.isPending || titleCast.data?.status === "pending");
 
   // Ordered as a title moves through a library: queued, started, finished, or
   // abandoned. Dropped sits last because it is the exit, not a step.
@@ -429,11 +433,11 @@ export function TitleDetailClient({
           </div>
         ) : null}
 
-        {title.cast?.length ? (
+        {cast.length > 0 ? (
           <div>
             <h2 className="display mb-3 text-base text-white">Cast</h2>
             <div className="flex gap-4 overflow-x-auto pb-2">
-              {title.cast.map((person) => (
+              {cast.map((person) => (
                 <Link
                   key={person.id}
                   href={`/app/people/${person.id}?titleId=${encodeURIComponent(title.id)}&character=${encodeURIComponent(person.character ?? "")}${detailQuery}`}
@@ -452,6 +456,18 @@ export function TitleDetailClient({
                   <p className="mt-2 truncate text-xs font-bold text-white/80">{person.name}</p>
                   {person.character ? <p className="mt-0.5 truncate text-[11px] text-white/40">{person.character}</p> : null}
                 </Link>
+              ))}
+            </div>
+          </div>
+        ) : castPending ? (
+          <div aria-label="Loading cast" aria-busy="true">
+            <h2 className="display mb-3 text-base text-white">Cast</h2>
+            <div className="flex gap-4 overflow-hidden pb-2" aria-hidden="true">
+              {[0, 1, 2, 3].map((item) => (
+                <div key={item} className="w-[82px] shrink-0 animate-pulse">
+                  <div className="mx-auto size-16 rounded-full bg-white/[0.06]" />
+                  <div className="mx-auto mt-2 h-3 w-14 rounded bg-white/[0.05]" />
+                </div>
               ))}
             </div>
           </div>
