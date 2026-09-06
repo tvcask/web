@@ -3,12 +3,14 @@ import { ArrowLeft01Icon, Delete02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteListAction, removeListItemAction, updateListAction } from "@/app/actions";
+import { CopyListButton } from "@/components/lists/copy-list-button";
 import { Poster } from "@/components/titles/poster";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getList, type UserListDetail } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth/session";
+import { formatListAsText } from "@/lib/list-text";
 
 export default async function ListPage({
   params,
@@ -68,6 +70,11 @@ export default async function ListPage({
             <p className="eyebrow">Titles</p>
             <p className="display mt-2 text-3xl text-white">{list.items.length.toLocaleString()}</p>
             {list.importedFrom ? <p className="mt-2 text-sm font-semibold text-white/40">Imported from TV Time</p> : null}
+            {list.items.length > 0 ? (
+              <div className="mt-5">
+                <CopyListButton text={formatListAsText(list)} />
+              </div>
+            ) : null}
             <form action={deleteListAction} className="mt-6">
               <input type="hidden" name="listId" value={list.id} />
               <ConfirmButton
@@ -133,10 +140,13 @@ function PublicListView({ list, returnTo }: { list: UserListDetail; returnTo?: s
         </Link>
       ) : null}
 
-      <section className="surface rounded-[16px] p-5">
-        <h1 className="display text-2xl text-white">{list.name}</h1>
-        {list.description ? <p className="mt-2 max-w-2xl text-white/60">{list.description}</p> : null}
-        <p className="mt-3 text-sm font-semibold text-white/40">{list.items.length.toLocaleString()} titles</p>
+      <section className="surface flex flex-col items-start justify-between gap-4 rounded-[16px] p-5 sm:flex-row">
+        <div>
+          <h1 className="display text-2xl text-white">{list.name}</h1>
+          {list.description ? <p className="mt-2 max-w-2xl text-white/60">{list.description}</p> : null}
+          <p className="mt-3 text-sm font-semibold text-white/40">{list.items.length.toLocaleString()} titles</p>
+        </div>
+        {list.items.length > 0 ? <CopyListButton text={formatListAsText(list)} /> : null}
       </section>
 
       {list.items.length > 0 ? (
