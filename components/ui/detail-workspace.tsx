@@ -51,7 +51,7 @@ export function DetailWorkspace({ children }: { children: React.ReactNode }) {
         <Dialog.Content
           data-detail-workspace
           aria-describedby={undefined}
-          className="detail-workspace-content fixed inset-0 z-50 flex h-dvh w-full flex-col overflow-hidden bg-[#0a0a0c] outline-none sm:left-1/2 sm:top-1/2 sm:h-[min(86dvh,860px)] sm:w-[min(1120px,calc(100vw-4rem))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[22px] sm:border sm:border-white/[0.1] sm:shadow-2xl sm:shadow-black/70"
+          className="detail-workspace-content fixed inset-0 z-50 flex h-dvh w-full flex-col overflow-hidden bg-[#0a0a0c] outline-none sm:inset-8 sm:m-auto sm:h-[min(86dvh,860px)] sm:w-[min(1120px,calc(100vw-4rem))] sm:rounded-[22px] sm:border sm:border-white/[0.1] sm:shadow-2xl sm:shadow-black/70"
         >
           <Dialog.Title className="sr-only">{workspaceLabel(pathname)}</Dialog.Title>
 
