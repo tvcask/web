@@ -6,13 +6,17 @@ export async function EpisodeDetail({
   episodeId,
   mode,
   fromTitle = false,
-  returnTo
+  returnTo,
+  embedded = false,
+  fromDetail = false
 }: {
   titleId: string;
   episodeId: string;
   mode: "app" | "public";
   fromTitle?: boolean;
   returnTo?: string;
+  embedded?: boolean;
+  fromDetail?: boolean;
 }) {
   if (mode === "public") {
     const title = await getPublicTitleDetail(titleId);
@@ -30,6 +34,8 @@ export async function EpisodeDetail({
       mode={mode}
       fromTitle={fromTitle}
       returnTo={returnTo}
+      embedded={embedded}
+      fromDetail={fromDetail}
       initial={{ tracked: mine.tracked, watched: mine.watched }}
     />
   );

@@ -9,5 +9,14 @@ export default async function PersonModal({
 }) {
   const { id } = await params;
   const query = await searchParams;
-  return <PersonDetail id={id} mode="app" character={query.character} titleId={query.titleId} returnTo={query.returnTo} />;
+  return (
+    <PersonDetail
+      id={id}
+      mode="app"
+      character={query.character}
+      titleId={query.titleId}
+      returnTo={query.returnTo}
+      embedded
+    />
+  );
 }

@@ -69,9 +69,11 @@ export function TitleDetailClient({
   const [openSeason, setOpenSeason] = useState<number | null>(() => episodes[0]?.seasonNumber ?? null);
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
   const returnTo = searchParams.get("returnTo");
-  const detailQuery = returnTo?.startsWith("/app/") ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
+  const nestedDetailParams = new URLSearchParams({ fromDetail: "1" });
+  if (returnTo?.startsWith("/app/")) nestedDetailParams.set("returnTo", returnTo);
+  const nestedDetailQuery = nestedDetailParams.toString();
 
-  // Keep the cached library lists in sync with the drawer — debounced so rapid
+  // Keep the cached library lists in sync with the detail view — debounced so rapid
   // toggles trigger a single refetch.
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   function scheduleRefresh() {
@@ -271,7 +273,7 @@ export function TitleDetailClient({
     <div>
       <div className="relative h-[280px] px-6 pt-6 sm:px-8">
         {title.backdropUrl ? (
-          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 560px" className="object-cover" />
+          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 960px" className="object-cover" />
         ) : (
           <div className="absolute inset-0" style={{ background: seededGradient(title.title) }} />
         )}
@@ -281,13 +283,13 @@ export function TitleDetailClient({
             <Poster src={title.posterUrl} title={title.title} className="h-full rounded-[14px]" />
           </div>
           <div className="min-w-0 pb-1">
-            <h1 className="display truncate text-3xl text-white sm:text-4xl">{title.title}</h1>
+            <h1 className="display break-words text-3xl leading-tight text-white sm:text-4xl">{title.title}</h1>
             <p className="mt-1.5 text-sm text-white/60">{meta}</p>
           </div>
         </div>
       </div>
 
-      <div className="space-y-6 px-6 pb-10 pt-5 sm:px-8">
+      <div className="mx-auto w-full max-w-[820px] space-y-6 px-6 pb-10 pt-5 sm:px-8">
         <div className="flex items-center gap-3">
           {tracked ? (
             <button
@@ -429,7 +431,7 @@ export function TitleDetailClient({
         {title.overview ? (
           <div>
             <h2 className="display mb-2 text-base text-white">About</h2>
-            <p className="text-[15px] leading-7 text-white/70">{title.overview}</p>
+            <p className="max-w-[72ch] text-[15px] leading-7 text-white/70">{title.overview}</p>
           </div>
         ) : null}
 
@@ -440,7 +442,7 @@ export function TitleDetailClient({
               {cast.map((person) => (
                 <Link
                   key={person.id}
-                  href={`/app/people/${person.id}?titleId=${encodeURIComponent(title.id)}&character=${encodeURIComponent(person.character ?? "")}${detailQuery}`}
+                  href={`/app/people/${person.id}?titleId=${encodeURIComponent(title.id)}&character=${encodeURIComponent(person.character ?? "")}&${nestedDetailQuery}`}
                   className="w-[82px] shrink-0 text-center"
                   aria-label={`View ${person.name}'s biography`}
                 >
@@ -453,8 +455,8 @@ export function TitleDetailClient({
                       </div>
                     )}
                   </div>
-                  <p className="mt-2 truncate text-xs font-bold text-white/80">{person.name}</p>
-                  {person.character ? <p className="mt-0.5 truncate text-[11px] text-white/40">{person.character}</p> : null}
+                  <p className="mt-2 text-xs font-bold leading-4 text-white/80">{person.name}</p>
+                  {person.character ? <p className="mt-0.5 text-[11px] leading-4 text-white/40">{person.character}</p> : null}
                 </Link>
               ))}
             </div>
@@ -519,11 +521,11 @@ export function TitleDetailClient({
                                 ) : null}
                               </div>
                               <Link
-                                href={`/app/titles/${title.id}/episodes/${episode.id}?fromTitle=1${detailQuery}`}
+                                href={`/app/titles/${title.id}/episodes/${episode.id}?fromTitle=1&${nestedDetailQuery}`}
                                 className="min-w-0 flex-1 text-left"
                                 aria-label={`View details for ${episode.name || `episode ${episode.episodeNumber}`}`}
                               >
-                                <p className="truncate text-sm font-semibold text-white">
+                                <p className="text-sm font-semibold leading-5 text-white">
                                   E{pad(episode.episodeNumber)} · {episode.name ?? "TBA"}
                                 </p>
                                 <p className="mt-0.5 text-xs text-white/45">{future ? "Airs " : ""}{episode.airDate ? formatAirDate(episode.airDate) : ""}</p>
@@ -560,11 +562,11 @@ export function TitleDetailClient({
               {related.slice(0, 12).map((item) => (
                 <Link
                   key={item.id}
-                  href={`/app/titles/${item.id}${returnTo?.startsWith("/app/") ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
+                  href={`/app/titles/${item.id}?${nestedDetailQuery}`}
                   className="lift w-[112px] shrink-0"
                 >
                   <Poster src={item.posterUrl} title={item.title} className="rounded-[12px]" />
-                  <p className="mt-2 truncate text-xs font-bold text-white/85">{item.title}</p>
+                  <p className="mt-2 text-xs font-bold leading-4 text-white/85">{item.title}</p>
                 </Link>
               ))}
             </div>

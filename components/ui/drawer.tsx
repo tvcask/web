@@ -29,7 +29,12 @@ function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof Draw
   return <DrawerPrimitive.Overlay data-slot="drawer-overlay" className={cn("fixed inset-0 z-40 bg-black/60", className)} {...props} />;
 }
 
-function DrawerContent({ className, children, ...props }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+function DrawerContent({
+  className,
+  children,
+  showHandle = true,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & { showHandle?: boolean }) {
   return (
     <DrawerPortal>
       <DrawerOverlay />
@@ -44,7 +49,9 @@ function DrawerContent({ className, children, ...props }: React.ComponentProps<t
         {...props}
       >
         {/* Grab handle — bottom sheet only. */}
-        <DrawerPrimitive.Handle className="mx-auto mt-2.5 shrink-0 !bg-white/25 group-data-[vaul-drawer-direction=right]/drawer-content:hidden" />
+        {showHandle ? (
+          <DrawerPrimitive.Handle className="mx-auto mt-2.5 shrink-0 !bg-white/25 group-data-[vaul-drawer-direction=right]/drawer-content:hidden" />
+        ) : null}
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

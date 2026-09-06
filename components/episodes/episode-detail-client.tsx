@@ -26,6 +26,8 @@ export function EpisodeDetailClient({
   mode,
   fromTitle = false,
   returnTo,
+  embedded = false,
+  fromDetail = false,
   initial
 }: {
   title: TitleDetail;
@@ -33,6 +35,8 @@ export function EpisodeDetailClient({
   mode: "app" | "public";
   fromTitle?: boolean;
   returnTo?: string;
+  embedded?: boolean;
+  fromDetail?: boolean;
   initial?: EpisodeTracking;
 }) {
   const router = useRouter();
@@ -60,6 +64,7 @@ export function EpisodeDetailClient({
   const query = new URLSearchParams();
   if (fromTitle) query.set("fromTitle", "1");
   if (returnTo?.startsWith("/app/")) query.set("returnTo", returnTo);
+  if (fromDetail) query.set("fromDetail", "1");
 
   function step(target: Episode) {
     setSelectedId(target.id);
@@ -67,7 +72,9 @@ export function EpisodeDetailClient({
     const prefix = mode === "app" ? "/app" : "";
     const suffix = query.toString();
     window.history.replaceState(null, "", `${prefix}/titles/${title.id}/episodes/${target.id}${suffix ? `?${suffix}` : ""}`);
-    document.querySelector('[data-episode-scroll]')?.scrollTo({ top: 0, behavior: "smooth" });
+    const workspace = document.querySelector<HTMLElement>('[data-detail-scroll]');
+    if (workspace) workspace.scrollTo({ top: 0, behavior: "smooth" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function toggleWatched() {
@@ -96,9 +103,11 @@ export function EpisodeDetailClient({
       .finally(() => setPending(false));
   }
 
-  const showHref = mode === "public"
-    ? `/titles/${title.id}`
-    : `/app/titles/${title.id}${returnTo?.startsWith("/app/") ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
+  const showParams = new URLSearchParams();
+  if (returnTo?.startsWith("/app/")) showParams.set("returnTo", returnTo);
+  if (embedded) showParams.set("fromDetail", "1");
+  const showQuery = showParams.toString();
+  const showHref = mode === "public" ? `/titles/${title.id}` : `/app/titles/${title.id}${showQuery ? `?${showQuery}` : ""}`;
   const meta = [
     episode.airDate ? formatAirDate(episode.airDate) : null,
     episode.runtimeMinutes ? `${episode.runtimeMinutes} min` : null,
@@ -106,21 +115,23 @@ export function EpisodeDetailClient({
   ].filter(Boolean).join(" · ");
 
   return (
-    <article data-episode-scroll className="min-h-0 overflow-y-auto overscroll-contain">
+    <article data-episode-scroll>
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-white/[0.04]">
         {!hideFutureDetails && episode.stillUrl ? (
-          <Image src={episode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 560px" className="object-cover" priority />
+          <Image src={episode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 960px" className="object-cover" priority />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-transparent to-black/20" />
       </div>
 
-      <div key={episode.id} className="episode-detail-enter px-5 pb-10 sm:px-8">
+      <div key={episode.id} className="episode-detail-enter mx-auto w-full max-w-[760px] px-5 pb-10 sm:px-8">
         {fromTitle && mode === "app" ? (
-          <button type="button" onClick={() => router.back()} className="group mx-auto -mt-4 mb-5 flex max-w-[90%] items-center gap-2 rounded-full bg-[#0a0a0c] px-3 py-2 text-sm font-bold text-white/65 ring-1 ring-white/10 transition hover:text-white">
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4 transition-transform group-hover:-translate-x-0.5" /> Back to {title.title}
-          </button>
+          embedded ? null : (
+            <button type="button" onClick={() => router.back()} className="group mx-auto -mt-4 mb-5 flex max-w-[90%] items-center gap-2 rounded-full bg-[#0a0a0c] px-3 py-2 text-sm font-bold text-white/65 ring-1 ring-white/10 transition hover:text-white">
+              <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4 transition-transform group-hover:-translate-x-0.5" /> Back to {title.title}
+            </button>
+          )
         ) : (
-          <Link href={showHref} replace={mode === "app"} className="group mx-auto -mt-4 mb-5 flex max-w-[90%] items-center justify-center gap-2 rounded-full bg-[#0a0a0c] px-3 py-2 ring-1 ring-white/10">
+          <Link href={showHref} replace={mode === "app" && !embedded} className="group mx-auto -mt-4 mb-5 flex max-w-[90%] items-center justify-center gap-2 rounded-full bg-[#0a0a0c] px-3 py-2 ring-1 ring-white/10">
             <Poster src={title.posterUrl} title={title.title} className="h-10 w-7 rounded-[5px]" />
             <span className="truncate text-sm font-bold text-white/65 transition group-hover:text-white">{title.title}</span>
             <HugeiconsIcon icon={ArrowRight01Icon} className="size-4 text-white/35" />

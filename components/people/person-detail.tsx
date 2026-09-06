@@ -11,6 +11,7 @@ type PersonDetailProps = {
   character?: string;
   titleId?: string;
   returnTo?: string;
+  embedded?: boolean;
 };
 
 function formatPersonDates(birthday?: string, deathday?: string): string {
@@ -25,12 +26,13 @@ function formatPersonDates(birthday?: string, deathday?: string): string {
 function titleHref(id: string, mode: PersonDetailProps["mode"], returnTo?: string): string {
   if (mode === "public") return `/titles/${id}`;
   const params = new URLSearchParams();
+  params.set("fromDetail", "1");
   if (returnTo?.startsWith("/app/")) params.set("returnTo", returnTo);
   const query = params.toString();
   return `/app/titles/${id}${query ? `?${query}` : ""}`;
 }
 
-export async function PersonDetail({ id, mode, character, titleId, returnTo }: PersonDetailProps) {
+export async function PersonDetail({ id, mode, character, titleId, returnTo, embedded = false }: PersonDetailProps) {
   const [person, credits] = await Promise.all([getPerson(id), getPersonCredits(id)]);
   if (!person) {
     return <p className="p-8 text-white/55">Actor not found.</p>;
@@ -41,7 +43,7 @@ export async function PersonDetail({ id, mode, character, titleId, returnTo }: P
 
   return (
     <article className="px-5 pb-10 pt-7 sm:px-8 sm:pt-9">
-      {mode === "app" && titleId ? <DetailBack label="Back to title" /> : null}
+      {mode === "app" && titleId && !embedded ? <DetailBack label="Back to title" /> : null}
       <div className="grid gap-7 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8">
         <aside className="sm:sticky sm:top-8 sm:self-start">
           <div className="flex gap-5 sm:block">
@@ -92,12 +94,12 @@ export async function PersonDetail({ id, mode, character, titleId, returnTo }: P
                 <span className="h-px w-7 bg-[var(--accent)]/70" aria-hidden />
                 <h2 className="eyebrow">Filmography</h2>
               </div>
-              <div className="nos flex gap-3 overflow-x-auto pb-2">
+              <div className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4 lg:grid-cols-5">
                 {elsewhere.map((credit) => (
-                  <Link key={credit.id} href={titleHref(credit.id, mode, returnTo)} className="lift w-[112px] shrink-0">
+                  <Link key={credit.id} href={titleHref(credit.id, mode, returnTo)} className="lift min-w-0">
                     <Poster src={credit.posterUrl} title={credit.title} className="rounded-[12px]" />
-                    <p className="mt-2 truncate text-xs font-bold text-white">{credit.title}</p>
-                    {credit.character ? <p className="truncate text-[11px] text-white/40">{credit.character}</p> : null}
+                    <p className="mt-2 text-xs font-bold leading-4 text-white">{credit.title}</p>
+                    {credit.character ? <p className="mt-0.5 text-[11px] leading-4 text-white/40">{credit.character}</p> : null}
                   </Link>
                 ))}
               </div>

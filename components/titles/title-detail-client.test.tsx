@@ -32,8 +32,14 @@ describe("PersonDetail", () => {
     expect(screen.getByText("A real biography.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Another Show/ })).toHaveAttribute(
       "href",
-      "/app/titles/t1?returnTo=%2Fapp%2Fexplore"
+      "/app/titles/t1?fromDetail=1&returnTo=%2Fapp%2Fexplore"
     );
+  });
+
+  it("leaves nested navigation to the persistent workspace header", async () => {
+    render(await PersonDetail({ id: "42", mode: "app", titleId: "source", embedded: true }));
+
+    expect(screen.queryByRole("button", { name: "Back to title" })).not.toBeInTheDocument();
   });
 
   it("uses public title links on shareable actor pages", async () => {

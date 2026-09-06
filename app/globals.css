@@ -117,6 +117,19 @@ button:disabled {
   display: none;
 }
 
+/* Vaul's drag surface disables selection for fine pointers. Detail workspace
+   content is document-like and deliberately uses only the header for controls. */
+[data-detail-workspace] [data-detail-scroll] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* A bottom drawer normally extends its background below the viewport. The
+   desktop workspace floats in the center, so that extension must disappear. */
+[data-detail-workspace]::after {
+  display: none;
+}
+
 /* Previous/next episode changes reuse the open drawer. A short opacity-only
    transition makes the content change legible without delaying navigation. */
 @keyframes episode-detail-enter {
