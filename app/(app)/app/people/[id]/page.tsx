@@ -16,7 +16,7 @@ export default async function PersonPage({
   const backHref = query.returnTo?.startsWith("/app/") ? query.returnTo : "/app/explore";
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-[960px]">
       <Link
         href={backHref}
         className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-2 text-sm font-bold text-white/70 transition hover:bg-white/10 hover:text-white"

@@ -5,7 +5,7 @@ export default async function EpisodeModal({
   searchParams
 }: {
   params: Promise<{ id: string; episodeId: string }>;
-  searchParams: Promise<{ fromTitle?: string; returnTo?: string }>;
+  searchParams: Promise<{ fromTitle?: string; fromDetail?: string; returnTo?: string }>;
 }) {
   const { id, episodeId } = await params;
   const query = await searchParams;
@@ -16,6 +16,8 @@ export default async function EpisodeModal({
       mode="app"
       fromTitle={query.fromTitle === "1"}
       returnTo={query.returnTo}
+      embedded
+      fromDetail={query.fromDetail === "1"}
     />
   );
 }

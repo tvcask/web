@@ -15,7 +15,7 @@ export default async function TitleDetailsPage({
   const backHref = returnTo?.startsWith("/app/") ? returnTo : "/app/shows";
 
   return (
-    <div className="mx-auto max-w-[640px]">
+    <div className="mx-auto max-w-[960px]">
       <div className="mb-3">
         <Link
           href={backHref}
