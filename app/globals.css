@@ -117,17 +117,39 @@ button:disabled {
   display: none;
 }
 
-/* Vaul's drag surface disables selection for fine pointers. Detail workspace
-   content is document-like and deliberately uses only the header for controls. */
+/* Detail content behaves like a document: names, biographies, and metadata can
+   be selected normally. */
 [data-detail-workspace] [data-detail-scroll] {
   -webkit-user-select: text;
   user-select: text;
 }
 
-/* A bottom drawer normally extends its background below the viewport. The
-   desktop workspace floats in the center, so that extension must disappear. */
-[data-detail-workspace]::after {
-  display: none;
+@keyframes detail-workspace-in {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.985); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes detail-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (min-width: 640px) {
+  .detail-workspace-content[data-state="open"] {
+    animation: detail-workspace-in 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .detail-workspace-content[data-state="closed"] {
+    animation: detail-workspace-in 120ms ease-in reverse both;
+  }
+}
+
+.detail-workspace-overlay[data-state="open"] {
+  animation: detail-overlay-in 140ms ease-out both;
+}
+
+.detail-workspace-overlay[data-state="closed"] {
+  animation: detail-overlay-in 120ms ease-in reverse both;
 }
 
 /* Previous/next episode changes reuse the open drawer. A short opacity-only
@@ -142,6 +164,8 @@ button:disabled {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .detail-workspace-content,
+  .detail-workspace-overlay,
   .episode-detail-enter {
     animation: none;
   }

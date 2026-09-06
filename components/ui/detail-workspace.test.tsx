@@ -1,6 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import type { ComponentProps, PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DetailWorkspace } from "@/components/ui/detail-workspace";
 
@@ -17,32 +16,26 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(navigation.query)
 }));
 
-vi.mock("@/components/ui/drawer", () => ({
-  Drawer: ({ children, onAnimationEnd }: PropsWithChildren<{ onAnimationEnd?: (open: boolean) => void }>) => (
-    <div>
-      <button type="button" onClick={() => onAnimationEnd?.(false)}>Finish close</button>
-      {children}
-    </div>
-  ),
-  DrawerClose: (props: ComponentProps<"button">) => <button type="button" {...props} />,
-  DrawerContent: ({ children, showHandle: _showHandle, ...props }: ComponentProps<"div"> & { showHandle?: boolean }) => (
-    <div {...props}>{children}</div>
-  ),
-  DrawerTitle: (props: ComponentProps<"h2">) => <h2 {...props} />
-}));
-
 describe("DetailWorkspace", () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     navigation.back.mockReset();
     navigation.replace.mockReset();
     navigation.pathname = "/app/titles/t1";
     navigation.query = "returnTo=%2Fapp%2Fexplore";
   });
 
+  afterEach(() => vi.useRealTimers());
+
+  function openWorkspace() {
+    act(() => vi.runOnlyPendingTimers());
+  }
+
   it("keeps Back separate from Close for nested actor details", () => {
     navigation.pathname = "/app/people/p1";
     navigation.query += "&fromDetail=1";
     render(<DetailWorkspace><p>Biography</p></DetailWorkspace>);
+    openWorkspace();
 
     expect(screen.getByRole("heading", { name: "Actor details" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
@@ -52,17 +45,20 @@ describe("DetailWorkspace", () => {
 
   it("closes to the original app page", () => {
     render(<DetailWorkspace><p>Title</p></DetailWorkspace>);
+    openWorkspace();
 
     expect(screen.queryByRole("button", { name: "Back" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Finish close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close details" }));
+    act(() => vi.advanceTimersByTime(140));
     expect(navigation.replace).toHaveBeenCalledWith("/app/explore");
   });
 
   it("labels episode routes and exposes one scrollable content area", () => {
     navigation.pathname = "/app/titles/t1/episodes/e1";
-    const { container } = render(<DetailWorkspace><p>Synopsis</p></DetailWorkspace>);
+    render(<DetailWorkspace><p>Synopsis</p></DetailWorkspace>);
+    openWorkspace();
 
     expect(screen.getByRole("heading", { name: "Episode details" })).toBeInTheDocument();
-    expect(container.querySelectorAll("[data-detail-scroll]")).toHaveLength(1);
+    expect(document.querySelectorAll("[data-detail-scroll]")).toHaveLength(1);
   });
 });

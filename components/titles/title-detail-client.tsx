@@ -50,8 +50,9 @@ export function TitleDetailClient({
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const syncTracked = useSetTracked();
-  const titleCast = useTitleCast(title.id);
   const isMovie = title.type === "movie";
+  const [activeSection, setActiveSection] = useState<"overview" | "episodes" | "cast">("overview");
+  const titleCast = useTitleCast(title.id, activeSection === "cast");
   const [tracked, setTrackedState] = useState(initial.tracked);
 
   // Every tracked change also updates the shared library-ids Set, so poster
@@ -90,6 +91,7 @@ export function TitleDetailClient({
     const episodeID = decodeURIComponent(window.location.hash.slice(1));
     const target = episodes.find((episode) => episode.id === episodeID);
     if (!target) return;
+    setActiveSection("episodes");
     setOpenSeason(target.seasonNumber);
     requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
   }, [episodes]);
@@ -271,30 +273,52 @@ export function TitleDetailClient({
 
   return (
     <div>
-      <div className="relative h-[280px] px-6 pt-6 sm:px-8">
+      <div className="relative h-[220px] px-5 pt-5 sm:h-[230px] sm:px-9 sm:pt-6">
         {title.backdropUrl ? (
-          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 960px" className="object-cover" />
+          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 1120px" className="object-cover" priority />
         ) : (
           <div className="absolute inset-0" style={{ background: seededGradient(title.title) }} />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#0a0a0c]/75 to-[#0a0a0c]" />
-        <div className="relative flex h-full items-end gap-4">
-          <div className="relative h-[168px] w-[112px] shrink-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
-            <Poster src={title.posterUrl} title={title.title} className="h-full rounded-[14px]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0c]/65 via-[#0a0a0c]/30 to-[#0a0a0c]/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/35 to-transparent" />
+        <div className="relative mx-auto flex h-full max-w-[960px] items-end gap-4 sm:gap-5">
+          <div className="relative h-[138px] w-[92px] shrink-0 overflow-hidden rounded-[12px] ring-1 ring-white/10 sm:h-[156px] sm:w-[104px]">
+            <Poster src={title.posterUrl} title={title.title} className="h-full rounded-[12px]" />
           </div>
-          <div className="min-w-0 pb-1">
-            <h1 className="display break-words text-3xl leading-tight text-white sm:text-4xl">{title.title}</h1>
+          <div className="min-w-0 pb-0.5 sm:pb-2">
+            <h1 className="display max-w-[18ch] break-words text-3xl leading-[1.05] text-white sm:text-[2.6rem]">{title.title}</h1>
             <p className="mt-1.5 text-sm text-white/60">{meta}</p>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-[820px] space-y-6 px-6 pb-10 pt-5 sm:px-8">
+      <div className="mx-auto w-full max-w-[960px] px-5 pb-10 pt-4 sm:px-8">
+        <div className="nos mb-6 flex gap-1 overflow-x-auto border-b border-white/[0.08]" role="tablist" aria-label="Title details">
+          {([
+            ["overview", "Overview"],
+            ...(!isMovie ? [["episodes", `Episodes${episodes.length ? ` · ${episodes.length}` : ""}`]] : []),
+            ["cast", "Cast"]
+          ] as ["overview" | "episodes" | "cast", string][]).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={activeSection === value}
+              onClick={() => setActiveSection(value)}
+              className={`relative min-h-11 shrink-0 px-4 text-sm font-extrabold transition ${activeSection === value ? "text-white" : "text-white/45 hover:text-white/75"}`}
+            >
+              {label}
+              {activeSection === value ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-[var(--accent)]" /> : null}
+            </button>
+          ))}
+        </div>
+
+        {activeSection === "overview" ? <div className="space-y-6">
         <div className="flex items-center gap-3">
           {tracked ? (
             <button
               onClick={untrack}
-              className="accent-fill group flex h-[52px] flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold"
+              className="accent-fill group flex h-11 flex-1 items-center justify-center gap-2 rounded-full px-6 text-sm font-extrabold sm:flex-none"
             >
               <HugeiconsIcon icon={Tick02Icon} className="size-5 group-hover:hidden" />
               <HugeiconsIcon icon={Cancel01Icon} className="hidden size-5 group-hover:block" />
@@ -304,7 +328,7 @@ export function TitleDetailClient({
           ) : (
             <button
               onClick={track}
-              className="accent-fill flex h-[52px] flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-extrabold"
+              className="accent-fill flex h-11 flex-1 items-center justify-center gap-2 rounded-full px-6 text-sm font-extrabold sm:flex-none"
             >
               <HugeiconsIcon icon={PlusSignIcon} className="size-5" /> {isMovie ? "Add to watchlist" : "Track show"}
             </button>
@@ -312,7 +336,7 @@ export function TitleDetailClient({
 
           <button
             onClick={toggleFavorite}
-            className="grid size-[52px] shrink-0 place-items-center rounded-full border border-white/12 text-white transition hover:bg-white/5"
+            className="grid size-11 shrink-0 place-items-center rounded-full border border-white/12 text-white transition hover:bg-white/5"
             style={favorite ? { color: "var(--accent-text)" } : undefined}
             aria-label="Favorite"
           >
@@ -320,7 +344,7 @@ export function TitleDetailClient({
           </button>
           <button
             onClick={share}
-            className="grid size-[52px] shrink-0 place-items-center rounded-full border border-white/12 text-white/80 transition hover:bg-white/5"
+            className="grid size-11 shrink-0 place-items-center rounded-full border border-white/12 text-white/80 transition hover:bg-white/5"
             aria-label="Share"
           >
             <HugeiconsIcon icon={Share01Icon} className="size-5" />
@@ -434,16 +458,17 @@ export function TitleDetailClient({
             <p className="max-w-[72ch] text-[15px] leading-7 text-white/70">{title.overview}</p>
           </div>
         ) : null}
+        </div> : null}
 
+        {activeSection === "cast" ? <div>
         {cast.length > 0 ? (
           <div>
-            <h2 className="display mb-3 text-base text-white">Cast</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-5 lg:grid-cols-7">
               {cast.map((person) => (
                 <Link
                   key={person.id}
                   href={`/app/people/${person.id}?titleId=${encodeURIComponent(title.id)}&character=${encodeURIComponent(person.character ?? "")}&${nestedDetailQuery}`}
-                  className="w-[82px] shrink-0 text-center"
+                  className="min-w-0 text-center"
                   aria-label={`View ${person.name}'s biography`}
                 >
                   <div className="relative mx-auto size-16 overflow-hidden rounded-full bg-white/[0.06] ring-1 ring-white/10">
@@ -455,7 +480,7 @@ export function TitleDetailClient({
                       </div>
                     )}
                   </div>
-                  <p className="mt-2 text-xs font-bold leading-4 text-white/80">{person.name}</p>
+                  <p className="mt-2 break-words text-xs font-bold leading-4 text-white/80">{person.name}</p>
                   {person.character ? <p className="mt-0.5 text-[11px] leading-4 text-white/40">{person.character}</p> : null}
                 </Link>
               ))}
@@ -473,9 +498,10 @@ export function TitleDetailClient({
               ))}
             </div>
           </div>
-        ) : null}
+        ) : <p className="surface rounded-[14px] p-5 text-sm text-white/50">Cast details aren&apos;t available yet.</p>}
+        </div> : null}
 
-        {!isMovie ? (
+        {activeSection === "episodes" && !isMovie ? (
           <div>
             <h2 className="display mb-3 text-base text-white">Episodes</h2>
             {seasons.length === 0 ? (
@@ -555,7 +581,7 @@ export function TitleDetailClient({
           </div>
         ) : null}
 
-        {related.length > 0 ? (
+        {activeSection === "overview" && related.length > 0 ? (
           <section>
             <h2 className="display mb-3 text-base text-white">More like this</h2>
             <div className="nos flex gap-3 overflow-x-auto pb-2">
