@@ -13,7 +13,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   }
 
   const { error, reset, returnTo } = await searchParams;
-  const safeReturnTo = typeof returnTo === "string" && returnTo.startsWith("/app/") ? returnTo : "";
+  const safeReturnTo = typeof returnTo === "string" && (returnTo.startsWith("/app/") || returnTo.startsWith("/connect?")) ? returnTo : "";
   return (
     <AuthCard
       title="Welcome back"

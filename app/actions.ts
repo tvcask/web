@@ -23,7 +23,7 @@ async function setSession(res: AuthResponse) {
 
 function safeReturnTo(formData: FormData) {
   const returnTo = formData.get("returnTo");
-  if (typeof returnTo === "string" && returnTo.startsWith("/app/")) {
+  if (typeof returnTo === "string" && (returnTo.startsWith("/app/") || returnTo.startsWith("/connect?"))) {
     return returnTo;
   }
   return "/app/shows";

@@ -13,7 +13,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
   }
 
   const { error, returnTo } = await searchParams;
-  const safeReturnTo = typeof returnTo === "string" && returnTo.startsWith("/app/") ? returnTo : "";
+  const safeReturnTo = typeof returnTo === "string" && (returnTo.startsWith("/app/") || returnTo.startsWith("/connect?")) ? returnTo : "";
   return (
     <AuthCard
       title="Start your cask"
