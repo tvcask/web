@@ -36,6 +36,7 @@ export default async function SettingsPage({
       </Link>
       <h1 className="display mb-7 text-2xl text-white">Settings</h1>
 
+      <Section title="AI assistants"><div className="surface overflow-hidden rounded-[14px]"><SettingsLink href="/app/settings/ai" label="AI connections" /></div></Section>
       <Section title="Account">
         <div className="surface overflow-hidden rounded-[14px]">
           <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] px-4 py-3.5">
