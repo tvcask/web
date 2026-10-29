@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.11.0](https://github.com/tvcask/web/compare/tvcask-web-v0.10.0...tvcask-web-v0.11.0) (2026-10-29)
+
+
+### Features
+
+* add AI connection setup, consent and access management ([fcf1f3a](https://github.com/tvcask/web/commit/fcf1f3a292810797fd0aa0f1852ca77a7e5bb64c))
+* add shareable detail navigation ([b391d2a](https://github.com/tvcask/web/commit/b391d2a16335de69395231f1f5b84dbc580d9e4e))
+* add shareable detail navigation ([59e1de3](https://github.com/tvcask/web/commit/59e1de38383898f0c18269eb9bdb3e3dbb1d0db6))
+* add TVCask consent flow for AI account linking ([f206966](https://github.com/tvcask/web/commit/f20696658b66fa2a7fda15af35995b0cf3a037ab))
+* copy lists as text ([bb30124](https://github.com/tvcask/web/commit/bb30124084d6afb882b919e387e57f405a3536e5))
+* copy lists as text ([d557595](https://github.com/tvcask/web/commit/d5575951ab3ceb5992f22aa3775b42c2ca6d0d35))
+* guide users through connecting and managing AI assistants ([259f289](https://github.com/tvcask/web/commit/259f289455f4827537b9afe26cd0fc9ef959d211))
+* load title cast independently ([ad4b8b6](https://github.com/tvcask/web/commit/ad4b8b6d448f463868a3a5ad20f387f32ac8f4d9))
+
+
+### Bug Fixes
+
+* clarify nested detail controls ([957a19b](https://github.com/tvcask/web/commit/957a19b78f7e662bd51fcc1a5d2624b9d14f70f3))
+
 ## [0.10.0](https://github.com/tvcask/web/compare/tvcask-web-v0.9.0...tvcask-web-v0.10.0) (2026-08-02)
 
 
