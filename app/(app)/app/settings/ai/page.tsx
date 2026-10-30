@@ -9,7 +9,8 @@ import { CopyEndpoint } from "./copy-endpoint";
 
 type Connections = {
   mcpUrl: string;
-  items: { id: string; clientName: string; createdAt: string }[];
+  supportedScopes?: string[];
+  items: { id: string; clientName: string; createdAt: string; scope?: string }[];
 };
 const docsURL = "https://developers.openai.com/plugins/deploy/connect-chatgpt";
 
@@ -49,10 +50,10 @@ export default async function AIConnections({ searchParams }: {
         <p className="mt-3 text-sm leading-6 text-white/60">
           Better recommendations start with what you’ve already watched. Connect TVCask so your assistant can check your library every time you ask.
         </p>
-        <span className="mt-4 inline-flex rounded-full bg-[var(--accent-text)]/10 px-3 py-1 text-xs font-bold text-[var(--accent-text)]">Read-only access</span>
+        <span className="mt-4 inline-flex rounded-full bg-[var(--accent-text)]/10 px-3 py-1 text-xs font-bold text-[var(--accent-text)]">Read access · Optional library management</span>
       </header>
 
-      {params.disconnected && <p role="status" className="rounded-xl border border-white/10 p-4 text-sm text-white/80">Disconnected. This application can no longer read your TVCask library.</p>}
+      {params.disconnected && <p role="status" className="rounded-xl border border-white/10 p-4 text-sm text-white/80">Disconnected. This application can no longer access your TVCask library.</p>}
       {params.error === "disconnect" && <p role="alert" className="rounded-xl border border-red-400/20 p-4 text-sm text-red-200">We couldn’t disconnect the application. Please try again.</p>}
 
       {!data ? (
@@ -75,7 +76,7 @@ export default async function AIConnections({ searchParams }: {
               <p className="mt-2 text-xs text-white/45">You don’t need to copy a TVCask password, API key or login token into ChatGPT.</p>
             </Step>
             <Step number={3} title="Approve access in TVCask">
-              Continue through ChatGPT’s connection prompt. Sign in to TVCask if asked, review the permissions and choose <strong>Allow read access</strong>. Finish creating and installing the plugin in ChatGPT.
+              Continue through ChatGPT’s connection prompt. Sign in to TVCask if asked, review the permissions and approve access. Leave <strong>Also allow library management</strong> unchecked for read-only access, or select it to let your assistant update progress and lists. Finish creating and installing the plugin in ChatGPT.
             </Step>
             <Step number={4} title="Check your library in a new chat">
               Type <strong>@</strong>, select <strong>TVCask</strong>, then ask the question below. Compare the answer with your Watching list to confirm the connection works.
@@ -92,6 +93,17 @@ export default async function AIConnections({ searchParams }: {
           <p className="mt-4 text-xs leading-5 text-white/45">Keep tracking shows in TVCask as usual. Your assistant reads your latest library when it calls TVCask; old messages won’t update automatically.</p>
         </section>
 
+        {data.supportedScopes?.includes("tvcask:write") && (
+          <section className="surface rounded-[14px] p-5 sm:p-6">
+            <h2 className="font-bold text-white">Update your library from a conversation</h2>
+            <p className="mt-2 text-sm leading-6 text-white/60">With library management enabled, your assistant can update watch status, mark one episode or all previous episodes, and manage custom lists.</p>
+            <blockquote className="mt-4 border-l-2 border-[var(--accent-text)] pl-4 text-sm leading-6 text-white/80">“Mark episodes 1–14 of Dali &amp; Cocky Prince watched in TVCask.”</blockquote>
+            <p className="mt-3 text-sm leading-6 text-white/60">Or ask: “Create a private Weekend dramas list and add the titles we picked.”</p>
+            <p className="mt-4 text-xs leading-5 text-white/50">Already connected with read-only access? Disconnect that connection here, then reconnect in your assistant and check “Also allow library management” on the TVCask consent page. Refresh the assistant’s TVCask tools and start a new chat. If the option is missing, the client must request both tvcask:read and tvcask:write.</p>
+            <p className="mt-3 text-xs leading-5 text-white/50">Review the title, episode range and list before approving a write in your assistant. Marking a show completed also marks its aired episodes watched; making a list public shares its contents.</p>
+          </section>
+        )}
+
         <section aria-labelledby="connections-heading">
           <h2 id="connections-heading" className="mb-3 font-bold text-white">Connected applications</h2>
           {data.items.length === 0 ? (
@@ -99,7 +111,7 @@ export default async function AIConnections({ searchParams }: {
           ) : (
             <ul className="surface divide-y divide-white/10 rounded-[14px]">
               {data.items.map(item => <li key={item.id} className="flex flex-wrap items-center justify-between gap-4 p-5">
-                <div className="min-w-0"><p className="break-words font-semibold text-white">{item.clientName}</p><p className="mt-1 text-xs text-white/50">Read access · Connected {new Date(item.createdAt).toLocaleDateString("en-GB")}</p></div>
+                <div className="min-w-0"><p className="break-words font-semibold text-white">{item.clientName}</p><p className="mt-1 text-xs text-white/50">{item.scope?.split(/\s+/).includes("tvcask:write") ? "Read and manage library" : "Read-only"} · Connected {new Date(item.createdAt).toLocaleDateString("en-GB")}</p></div>
                 <form action={disconnect}>
                   <input type="hidden" name="id" value={item.id} />
                   <SubmitButton pendingLabel="Disconnecting…" aria-label={`Disconnect ${item.clientName}`} className="rounded-full border border-white/15 px-4 py-2 text-sm text-white hover:bg-white/5">Disconnect</SubmitButton>
@@ -112,7 +124,7 @@ export default async function AIConnections({ searchParams }: {
       </>}
 
       <section className="surface divide-y divide-white/10 rounded-[14px]" aria-label="Connection help">
-        <Help title="What can my assistant see?">Your watched and watching titles, watchlist, ratings, favorites, lists, episode progress and watch region, plus the TVCask catalog. It cannot edit your library or account. Your TVCask password is never shared with the assistant.</Help>
+        <Help title="What can my assistant see?">Your watched and watching titles, watchlist, ratings, favorites, lists, episode progress and watch region, plus the TVCask catalog. Library changes require the optional management permission. Account and password changes are never allowed. Your TVCask password is never shared with the assistant.</Help>
         <Help title="I can’t find the custom connection option">Your ChatGPT account or workspace may not allow custom MCP servers. Check the official instructions above or ask your workspace administrator. TVCask doesn’t enable that option inside ChatGPT.</Help>
         <Help title="Connected, but the assistant doesn’t use my library">Start a new conversation and select TVCask with @ before asking. Explicitly ask it to read your TVCask library. If you signed out of all devices or changed your password, reconnect TVCask.</Help>
         <Help title="Can I use another AI assistant?">Yes, if it supports remote MCP over HTTP and OAuth account linking. Use the same server address and approve access through TVCask. Each application gets its own connection.</Help>
