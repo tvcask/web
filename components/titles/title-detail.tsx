@@ -4,7 +4,7 @@ import { TitleDetailClient } from "@/components/titles/title-detail-client";
 export async function TitleDetail({ id }: { id: string }) {
   const [settings, my] = await Promise.all([getSettings(), getMyTitle(id)]);
   const [detail, related] = await Promise.all([
-    getTitleDetail(id, settings.watchRegion || "US"),
+    getTitleDetail(id, settings.watchRegion || "US", true),
     getRelatedTitles(id)
   ]);
   if (!detail) {

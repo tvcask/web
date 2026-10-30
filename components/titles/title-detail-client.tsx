@@ -5,6 +5,7 @@ import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } fr
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Drawer, DrawerContent, DrawerTitle, DrawerDescription, DrawerClose } from "@/components/ui/drawer";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { celebrate } from "@/lib/celebrate";
@@ -18,6 +19,8 @@ import type { TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import type { Episode, Title } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
+
+const EPISODES_PER_PAGE = 50;
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
@@ -67,6 +70,11 @@ export function TitleDetailClient({
   const [favorite, setFavorite] = useState(initial.favorite);
   const [personalRating, setPersonalRating] = useState(initial.rating);
   const [openSeason, setOpenSeason] = useState<number | null>(() => episodes[0]?.seasonNumber ?? null);
+  const [episodeChoice, setEpisodeChoice] = useState<Episode | null>(null);
+  const [episodeSaving, setEpisodeSaving] = useState(false);
+  const [episodeFilter, setEpisodeFilter] = useState("all");
+  const [episodeQuery, setEpisodeQuery] = useState("");
+  const [episodePages, setEpisodePages] = useState<Record<number, number>>({});
   const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
   const returnTo = searchParams.get("returnTo");
   const detailQuery = returnTo?.startsWith("/app/") ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
@@ -89,6 +97,10 @@ export function TitleDetailClient({
     const target = episodes.find((episode) => episode.id === episodeID);
     if (!target) return;
     setOpenSeason(target.seasonNumber);
+    setEpisodeFilter("all");
+    setEpisodeQuery("");
+    const season = episodes.filter(e => e.seasonNumber === target.seasonNumber);
+    setEpisodePages({[target.seasonNumber]: Math.floor(season.findIndex(e => e.id === target.id) / EPISODES_PER_PAGE)});
     requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
   }, [episodes]);
 
@@ -111,18 +123,24 @@ export function TitleDetailClient({
   const isComplete = (set: Set<string>) =>
     !isMovie && episodes.length > 0 && episodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
 
-  function toggleEpisode(ep: Episode) {
+  function toggleEpisode(ep: Episode, choice?: "single" | "through") {
+    if (episodeSaving) return;
     const k = key(ep.seasonNumber, ep.episodeNumber);
     const willWatch = !watched.has(k);
     if (willWatch && !hasAired(ep)) return;
 
-    // Checking an episode that still has several unwatched aired episodes before
-    // it marks the whole run through it in one server call. Otherwise it's a
-    // plain single toggle (and unchecking always is).
+    // Offer an explicit choice when earlier aired episodes are still unwatched.
+    // Unchecking always affects only the selected episode.
     const through = willWatch
       ? airedEpisodes.filter((e) => isAtOrBefore(e, ep) && !watched.has(key(e.seasonNumber, e.episodeNumber)))
       : [];
-    const markThrough = through.length > 1;
+    if (through.length > 1 && choice === undefined) {
+      setEpisodeChoice(ep);
+      return;
+    }
+    setEpisodeChoice(null);
+    setEpisodeSaving(true);
+    const markThrough = choice === "through" && through.length > 1;
 
     const nextWatched = new Set(watched);
     if (markThrough) {
@@ -145,14 +163,17 @@ export function TitleDetailClient({
         episode: ep.episodeNumber
       })
         .then(() =>
-          toast(`Marked ${through.length} earlier episodes`, {
-            action: { label: "Undo", onClick: () => undoMarkThrough(through, prev.watched, nextWatched) }
+          toast(`Marked ${through.length} episodes`, {
+            // Avoid hundreds of individual requests for a large bulk undo.
+            ...(through.length <= 50 ? {
+              action: { label: "Undo", onClick: () => undoMarkThrough(through, prev.watched, nextWatched) }
+            } : {})
           })
         )
         .catch(onSaveError(() => {
           setWatched(prev.watched);
           setTracked(prev.tracked);
-        }));
+        })).finally(() => setEpisodeSaving(false));
       return;
     }
 
@@ -164,7 +185,7 @@ export function TitleDetailClient({
     }).catch(onSaveError(() => {
       setWatched(prev.watched);
       setTracked(prev.tracked);
-    }));
+    })).finally(() => setEpisodeSaving(false));
   }
 
   // Reverse a mark-through. There's no bulk-unmark endpoint, so clear the run
@@ -476,6 +497,25 @@ export function TitleDetailClient({
         {!isMovie ? (
           <div>
             <h2 className="display mb-3 text-base text-white">Episodes</h2>
+            <div className="mb-4 flex flex-wrap gap-2">
+              <input
+                aria-label="Find episode by number or name"
+                placeholder="Episode number or name"
+                value={episodeQuery}
+                onChange={(e) => { setEpisodeQuery(e.target.value); setEpisodePages({}); }}
+                className="min-w-0 flex-1 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white"
+              />
+              <select
+                aria-label="Episode watch status"
+                value={episodeFilter}
+                onChange={(e) => { setEpisodeFilter(e.target.value); setEpisodePages({}); }}
+                className="rounded-xl border border-white/15 bg-[var(--bg)] px-3 py-2 text-sm text-white"
+              >
+                <option value="all">All episodes</option>
+                <option value="unwatched">Unwatched</option>
+                <option value="watched">Watched</option>
+              </select>
+            </div>
             {seasons.length === 0 ? (
               <p className="surface rounded-[14px] p-5 text-white/50">Episode data isn&apos;t available yet.</p>
             ) : (
@@ -484,6 +524,13 @@ export function TitleDetailClient({
                   const airedSeason = seasonEpisodes.filter(hasAired);
                   const seasonWatched = airedSeason.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
                   const allWatched = airedSeason.length > 0 && seasonWatched === airedSeason.length;
+                  const query = episodeQuery.trim().toLowerCase();
+                  const matching = seasonEpisodes.filter((e) => {
+                    const seen = watched.has(key(e.seasonNumber, e.episodeNumber));
+                    return (episodeFilter === "all" || (episodeFilter === "watched" ? seen : !seen)) && (!query || (/^\d+$/.test(query) ? e.episodeNumber === Number(query) : e.name?.toLowerCase().includes(query)));
+                  });
+                  const page = Math.min(episodePages[seasonNumber] ?? 0, Math.max(0, Math.ceil(matching.length / EPISODES_PER_PAGE) - 1));
+                  const visible = matching.slice(page * EPISODES_PER_PAGE, (page + 1) * EPISODES_PER_PAGE);
                   return (
                     <div key={seasonNumber}>
                       <div className="mb-2 flex items-center justify-between rounded-[12px] bg-white/[0.035] px-3 py-2">
@@ -505,7 +552,13 @@ export function TitleDetailClient({
                         </div>
                       </div>
                       {openSeason === seasonNumber ? <div className="flex flex-col">
-                        {seasonEpisodes.map((episode) => {
+                        {matching.length === 0 && <p className="py-4 text-sm text-white/50">No episodes match this filter.</p>}
+                        {matching.length > EPISODES_PER_PAGE && <nav aria-label={`Season ${seasonNumber} episode pages`} className="flex items-center justify-between py-3 text-sm text-white/70">
+                          <button disabled={page === 0} onClick={() => setEpisodePages(p => ({...p,[seasonNumber]:page-1}))} className="disabled:opacity-30">Previous</button>
+                          <span>{page * EPISODES_PER_PAGE + 1}–{Math.min((page + 1) * EPISODES_PER_PAGE,matching.length)} of {matching.length}</span>
+                          <button disabled={(page + 1) * EPISODES_PER_PAGE >= matching.length} onClick={() => setEpisodePages(p => ({...p,[seasonNumber]:page+1}))} className="disabled:opacity-30">Next</button>
+                        </nav>}
+                        {visible.map((episode) => {
                           const isWatched = watched.has(key(episode.seasonNumber, episode.episodeNumber));
                           const future = !hasAired(episode);
                           return (
@@ -530,7 +583,7 @@ export function TitleDetailClient({
                               </Link>
                               <button
                                 onClick={() => toggleEpisode(episode)}
-                                disabled={future && !isWatched}
+                                disabled={episodeSaving || (future && !isWatched)}
                                 className="grid size-7 shrink-0 place-items-center rounded-full transition"
                                 style={
                                   isWatched
@@ -586,6 +639,29 @@ export function TitleDetailClient({
         </p>
       </div>
 
+      <Drawer open={episodeChoice !== null} onOpenChange={(open) => { if (!open) setEpisodeChoice(null); }}>
+        <DrawerContent className="mx-auto max-w-lg p-6 pb-8 text-white">
+          <DrawerTitle className="text-lg font-bold">Mark episode {episodeChoice?.episodeNumber} watched?</DrawerTitle>
+          <DrawerDescription className="mt-2 text-sm text-white/60">
+            Choose only this episode, or also mark every earlier aired episode as watched, including earlier seasons.
+          </DrawerDescription>
+          <div className="mt-5 flex flex-col gap-2">
+            <button
+              className="rounded-full bg-[var(--accent)] px-4 py-3 font-bold text-[var(--on-accent)]"
+              onClick={() => episodeChoice && toggleEpisode(episodeChoice, "single")}
+            >
+              Only this episode
+            </button>
+            <button
+              className="rounded-full border border-white/15 px-4 py-3"
+              onClick={() => episodeChoice && toggleEpisode(episodeChoice, "through")}
+            >
+              This and all previous episodes
+            </button>
+            <DrawerClose className="px-4 py-2 text-white/60">Cancel</DrawerClose>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

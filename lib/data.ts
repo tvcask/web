@@ -228,9 +228,9 @@ export async function searchActors(query: string): Promise<Person[]> {
   return res.items ?? [];
 }
 
-export async function getTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
+export async function getTitleDetail(id: string, region = "US", episodeSummary = false): Promise<TitleDetail | null> {
   try {
-    return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`);
+    return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}${episodeSummary ? "&episodeSummary=true" : ""}`);
   } catch (e) {
     if (!(e instanceof ApiError) || e.status !== 404) {
       throw e;
