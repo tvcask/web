@@ -26,6 +26,9 @@ export async function MarketingFooter({ auth = true }: { auth?: boolean }) {
             <Link href="/import-tv-time" className="block font-bold text-white/55 transition hover:text-white">
               TV Time import
             </Link>
+            <Link href="/tv-time-alternatives" className="block font-bold text-white/55 transition hover:text-white">
+              TV Time alternatives
+            </Link>
             <Link href="/ai" className="block font-bold text-white/55 transition hover:text-white">
               Use with ChatGPT
             </Link>

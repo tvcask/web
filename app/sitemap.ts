@@ -12,6 +12,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date("2026-07-13")
     },
     {
+      url: `${baseUrl}/tv-time-alternatives`,
+      lastModified: new Date("2026-10-31")
+    },
+    {
       url: `${baseUrl}/ai`,
       lastModified: new Date("2026-10-31")
     },
