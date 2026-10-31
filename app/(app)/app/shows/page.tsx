@@ -11,7 +11,7 @@ import { Upcoming } from "@/components/titles/upcoming";
 import { getCalendar, getDiscover, getLibraryPage } from "@/lib/data";
 
 const tabs = [
-  { value: "watchlist", label: "Watch list" },
+  { value: "watchlist", label: "Watching" },
   { value: "upcoming", label: "Upcoming" }
 ];
 
@@ -23,8 +23,9 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
     ? view
     : savedView === "grid" ? "grid" : "list";
 
-  // The watch list is active shows only — completed shows leave it.
-  const status = "watchlist,watching";
+  // An action queue of started shows, like the app. Not started, finished and
+  // dropped shows live in the library, reached from Profile.
+  const status = "watching";
   const { items, total } =
     activeTab === "watchlist" ? await getLibraryPage({ type: "show", status, limit: 40 }) : { items: [], total: 0 };
   const calendar = activeTab === "upcoming" ? await getCalendar() : null;
@@ -59,7 +60,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
       ) : total === 0 ? (
         <EmptyShows />
       ) : (
-        <InfiniteLibrary key={status} type="show" view={activeView} status={status} initial={items} total={total} returnTo={returnTo} />
+        <InfiniteLibrary key={status} type="show" view={activeView} status={status} queue initial={items} total={total} returnTo={returnTo} />
       )}
     </div>
   );
@@ -67,6 +68,19 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
 
 
 async function EmptyShows() {
+  const { total: libraryTotal } = await getLibraryPage({ type: "show", limit: 1 });
+  if (libraryTotal > 0) {
+    return (
+      <div className="surface mx-auto max-w-2xl rounded-[16px] p-8 text-center">
+        <h2 className="display text-xl text-white">Nothing in progress</h2>
+        <p className="mt-2 text-white/50">Start a show from your library and its next episode lands here.</p>
+        <Button asChild className="mt-5">
+          <Link href="/app/library?type=show">Your shows</Link>
+        </Button>
+      </div>
+    );
+  }
+
   const sections = await getDiscover();
   const shows = sections.find((section) => section.items.some((item) => item.type !== "movie"));
 

@@ -3,7 +3,7 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Drawer, DrawerContent, DrawerTitle, DrawerDescription, DrawerClose } from "@/components/ui/drawer";
 import { useSearchParams } from "next/navigation";
@@ -21,6 +21,8 @@ import type { Episode, Title } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
 
 const EPISODES_PER_PAGE = 50;
+// Past this, a single season is split into collapsible air years.
+const LONG_SEASON = 100;
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const key = (s: number, e: number) => `${s}-${e}`;
@@ -66,16 +68,26 @@ export function TitleDetailClient({
     },
     [syncTracked, title.id]
   );
-  const [status, setStatus] = useState(initial.status || (isMovie ? "watchlist" : "watching"));
+  const [status, setStatus] = useState(initial.status || "watchlist");
   const [favorite, setFavorite] = useState(initial.favorite);
   const [personalRating, setPersonalRating] = useState(initial.rating);
-  const [openSeason, setOpenSeason] = useState<number | null>(() => episodes[0]?.seasonNumber ?? null);
+  const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
+  const sections = useMemo(() => episodeSections(episodes), [episodes]);
+  // Open where the viewer actually is: the first section with something left to
+  // watch, or the last one if they've finished the show. Fixed at mount, so
+  // finishing a section doesn't collapse it under them.
+  const isNextUp = (e: Episode) => hasAired(e) && !watched.has(key(e.seasonNumber, e.episodeNumber));
+  const [openSection, setOpenSection] = useState<string | null>(
+    () => (sections.find((s) => s.episodes.some(isNextUp)) ?? sections.at(-1))?.id ?? null
+  );
   const [episodeChoice, setEpisodeChoice] = useState<Episode | null>(null);
   const [episodeSaving, setEpisodeSaving] = useState(false);
   const [episodeFilter, setEpisodeFilter] = useState("all");
   const [episodeQuery, setEpisodeQuery] = useState("");
-  const [episodePages, setEpisodePages] = useState<Record<number, number>>({});
-  const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
+  const [episodePages, setEpisodePages] = useState<Record<string, number>>(() => {
+    const nextUp = sections.find((s) => s.id === openSection)?.episodes.findIndex(isNextUp) ?? -1;
+    return openSection && nextUp > 0 ? { [openSection]: Math.floor(nextUp / EPISODES_PER_PAGE) } : {};
+  });
   const returnTo = searchParams.get("returnTo");
   const detailQuery = returnTo?.startsWith("/app/") ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
 
@@ -90,19 +102,30 @@ export function TitleDetailClient({
   const airedEpisodes = episodes.filter(hasAired);
   const watchedCount = airedEpisodes.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
   const pct = airedEpisodes.length > 0 ? Math.min(100, Math.round((watchedCount / airedEpisodes.length) * 100)) : 0;
-  const seasons = groupSeasons(episodes);
 
   useEffect(() => {
     const episodeID = decodeURIComponent(window.location.hash.slice(1));
     const target = episodes.find((episode) => episode.id === episodeID);
     if (!target) return;
-    setOpenSeason(target.seasonNumber);
+    const section = sections.find((s) => s.episodes.includes(target));
+    if (!section) return;
+    setOpenSection(section.id);
     setEpisodeFilter("all");
     setEpisodeQuery("");
-    const season = episodes.filter(e => e.seasonNumber === target.seasonNumber);
-    setEpisodePages({[target.seasonNumber]: Math.floor(season.findIndex(e => e.id === target.id) / EPISODES_PER_PAGE)});
+    setEpisodePages({ [section.id]: Math.floor(section.episodes.indexOf(target) / EPISODES_PER_PAGE) });
     requestAnimationFrame(() => document.getElementById(target.id)?.scrollIntoView({ block: "center", behavior: "smooth" }));
-  }, [episodes]);
+  }, [episodes, sections]);
+
+  const query = episodeQuery.trim().toLowerCase();
+  const filtering = Boolean(query) || episodeFilter !== "all";
+  const matchingEpisodes = (section: EpisodeSection) =>
+    section.episodes.filter((e) => {
+      const seen = watched.has(key(e.seasonNumber, e.episodeNumber));
+      return (episodeFilter === "all" || (episodeFilter === "watched" ? seen : !seen)) && (!query || (/^\d+$/.test(query) ? e.episodeNumber === Number(query) : e.name?.toLowerCase().includes(query)));
+    });
+  const visibleSections = sections.map((section) => ({ section, matching: matchingEpisodes(section) })).filter(({ matching }) => !filtering || matching.length > 0);
+  // A filter can hide the open section, so fall through to the first one left.
+  const expandedSection = openSection !== null && !visibleSections.some(({ section }) => section.id === openSection) ? (visibleSections[0]?.section.id ?? null) : openSection;
 
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
@@ -154,6 +177,7 @@ export function TitleDetailClient({
     const prev = { watched, tracked };
     setWatched(nextWatched);
     setTracked(true);
+    if (willWatch && status === "watchlist") setStatus("watching");
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
 
@@ -217,6 +241,7 @@ export function TitleDetailClient({
     const prev = { watched, tracked };
     setWatched(nextWatched);
     setTracked(true);
+    if (willWatch && status === "watchlist") setStatus("watching");
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
 
@@ -516,47 +541,48 @@ export function TitleDetailClient({
                 <option value="watched">Watched</option>
               </select>
             </div>
-            {seasons.length === 0 ? (
+            {sections.length === 0 ? (
               <p className="surface rounded-[14px] p-5 text-white/50">Episode data isn&apos;t available yet.</p>
+            ) : visibleSections.length === 0 ? (
+              <p className="py-4 text-sm text-white/50">No episodes match this filter.</p>
             ) : (
               <div className="space-y-5">
-                {seasons.map(([seasonNumber, seasonEpisodes]) => {
-                  const airedSeason = seasonEpisodes.filter(hasAired);
-                  const seasonWatched = airedSeason.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
-                  const allWatched = airedSeason.length > 0 && seasonWatched === airedSeason.length;
-                  const query = episodeQuery.trim().toLowerCase();
-                  const matching = seasonEpisodes.filter((e) => {
-                    const seen = watched.has(key(e.seasonNumber, e.episodeNumber));
-                    return (episodeFilter === "all" || (episodeFilter === "watched" ? seen : !seen)) && (!query || (/^\d+$/.test(query) ? e.episodeNumber === Number(query) : e.name?.toLowerCase().includes(query)));
-                  });
-                  const page = Math.min(episodePages[seasonNumber] ?? 0, Math.max(0, Math.ceil(matching.length / EPISODES_PER_PAGE) - 1));
-                  const visible = matching.slice(page * EPISODES_PER_PAGE, (page + 1) * EPISODES_PER_PAGE);
+                {visibleSections.map(({ section, matching }) => {
+                  const aired = section.episodes.filter(hasAired);
+                  const seenCount = aired.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
+                  const allWatched = aired.length > 0 && seenCount === aired.length;
+                  const expanded = Boolean(query) || expandedSection === section.id;
+                  // A weekly show's year is 52 episodes: not worth a pager for 2 leftover rows.
+                  const paged = matching.length > LONG_SEASON;
+                  const page = paged ? Math.min(episodePages[section.id] ?? 0, Math.ceil(matching.length / EPISODES_PER_PAGE) - 1) : 0;
+                  const visible = paged ? matching.slice(page * EPISODES_PER_PAGE, (page + 1) * EPISODES_PER_PAGE) : matching;
                   return (
-                    <div key={seasonNumber}>
+                    <div key={section.id}>
                       <div className="mb-2 flex items-center justify-between rounded-[12px] bg-white/[0.035] px-3 py-2">
-                        <button type="button" onClick={() => setOpenSeason(openSeason === seasonNumber ? null : seasonNumber)} className="flex flex-1 items-center gap-2 text-left text-sm font-bold text-white" aria-expanded={openSeason === seasonNumber}>
-                          <span className={`text-white/40 transition ${openSeason === seasonNumber ? "rotate-90" : ""}`}>›</span>
-                          Season {seasonNumber}
+                        <button type="button" disabled={Boolean(query)} onClick={() => setOpenSection(expanded ? null : section.id)} className="flex flex-1 items-center gap-2 text-left text-sm font-bold text-white" aria-expanded={expanded}>
+                          <span className={`text-white/40 transition ${expanded ? "rotate-90" : ""}`}>›</span>
+                          {section.label}
                         </button>
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-white/45">
-                            {seasonWatched}/{airedSeason.length}
+                            {seenCount}/{aired.length}
                           </span>
-                          <button
-                            onClick={() => toggleSeason(seasonNumber, airedSeason, allWatched)}
-                            disabled={airedSeason.length === 0}
-                            className="rounded-full bg-white/5 px-3 py-1 text-[11px] font-bold text-white/70 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
-                          >
-                            {allWatched ? "Clear season" : "Mark season"}
-                          </button>
+                          {section.wholeSeason ? (
+                            <button
+                              onClick={() => toggleSeason(section.seasonNumber, aired, allWatched)}
+                              disabled={aired.length === 0}
+                              className="rounded-full bg-white/5 px-3 py-1 text-[11px] font-bold text-white/70 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+                            >
+                              {allWatched ? "Clear season" : "Mark season"}
+                            </button>
+                          ) : null}
                         </div>
                       </div>
-                      {openSeason === seasonNumber ? <div className="flex flex-col">
-                        {matching.length === 0 && <p className="py-4 text-sm text-white/50">No episodes match this filter.</p>}
-                        {matching.length > EPISODES_PER_PAGE && <nav aria-label={`Season ${seasonNumber} episode pages`} className="flex items-center justify-between py-3 text-sm text-white/70">
-                          <button disabled={page === 0} onClick={() => setEpisodePages(p => ({...p,[seasonNumber]:page-1}))} className="disabled:opacity-30">Previous</button>
+                      {expanded ? <div className="flex flex-col">
+                        {paged && <nav aria-label={`${section.label} episode pages`} className="flex items-center justify-between py-3 text-sm text-white/70">
+                          <button disabled={page === 0} onClick={() => setEpisodePages(p => ({...p,[section.id]:page-1}))} className="disabled:opacity-30">Previous</button>
                           <span>{page * EPISODES_PER_PAGE + 1}–{Math.min((page + 1) * EPISODES_PER_PAGE,matching.length)} of {matching.length}</span>
-                          <button disabled={(page + 1) * EPISODES_PER_PAGE >= matching.length} onClick={() => setEpisodePages(p => ({...p,[seasonNumber]:page+1}))} className="disabled:opacity-30">Next</button>
+                          <button disabled={(page + 1) * EPISODES_PER_PAGE >= matching.length} onClick={() => setEpisodePages(p => ({...p,[section.id]:page+1}))} className="disabled:opacity-30">Next</button>
                         </nav>}
                         {visible.map((episode) => {
                           const isWatched = watched.has(key(episode.seasonNumber, episode.episodeNumber));
@@ -640,7 +666,9 @@ export function TitleDetailClient({
       </div>
 
       <Drawer open={episodeChoice !== null} onOpenChange={(open) => { if (!open) setEpisodeChoice(null); }}>
-        <DrawerContent className="mx-auto max-w-lg p-6 pb-8 text-white">
+        {/* A bottom sheet on phones. On desktop it opens over a side panel, so anchor
+          it to the middle of the screen instead of straddling the panel's edge. */}
+        <DrawerContent className="mx-auto max-w-lg p-6 pb-8 text-white sm:top-0 sm:my-auto sm:h-fit sm:rounded-[22px] sm:border sm:pb-6 sm:[--initial-transform:0px] sm:after:!hidden sm:[&>[data-vaul-handle]]:!hidden">
           <DrawerTitle className="text-lg font-bold">Mark episode {episodeChoice?.episodeNumber} watched?</DrawerTitle>
           <DrawerDescription className="mt-2 text-sm text-white/60">
             Choose only this episode, or also mark every earlier aired episode as watched, including earlier seasons.
@@ -686,6 +714,38 @@ function groupSeasons(episodes: Episode[]): [number, Episode[]][] {
   return [...bySeason.entries()]
     .sort((a, b) => a[0] - b[0])
     .map(([season, list]) => [season, list.sort((a, b) => a.episodeNumber - b.episodeNumber)] as [number, Episode[]]);
+}
+
+// A section is a real season, or one air year of a very long one. `wholeSeason`
+// marks which, because the season-wide watched action can't target just a year.
+type EpisodeSection = { id: string; seasonNumber: number; label: string; wholeSeason: boolean; episodes: Episode[] };
+
+// Some long-running shows are catalogued as one season of hundreds of episodes.
+function episodeSections(episodes: Episode[]): EpisodeSection[] {
+  const seasons = groupSeasons(episodes);
+  return seasons.flatMap(([seasonNumber, list]) => {
+    const season = { id: String(seasonNumber), seasonNumber, label: `Season ${seasonNumber}`, wholeSeason: true, episodes: list };
+    if (list.length <= LONG_SEASON) return [season];
+    const years: EpisodeSection[] = [];
+    let year: string | undefined;
+    for (const episode of list) {
+      // An undated episode stays with the one before it, usually a just-announced one.
+      const episodeYear = episode.airDate?.slice(0, 4) ?? year;
+      if (episodeYear !== year || years.length === 0) {
+        year = episodeYear;
+        const yearLabel = year ?? "Undated";
+        years.push({
+          id: `${seasonNumber}-${years.length}`,
+          seasonNumber,
+          label: seasons.length > 1 ? `Season ${seasonNumber} · ${yearLabel}` : yearLabel,
+          wholeSeason: false,
+          episodes: []
+        });
+      }
+      years[years.length - 1].episodes.push(episode);
+    }
+    return years.length > 1 ? years : [season];
+  });
 }
 
 function seededGradient(title: string) {

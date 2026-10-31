@@ -11,12 +11,14 @@ export function TitleRail({
   title,
   items,
   heart = false,
+  count,
   href,
   returnTo
 }: {
   title: string;
   items: RailTitle[];
   heart?: boolean;
+  count?: number;
   href?: string;
   /** Where the title pages send people back to. */
   returnTo: string;
@@ -37,6 +39,11 @@ export function TitleRail({
           />
         ) : null}
         <h2 className="display text-lg text-white">{title}</h2>
+        {count ? (
+          <span className="rounded-full bg-white/8 px-2.5 py-0.5 text-xs font-bold text-white/45">
+            {count.toLocaleString()}
+          </span>
+        ) : null}
         {href ? (
           <Link href={href} className="ml-auto text-white/40 transition hover:text-white" aria-label={`All ${title}`}>
             <HugeiconsIcon icon={ArrowRight01Icon} className="size-5" />
