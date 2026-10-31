@@ -78,20 +78,23 @@ export default function HomePage() {
         </Reveal>
 
         <Reveal>
-          <section className="mx-auto grid max-w-6xl gap-8 px-5 pb-20 pt-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-14">
-            <div>
-              <h2 className="display text-3xl leading-[1.08] text-white md:text-[42px]">
-                Ask ChatGPT what to watch. It knows what you&apos;ve seen.
+          <section className="mx-auto max-w-4xl px-5 pb-20 pt-12 sm:pt-16">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="display text-balance text-3xl leading-[1.08] text-white md:text-[46px]">
+                Your watch history, inside ChatGPT.
               </h2>
-              <p className="mt-4 max-w-md text-[15px] leading-7 text-white/55">
-                Connect your tvcask library and ChatGPT stops suggesting shows you&apos;ve already finished. Also works
-                with other AI assistants that support MCP.
+              <p className="mx-auto mt-4 max-w-xl text-[17px] leading-7 text-white/55">
+                Connect tvcask, then ask what to watch next, where you left off, or how to sort your shows into lists.
               </p>
-              <Link href="/ai" className="mt-5 inline-block text-sm font-bold text-white underline decoration-white/25 underline-offset-4 transition hover:decoration-white">
-                Connect tvcask to ChatGPT
-              </Link>
+              <Button asChild variant="secondary" className="mt-6 h-12 px-6 text-[15px]">
+                <Link href="/ai">
+                  Connect tvcask to ChatGPT <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+                </Link>
+              </Button>
             </div>
-            <AiConversation />
+            <div className="mt-10 sm:mt-12">
+              <AiConversation />
+            </div>
           </section>
         </Reveal>
 
