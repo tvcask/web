@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection, LEGAL_CONTACT } from "@/components/marketing/legal";
 
-const UPDATED = "July 10, 2026";
+const UPDATED = "October 31, 2026";
 
 export const metadata: Metadata = {
   title: "Community Guidelines | tvcask",
@@ -36,9 +36,9 @@ export default function GuidelinesPage() {
 
       <LegalSection title="What you write">
         <p>
-          Fields such as your username, display name, and list names are the parts of tvcask that others could see if
-          sharing features are enabled. Keep them free of the content above. We may remove text that breaks these
-          guidelines.
+          Your username, display name, bio, links, and public lists are visible to other people, and to anyone with
+          the link if you turn on your public page. Keep them free of the content above. We may remove text that breaks
+          these guidelines.
         </p>
       </LegalSection>
 
