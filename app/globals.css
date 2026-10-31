@@ -183,3 +183,12 @@ button:disabled {
     transform: translateX(-50%);
   }
 }
+
+/* vaul slides for 500ms, which reads as lag on something opened this often. Keep
+   in step with CLOSE_MS in detail-drawer.tsx. Attribute selectors because vaul's
+   stylesheet is unlayered and injected at runtime. */
+[data-slot="drawer-content"][data-vaul-drawer],
+[data-slot="drawer-overlay"][data-vaul-overlay][data-vaul-snap-points] {
+  animation-duration: 200ms;
+  transition-duration: 200ms;
+}

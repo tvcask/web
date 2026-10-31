@@ -38,7 +38,7 @@ function DrawerContent({ className, children, ...props }: React.ComponentProps<t
         className={cn(
           "group/drawer-content fixed z-50 flex h-auto flex-col bg-[#0a0a0c] outline-none",
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:max-h-[92dvh] data-[vaul-drawer-direction=bottom]:rounded-t-[22px] data-[vaul-drawer-direction=bottom]:border-t data-[vaul-drawer-direction=bottom]:border-white/[0.08]",
-          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:h-full data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:max-w-[560px] data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-white/[0.08]",
+          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:h-full data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:max-w-[max(560px,min(720px,55vw))] data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-white/[0.08]",
           className
         )}
         {...props}
