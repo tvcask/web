@@ -24,7 +24,7 @@ export function CreditGrid({ label, credits }: { label: string; credits: CreditC
       <div className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-5">
         {visible.map((credit) => (
           <Link key={credit.id} href={credit.href} className="lift min-w-0">
-            <Poster src={credit.posterUrl} title={credit.title} className="rounded-[12px]" />
+            <Poster src={credit.posterUrl} title={credit.title} alt={`${credit.title} poster`} className="rounded-[12px]" />
             <p className="mt-2 truncate text-xs font-bold text-white">{credit.title}</p>
             {credit.character ? <p className="truncate text-[11px] text-white/40">{credit.character}</p> : null}
           </Link>

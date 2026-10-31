@@ -5,6 +5,7 @@ import { CreditGrid } from "@/components/people/credit-grid";
 import { DetailBack } from "@/components/ui/detail-back";
 import { DetailDrawerSpacer, DetailDrawerTitle } from "@/components/ui/detail-drawer";
 import { getPerson, getPersonCredits } from "@/lib/data";
+import { publicTitlePath } from "@/lib/public-urls";
 
 type PersonDetailProps = {
   id: string;
@@ -23,8 +24,8 @@ function formatPersonDates(birthday?: string, deathday?: string): string {
   return deathday ? `${format(birthday)} – ${format(deathday)}` : `Born ${format(birthday)}`;
 }
 
-function titleHref(id: string, mode: PersonDetailProps["mode"], returnTo?: string): string {
-  if (mode === "public") return `/titles/${id}`;
+function titleHref(id: string, title: string, mode: PersonDetailProps["mode"], returnTo?: string): string {
+  if (mode === "public") return publicTitlePath({ id, title });
   const params = new URLSearchParams({ fromDetail: "1" });
   if (returnTo?.startsWith("/app/")) params.set("returnTo", returnTo);
   const query = params.toString();
@@ -42,7 +43,7 @@ export async function PersonDetail({ id, mode, character, titleId, returnTo }: P
     .map((credit) => ({
       id: credit.id,
       type: credit.type,
-      href: titleHref(credit.id, mode, returnTo),
+      href: titleHref(credit.id, credit.title, mode, returnTo),
       title: credit.title,
       posterUrl: credit.posterUrl,
       character: credit.character
@@ -57,7 +58,7 @@ export async function PersonDetail({ id, mode, character, titleId, returnTo }: P
       <div className="flex gap-5 sm:gap-6">
         <div className="relative h-36 w-28 shrink-0 overflow-hidden rounded-[18px] bg-white/[0.06] shadow-xl shadow-black/25 ring-1 ring-white/10 sm:h-[176px] sm:w-[132px]">
           {person.profileUrl ? (
-            <Image src={person.profileUrl} alt="" fill sizes="(min-width: 640px) 132px, 112px" className="object-cover" priority />
+            <Image src={person.profileUrl} alt={person.name} fill sizes="(min-width: 640px) 132px, 112px" className="object-cover" priority />
           ) : (
             <div className="grid h-full place-items-center text-3xl font-extrabold text-white/45">
               {(person.name.trim()[0] ?? "?").toUpperCase()}

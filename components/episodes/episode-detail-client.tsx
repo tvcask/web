@@ -14,6 +14,7 @@ import type { TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import { mutate } from "@/lib/mutate";
 import { patchSavedWatched } from "@/lib/title-view";
+import { publicTitlePath } from "@/lib/public-urls";
 import { toast } from "@/lib/toast";
 import type { Episode } from "@/lib/services/types";
 
@@ -101,7 +102,7 @@ export function EpisodeDetailClient({
   }
 
   const showHref = mode === "public"
-    ? `/titles/${title.id}`
+    ? publicTitlePath(title)
     : `/app/titles/${title.id}${returnTo?.startsWith("/app/") ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
   const meta = [
     episode.airDate ? formatAirDate(episode.airDate) : null,

@@ -21,6 +21,8 @@ type ApiOptions = {
   token?: string | null;
   auth?: boolean; // set false for public endpoints
   signal?: AbortSignal;
+  // Seconds to reuse the response. Only for public data, sent without a token.
+  revalidate?: number;
 };
 
 export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
@@ -34,7 +36,7 @@ export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
         ...(token ? { Authorization: `Bearer ${token}` } : {})
       },
       body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-      cache: "no-store",
+      ...(opts.revalidate ? { next: { revalidate: opts.revalidate } } : { cache: "no-store" as const }),
       // Fail a hung request instead of freezing the page render forever.
       signal: opts.signal
         ? AbortSignal.any([opts.signal, AbortSignal.timeout(15000)])

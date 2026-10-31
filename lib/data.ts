@@ -240,19 +240,27 @@ export async function getTitleDetail(id: string, region = "US", episodeSummary =
   }
 }
 
-// Backs the shareable /titles/[id] page. Skips the auth cookie so the page
-// renders the same whether or not the reader has an account.
+// How long public catalog responses are reused. Skipping the auth cookie is what
+// makes them safe to share between readers.
+const PUBLIC_REVALIDATE = 3600;
+
+// Only a real 404 is "not found". Treating an API blip the same would cache a 404
+// for an hour; throwing lets the last good page keep being served.
 export async function getPublicTitleDetail(id: string, region = "US"): Promise<TitleDetail | null> {
   try {
-    return await api<TitleDetail>(`/v1/titles/${id}?region=${encodeURIComponent(region)}`, { auth: false });
-  } catch {
-    return null;
+    return await api<TitleDetail>(`/v1/titles/${encodeURIComponent(id)}?region=${encodeURIComponent(region)}`, {
+      auth: false,
+      revalidate: PUBLIC_REVALIDATE
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
   }
 }
 
 export async function getPublicTitleCast(id: string): Promise<TitleCast> {
   try {
-    return await api<TitleCast>(`/v1/titles/${encodeURIComponent(id)}/cast`, { auth: false });
+    return await api<TitleCast>(`/v1/titles/${encodeURIComponent(id)}/cast`, { auth: false, revalidate: PUBLIC_REVALIDATE });
   } catch {
     return { items: [], status: "pending" };
   }
@@ -260,7 +268,7 @@ export async function getPublicTitleCast(id: string): Promise<TitleCast> {
 
 export async function getRelatedTitles(id: string): Promise<Title[]> {
   try {
-    const res = await api<{ items: Title[] }>(`/v1/titles/${encodeURIComponent(id)}/related`, { auth: false });
+    const res = await api<{ items: Title[] }>(`/v1/titles/${encodeURIComponent(id)}/related`, { auth: false, revalidate: PUBLIC_REVALIDATE });
     return res.items ?? [];
   } catch {
     return [];
@@ -281,7 +289,7 @@ export async function getEpisodeDetail(titleId: string, episodeId: string): Prom
 
 export async function getPerson(id: string): Promise<Person | null> {
   try {
-    return await api<Person>(`/v1/people/${encodeURIComponent(id)}`, { auth: false });
+    return await api<Person>(`/v1/people/${encodeURIComponent(id)}`, { auth: false, revalidate: PUBLIC_REVALIDATE });
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
@@ -292,7 +300,7 @@ export async function getPersonCredits(id: string): Promise<CreditedTitle[]> {
   try {
     const res = await api<{ items: CreditedTitle[] }>(
       `/v1/people/${encodeURIComponent(id)}/credits`,
-      { auth: false }
+      { auth: false, revalidate: PUBLIC_REVALIDATE }
     );
     return res.items ?? [];
   } catch {
