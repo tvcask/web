@@ -153,20 +153,14 @@ describe("large episode libraries", () => {
         initial={{ ...initial, watched: ["1-3", "1-700"] }}
       />,
     );
-    fireEvent.change(
-      screen.getByRole("combobox", { name: "Episode watch status" }),
-      { target: { value: "watched" } },
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Watched" }));
     expect(screen.getAllByRole("button", { name: /Toggle S01E/ })).toHaveLength(
       2,
     );
     expect(
       screen.getByRole("button", { name: "Toggle S01E700 watched" }),
     ).toBeInTheDocument();
-    fireEvent.change(
-      screen.getByRole("combobox", { name: "Episode watch status" }),
-      { target: { value: "unwatched" } },
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Unwatched" }));
     expect(
       screen.queryByRole("button", { name: "Toggle S01E03 watched" }),
     ).not.toBeInTheDocument();
@@ -293,10 +287,7 @@ describe("large episode libraries", () => {
           initial={{ ...initial, watched: ["1-70"] }}
         />,
       );
-      fireEvent.change(
-        screen.getByRole("combobox", { name: "Episode watch status" }),
-        { target: { value: "watched" } },
-      );
+      fireEvent.click(screen.getByRole("button", { name: "Watched" }));
       expect(row(70)).toBeInTheDocument();
     });
   });

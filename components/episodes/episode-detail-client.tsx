@@ -70,7 +70,7 @@ export function EpisodeDetailClient({
     const prefix = mode === "app" ? "/app" : "";
     const suffix = query.toString();
     window.history.replaceState(null, "", `${prefix}/titles/${title.id}/episodes/${target.id}${suffix ? `?${suffix}` : ""}`);
-    document.querySelector('[data-detail-scroll], [data-episode-scroll]')?.scrollTo({ top: 0, behavior: "smooth" });
+    (document.querySelector("[data-detail-scroll]") ?? window).scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function toggleWatched() {
@@ -110,11 +110,11 @@ export function EpisodeDetailClient({
   ].filter(Boolean).join(" · ");
 
   return (
-    <article data-episode-scroll className="min-h-0 overflow-y-auto overscroll-contain">
+    <article>
       <DetailDrawerTitle>{hideFutureDetails ? title.title : episode.name || title.title}</DetailDrawerTitle>
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-white/[0.04]">
+      <div className="relative h-[220px] w-full overflow-hidden bg-white/[0.04] sm:h-[280px]">
         {!hideFutureDetails && episode.stillUrl ? (
-          <Image src={episode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 720px" className="object-cover" priority />
+          <Image src={episode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 720px" className="object-cover object-[center_30%]" priority />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-transparent to-black/20" />
       </div>

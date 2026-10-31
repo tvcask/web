@@ -1,11 +1,12 @@
 "use client";
 
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { ArrowRight01Icon, Cancel01Icon, FavouriteIcon, PlusSignIcon, Search01Icon, Share01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { DetailDrawerTitle } from "@/components/ui/detail-drawer";
+import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { celebrate } from "@/lib/celebrate";
@@ -23,6 +24,8 @@ import { Poster } from "@/components/titles/poster";
 
 const EPISODES_PER_PAGE = 50;
 const OFFER_MS = 7000;
+const DRAWER_HEADER_PX = 56;
+const WATCH_FILTERS = [["all", "All"], ["unwatched", "Unwatched"], ["watched", "Watched"]] as const;
 // Past this, a single season is split into collapsible air years.
 const LONG_SEASON = 100;
 
@@ -341,8 +344,8 @@ export function TitleDetailClient({
   function selectTab(next: TitleView["tab"]) {
     setTab(next);
     const scroller = hero.current?.closest("[data-detail-scroll]");
-    const heroHeight = hero.current?.offsetHeight ?? 0;
-    if (scroller && scroller.scrollTop > heroHeight) scroller.scrollTop = heroHeight;
+    const stuckAt = (hero.current?.offsetHeight ?? 0) - DRAWER_HEADER_PX;
+    if (scroller && scroller.scrollTop > stuckAt) scroller.scrollTop = stuckAt;
   }
 
   const tabs: [TitleView["tab"], string][] = [
@@ -378,7 +381,7 @@ export function TitleDetailClient({
         </div>
       </div>
 
-      <div role="tablist" aria-label="Title sections" className="nos sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#0a0a0c] px-6 py-3 sm:px-8">
+      <div role="tablist" aria-label="Title sections" className="nos sticky top-14 z-10 flex gap-2 overflow-x-auto bg-[#0a0a0c] px-6 py-3 sm:px-8">
         {tabs.map(([value, label]) => (
           <button
             key={value}
@@ -586,31 +589,37 @@ export function TitleDetailClient({
         {tab === "episodes" && !isMovie ? (
           <div>
             <h2 className="sr-only">Episodes</h2>
-            <div className="mb-4 flex flex-wrap gap-2">
-              <input
-                aria-label="Find episode by number or name"
-                placeholder="Episode number or name"
-                value={episodeQuery}
-                onChange={(e) => { setEpisodeQuery(e.target.value); setEpisodePages({}); }}
-                className="min-w-0 flex-1 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white"
-              />
-              <select
-                aria-label="Episode watch status"
-                value={episodeFilter}
-                onChange={(e) => { setEpisodeFilter(e.target.value); setEpisodePages({}); }}
-                className="rounded-xl border border-white/15 bg-[var(--bg)] px-3 py-2 text-sm text-white"
-              >
-                <option value="all">All episodes</option>
-                <option value="unwatched">Unwatched</option>
-                <option value="watched">Watched</option>
-              </select>
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[200px] flex-1">
+                <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-white/35" />
+                <Input
+                  aria-label="Find episode by number or name"
+                  placeholder="Number or name"
+                  value={episodeQuery}
+                  onChange={(e) => { setEpisodeQuery(e.target.value); setEpisodePages({}); }}
+                  className="pl-10"
+                />
+              </div>
+              <div role="group" aria-label="Episode watch status" className="flex gap-1 rounded-full bg-white/[0.04] p-1">
+                {WATCH_FILTERS.map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={episodeFilter === value}
+                    onClick={() => { setEpisodeFilter(value); setEpisodePages({}); }}
+                    className={`cask-focus rounded-full px-3.5 py-1.5 text-[13px] font-bold transition ${episodeFilter === value ? "accent-fill" : "text-white/60 hover:text-white"}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
             {sections.length === 0 ? (
               <p className="surface rounded-[14px] p-5 text-white/50">Episode data isn&apos;t available yet.</p>
             ) : visibleSections.length === 0 ? (
               <p className="py-4 text-sm text-white/50">No episodes match this filter.</p>
             ) : (
-              <div className="space-y-5">
+              <div className="space-y-2">
                 {visibleSections.map(({ section, matching }) => {
                   const aired = section.episodes.filter(hasAired);
                   const seenCount = aired.filter((e) => watched.has(key(e.seasonNumber, e.episodeNumber))).length;
@@ -622,27 +631,31 @@ export function TitleDetailClient({
                   const visible = paged ? matching.slice(page * EPISODES_PER_PAGE, (page + 1) * EPISODES_PER_PAGE) : matching;
                   return (
                     <div key={section.id}>
-                      <div className="mb-2 flex items-center justify-between rounded-[12px] bg-white/[0.035] px-3 py-2">
-                        <button type="button" disabled={Boolean(query)} onClick={() => setOpenSection(expanded ? null : section.id)} className="flex flex-1 items-center gap-2 text-left text-sm font-bold text-white" aria-expanded={expanded}>
-                          <span className={`text-white/40 transition ${expanded ? "rotate-90" : ""}`}>›</span>
-                          {section.label}
-                        </button>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-white/45">
-                            {seenCount}/{aired.length}
-                          </span>
+                      <div className="overflow-hidden rounded-[12px] bg-white/[0.035]">
+                        <div className="flex items-center gap-2 pr-2">
+                          <button type="button" disabled={Boolean(query)} onClick={() => setOpenSection(expanded ? null : section.id)} className="cask-focus flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-[12px] pl-3 pr-1 text-left text-sm font-bold text-white transition hover:bg-white/[0.02]" aria-expanded={expanded}>
+                            <HugeiconsIcon icon={ArrowRight01Icon} className={`size-3.5 shrink-0 text-white/40 transition-transform duration-150 ${expanded ? "rotate-90" : ""}`} />
+                            {section.label}
+                            <span className={`ml-auto text-xs font-semibold ${allWatched ? "text-[var(--accent-text)]" : "text-white/45"}`}>
+                              {seenCount}/{aired.length}
+                            </span>
+                          </button>
                           {section.wholeSeason ? (
                             <button
                               onClick={() => toggleSeason(section.seasonNumber, aired, allWatched)}
                               disabled={aired.length === 0}
-                              className="rounded-full bg-white/5 px-3 py-1 text-[11px] font-bold text-white/70 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+                              className="cask-focus rounded-full bg-white/5 px-3 py-1 text-[11px] font-bold text-white/70 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
                             >
                               {allWatched ? "Clear season" : "Mark season"}
                             </button>
                           ) : null}
                         </div>
+                        {/* The rule doubles as the section's progress bar, like the app. */}
+                        <div className="h-0.5 bg-white/[0.05]" aria-hidden>
+                          <div className="h-full bg-[var(--accent)]" style={{ width: `${aired.length ? (seenCount / aired.length) * 100 : 0}%` }} />
+                        </div>
                       </div>
-                      {expanded ? <div className="flex flex-col">
+                      {expanded ? <div className="mb-3 mt-1 flex flex-col">
                         {paged && <nav aria-label={`${section.label} episode pages`} className="flex items-center justify-between py-3 text-sm text-white/70">
                           <button disabled={page === 0} onClick={() => setEpisodePages(p => ({...p,[section.id]:page-1}))} className="disabled:opacity-30">Previous</button>
                           <span>{page * EPISODES_PER_PAGE + 1}–{Math.min((page + 1) * EPISODES_PER_PAGE,matching.length)} of {matching.length}</span>

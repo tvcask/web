@@ -2,8 +2,8 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight01Icon, FavouriteIcon, PlusSignIcon, Settings01Icon, UserAdd01Icon, ViewIcon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Poster } from "@/components/titles/poster";
 import { TitleRail } from "@/components/titles/title-rail";
+import { ListCard } from "@/components/lists/list-card";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ProfileHero, heroActionClass, heroControlClass } from "@/components/social/profile-hero";
 import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
@@ -134,32 +134,16 @@ function ListsSection({ lists, total }: { lists: UserListDetail[]; total: number
         >
           <HugeiconsIcon icon={PlusSignIcon} className="size-4" />
         </Link>
+        {total > lists.length ? (
+          <Link href="/app/lists" className="text-white/40 transition hover:text-white" aria-label="All lists">
+            <HugeiconsIcon icon={ArrowRight01Icon} className="size-5" />
+          </Link>
+        ) : null}
       </div>
 
       {lists.length > 0 ? (
         <div className="grid gap-3 md:grid-cols-2">
-          {lists.map((list) => (
-            <Link key={list.id} href={`/app/lists/${list.id}`} className="surface rounded-[14px] p-4 transition hover:bg-white/[0.04]">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-white">{list.name}</p>
-                  <p className="mt-1 text-xs font-semibold text-white/40">{(list.itemCount ?? list.items.length).toLocaleString()} titles</p>
-                </div>
-                <HugeiconsIcon icon={ArrowRight01Icon} className="mt-0.5 size-5 shrink-0 text-white/30" />
-              </div>
-              {list.items.length > 0 ? (
-                <div className="mt-3 flex -space-x-3">
-                  {list.items.slice(0, 5).map((item) => (
-                    <div key={item.id} className="w-[46px] overflow-hidden rounded-[8px] ring-2 ring-[#11100e]">
-                      <Poster src={item.title.posterUrl} title={item.title.title} className="rounded-[8px]" />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-sm text-white/45">No titles yet.</p>
-              )}
-            </Link>
-          ))}
+          {lists.map((list) => <ListCard key={list.id} list={list} />)}
         </div>
       ) : (
         <div className="surface rounded-[14px] p-5">

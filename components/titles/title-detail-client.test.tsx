@@ -36,6 +36,14 @@ describe("PersonDetail", () => {
     );
   });
 
+  it("separates series from movies", async () => {
+    vi.mocked(getPersonCredits).mockResolvedValue([credit, { ...credit, id: "m1", title: "A Film", type: "movie" as const }]);
+    render(await PersonDetail({ id: "42", mode: "public" }));
+
+    expect(screen.getByRole("heading", { name: "Series" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Movies" })).toBeInTheDocument();
+  });
+
   it("uses public title links on shareable actor pages", async () => {
     render(await PersonDetail({ id: "42", mode: "public" }));
 
@@ -45,6 +53,6 @@ describe("PersonDetail", () => {
   it("does not repeat the title used to open the actor", async () => {
     render(await PersonDetail({ id: "42", mode: "public", titleId: "t1" }));
 
-    expect(screen.queryByText("Filmography")).not.toBeInTheDocument();
+    expect(screen.queryByText("Series")).not.toBeInTheDocument();
   });
 });

@@ -23,6 +23,11 @@ export function DetailDrawerTitle({ children }: { children: React.ReactNode }) {
   return slot ? createPortal(children, slot) : null;
 }
 
+/** Clears the floating header on pages that have no artwork for it to sit on. */
+export function DetailDrawerSpacer() {
+  return useInDetailDrawer() ? <div className="h-8 sm:h-6" /> : null;
+}
+
 function drawerLabel(pathname: string): string {
   if (pathname.includes("/episodes/")) return "Episode details";
   if (pathname.includes("/people/")) return "Actor details";
@@ -131,13 +136,18 @@ export function DetailDrawer({ children }: { children: React.ReactNode }) {
       >
         <DrawerTitle className="sr-only">{drawerLabel(pathname)}</DrawerTitle>
 
-        <header className="grid h-14 shrink-0 grid-cols-[5rem_minmax(0,1fr)_5rem] items-center border-b border-white/[0.06] px-3 sm:px-4">
+        <div className="relative flex min-h-0 flex-1 flex-col">
+        {/* Floats over the artwork and turns solid once you scroll, like the app's
+            top nav. Click-through except its buttons, so the wheel still scrolls. */}
+        <header
+          className={`pointer-events-none absolute inset-x-0 top-0 z-20 grid h-14 grid-cols-[5rem_minmax(0,1fr)_5rem] items-center border-b px-3 transition-colors duration-150 sm:px-4 ${scrolled ? "border-white/[0.06] bg-[#0c0c0f]/90 backdrop-blur-xl" : "border-transparent"}`}
+        >
           <div>
             {canGoBack ? (
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="cask-focus group inline-flex min-h-9 items-center gap-1 rounded-full pl-1.5 pr-3 text-sm font-bold text-white/60 transition hover:bg-white/5 hover:text-white"
+                className="cask-focus group pointer-events-auto inline-flex min-h-9 items-center gap-1 rounded-full bg-black/50 pl-1.5 pr-3 text-sm font-bold text-white/85 backdrop-blur transition hover:bg-black/70 hover:text-white"
               >
                 <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4 transition-transform group-hover:-translate-x-0.5" />
                 Back
@@ -149,7 +159,7 @@ export function DetailDrawer({ children }: { children: React.ReactNode }) {
             className={`display truncate text-center text-sm text-white transition-opacity duration-150 ${scrolled ? "opacity-100" : "opacity-0"}`}
           />
           <DrawerClose
-            className="cask-focus grid size-9 place-items-center justify-self-end rounded-full bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
+            className="cask-focus pointer-events-auto grid size-9 place-items-center justify-self-end rounded-full bg-black/50 text-white/85 backdrop-blur transition hover:bg-black/70 hover:text-white"
             aria-label="Close details"
           >
             <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
@@ -166,6 +176,7 @@ export function DetailDrawer({ children }: { children: React.ReactNode }) {
           <div ref={content}>
             <DrawerHeaderContext.Provider value={{ titleSlot }}>{children}</DrawerHeaderContext.Provider>
           </div>
+        </div>
         </div>
       </DrawerContent>
     </Drawer>
