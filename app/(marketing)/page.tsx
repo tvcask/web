@@ -1,12 +1,19 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
+import { AiConversation } from "@/components/marketing/ai-conversation";
 import { MarketingHeader } from "@/components/marketing/header";
 import { HeroProductPreview, MobileAppSection, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import { Reveal } from "@/components/marketing/reveal";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter } from "@/components/marketing/footer";
+
+const aiHighlights = [
+  "Recommendations that skip what you've already seen",
+  "Sort your library into lists from a chat",
+  "Read-only unless you allow changes"
+];
 
 const worksToday = [
   "Track shows and movies episode by episode",
@@ -73,6 +80,42 @@ export default function HomePage() {
 
         <Reveal>
           <MobileAppSection />
+        </Reveal>
+
+        <Reveal>
+          <section className="mx-auto max-w-6xl px-5 pb-10">
+            <div className="surface relative overflow-hidden rounded-[18px] p-5 sm:p-8">
+              <div
+                className="absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(211,158,94,0.14),transparent_38%)]"
+                aria-hidden
+              />
+              <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:items-center">
+                <div className="min-w-0">
+                  <p className="eyebrow" style={{ color: "var(--accent-text)" }}>
+                    Works with ChatGPT
+                  </p>
+                  <h2 className="display mt-2 max-w-xl text-2xl leading-tight text-white md:text-3xl">
+                    Your history, in the conversation.
+                  </h2>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-white/52">
+                    Connect tvcask and your assistant can check what you&apos;ve actually watched before it answers.
+                  </p>
+                  <div className="mt-5 space-y-2.5">
+                    {aiHighlights.map((item) => (
+                      <div key={item} className="flex items-center gap-3 text-sm font-semibold text-white/62">
+                        <HugeiconsIcon icon={Tick02Icon} className="size-4 shrink-0" style={{ color: "var(--accent-text)" }} />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <Link href="/ai" className="mt-6 inline-flex items-center text-sm font-bold text-white transition hover:text-white/70">
+                    See how it works <HugeiconsIcon icon={ArrowRight02Icon} className="ml-1.5 size-4" />
+                  </Link>
+                </div>
+                <AiConversation />
+              </div>
+            </div>
+          </section>
         </Reveal>
 
         <Reveal>
