@@ -61,7 +61,14 @@ export function ShareButton({
         title={iconOnly ? "Share" : undefined}
       >
         <HugeiconsIcon icon={Share01Icon} className={iconOnly ? "size-[18px]" : "size-4"} />
-        {iconOnly ? null : "Share"}
+        {/* Named for what it does: phones get the share sheet, desktops a copied link.
+            In CSS rather than state so the server and client render the same thing. */}
+        {iconOnly ? null : (
+          <>
+            <span className="pointer-coarse:hidden">Copy link</span>
+            <span className="hidden pointer-coarse:inline">Share</span>
+          </>
+        )}
       </button>
 
       {blocker ? (

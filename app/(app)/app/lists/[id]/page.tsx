@@ -10,7 +10,7 @@ import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getList, getSettings, type UserListDetail } from "@/lib/data";
-import { publicListPath } from "@/lib/public-page-paths";
+import { publicListPath, publicUrl } from "@/lib/public-page-paths";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formatListAsText } from "@/lib/list-text";
 
@@ -30,6 +30,10 @@ export default async function ListPage({
   if (list.userId !== viewer?.id) {
     return <PublicListView list={list} returnTo={returnTo} />;
   }
+
+  // Only true once a stranger could actually open it, so copied text never carries
+  // a link that 404s.
+  const linkIsLive = list.isPublic && settings.publicPage && !settings.privateProfile && Boolean(viewer?.username);
 
   return (
     <div className="mx-auto max-w-[980px] space-y-6">
@@ -72,13 +76,8 @@ export default async function ListPage({
             <p className="eyebrow">Titles</p>
             <p className="display mt-2 text-3xl text-white">{list.items.length.toLocaleString()}</p>
             {list.importedFrom ? <p className="mt-2 text-sm font-semibold text-white/40">Imported from TV Time</p> : null}
-            {list.items.length > 0 ? (
-              <div className="mt-5">
-                <CopyListButton text={formatListAsText(list)} />
-              </div>
-            ) : null}
             {list.items.length > 0 && viewer?.username ? (
-              <div className="mt-2">
+              <div className="mt-5">
                 <ShareButton
                   path={publicListPath(list.id)}
                   title={list.name}
@@ -93,8 +92,14 @@ export default async function ListPage({
                     confirmLabel: "Make public and share",
                     confirm: publishListAction.bind(null, list.id, list.isPublic)
                   } : undefined}
-                  className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 px-4 text-sm font-bold text-white/70 transition hover:bg-white/5 hover:text-white"
+                  className="accent-fill cask-focus inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-bold"
                 />
+              </div>
+            ) : null}
+            {/* Never asks to publish anything: this is the private way to share. */}
+            {list.items.length > 0 ? (
+              <div className={viewer?.username ? "mt-2" : "mt-5"}>
+                <CopyListButton text={formatListAsText(list, linkIsLive ? publicUrl(publicListPath(list.id)) : undefined)} />
               </div>
             ) : null}
             <form action={deleteListAction} className="mt-6">
