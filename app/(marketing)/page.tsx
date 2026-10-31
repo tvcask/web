@@ -81,14 +81,14 @@ export default function HomePage() {
           <section className="mx-auto grid max-w-6xl gap-8 px-5 pb-20 pt-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-14">
             <div>
               <h2 className="display text-3xl leading-[1.08] text-white md:text-[42px]">
-                Ask your AI what to watch. It knows what you&apos;ve seen.
+                Ask ChatGPT what to watch. It knows what you&apos;ve seen.
               </h2>
               <p className="mt-4 max-w-md text-[15px] leading-7 text-white/55">
-                Connect tvcask to ChatGPT and it checks your library before it answers. In one run, it sorted 35
-                K-dramas into their lists. It stays read-only unless you say otherwise.
+                Connect your tvcask library and ChatGPT stops suggesting shows you&apos;ve already finished. Also works
+                with other AI assistants that support MCP.
               </p>
               <Link href="/ai" className="mt-5 inline-block text-sm font-bold text-white underline decoration-white/25 underline-offset-4 transition hover:decoration-white">
-                See how it works
+                Connect tvcask to ChatGPT
               </Link>
             </div>
             <AiConversation />

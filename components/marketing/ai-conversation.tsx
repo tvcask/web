@@ -11,6 +11,7 @@ const SORTED = [
 export function AiConversation() {
   return (
     <figure className="min-w-0">
+      <p className="mb-2 text-xs font-bold text-white/45">In ChatGPT</p>
       <blockquote className="rounded-[16px] bg-white/[0.06] px-4 py-3 text-[15px] leading-6 text-white/85">
         Look at my tvcask library and tell me which K-dramas belong in my custom lists.
       </blockquote>
