@@ -26,7 +26,7 @@ function DrawerClose(props: React.ComponentProps<typeof DrawerPrimitive.Close>) 
 }
 
 function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
-  return <DrawerPrimitive.Overlay data-slot="drawer-overlay" className={cn("fixed inset-0 z-40 bg-black/60", className)} {...props} />;
+  return <DrawerPrimitive.Overlay data-slot="drawer-overlay" className={cn("fixed inset-0 z-50 bg-black/60", className)} {...props} />;
 }
 
 function DrawerContent({ className, children, ...props }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
@@ -43,8 +43,9 @@ function DrawerContent({ className, children, ...props }: React.ComponentProps<t
         )}
         {...props}
       >
-        {/* Grab handle — bottom sheet only. */}
-        <DrawerPrimitive.Handle className="mx-auto mt-2.5 shrink-0 !bg-white/25 group-data-[vaul-drawer-direction=right]/drawer-content:hidden" />
+        {/* Grab handle, bottom sheet only. Important because vaul's own unlayered
+            CSS sets its display and beats a plain utility. */}
+        <DrawerPrimitive.Handle className="mx-auto mt-2.5 shrink-0 !bg-white/25 group-data-[vaul-drawer-direction=right]/drawer-content:!hidden" />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

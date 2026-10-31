@@ -157,6 +157,127 @@ describe("large episode libraries", () => {
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(mutate).not.toHaveBeenCalled();
   });
+  describe("air year sections", () => {
+    // 2010: E1-60, 2011: E61-120, plus an undated E121 announced after them.
+    const dated = Array.from({ length: 121 }, (_, i) => ({
+      ...episodes[i],
+      airDate: i === 120 ? null : i < 60 ? "2010-07-11" : "2011-03-06",
+    }));
+    const row = (n: number) =>
+      screen.queryByRole("button", {
+        name: `Toggle S01E${String(n).padStart(2, "0")} watched`,
+      });
+
+    it("splits a long season by air year, keeping episode numbers", () => {
+      render(
+        <TitleDetailClient title={title} episodes={dated} initial={initial} />,
+      );
+      expect(screen.getByRole("button", { name: /2010/ })).toHaveAttribute(
+        "aria-expanded",
+        "true",
+      );
+      expect(screen.getByRole("button", { name: /2011/ })).toHaveAttribute(
+        "aria-expanded",
+        "false",
+      );
+      expect(screen.queryByRole("button", { name: "Mark season" })).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: /2011/ }));
+      expect(row(1)).toBeNull();
+      expect(row(61)).toBeInTheDocument();
+      // The undated episode stays with the year before it, and a section this
+      // size is shown whole rather than paged.
+      expect(row(121)).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Next" })).toBeNull();
+    });
+    it("leaves short seasons and single-year seasons alone", () => {
+      const { unmount } = render(
+        <TitleDetailClient
+          title={title}
+          episodes={dated.slice(0, 100)}
+          initial={initial}
+        />,
+      );
+      expect(screen.getByRole("button", { name: /Season 1/ })).toBeInTheDocument();
+      unmount();
+      render(
+        <TitleDetailClient title={title} episodes={episodes} initial={initial} />,
+      );
+      expect(screen.getByRole("button", { name: /Season 1/ })).toBeInTheDocument();
+    });
+    it("opens on the next unwatched episode's year and page", () => {
+      const watched = dated.slice(0, 115).map((e) => `1-${e.episodeNumber}`);
+      render(
+        <TitleDetailClient
+          title={title}
+          episodes={dated}
+          initial={{ ...initial, watched }}
+        />,
+      );
+      expect(screen.getByRole("button", { name: /2011/ })).toHaveAttribute(
+        "aria-expanded",
+        "true",
+      );
+      expect(row(116)).toBeInTheDocument();
+    });
+    it("opens a long unsplit season on the next unwatched episode's page", () => {
+      const watched = episodes.slice(0, 700).map((e) => `1-${e.episodeNumber}`);
+      render(
+        <TitleDetailClient
+          title={title}
+          episodes={episodes}
+          initial={{ ...initial, watched }}
+        />,
+      );
+      expect(row(701)).toBeInTheDocument();
+      expect(row(1)).toBeNull();
+    });
+    it("search reaches into collapsed years", () => {
+      render(
+        <TitleDetailClient title={title} episodes={dated} initial={initial} />,
+      );
+      fireEvent.change(
+        screen.getByRole("textbox", { name: "Find episode by number or name" }),
+        { target: { value: "70" } },
+      );
+      expect(row(70)).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /2010/ })).toBeNull();
+    });
+    it("a watch filter falls through to the first year with a match", () => {
+      render(
+        <TitleDetailClient
+          title={title}
+          episodes={dated}
+          initial={{ ...initial, watched: ["1-70"] }}
+        />,
+      );
+      fireEvent.change(
+        screen.getByRole("combobox", { name: "Episode watch status" }),
+        { target: { value: "watched" } },
+      );
+      expect(row(70)).toBeInTheDocument();
+    });
+  });
+  it("tracks a new show as not started, then watching once an episode is marked", () => {
+    vi.mocked(mutate).mockClear();
+    render(
+      <TitleDetailClient
+        title={title}
+        episodes={episodes.slice(0, 1)}
+        initial={{ tracked: false, status: "", favorite: false, watched: [] }}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Track show/ }));
+    expect(mutate).toHaveBeenCalledWith("me/titles", "POST", {
+      titleId: "show",
+      status: "watchlist",
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Toggle S01E01 watched" }),
+    );
+    expect(screen.getByRole("button", { name: "Watching" })).toHaveClass(
+      "accent-fill",
+    );
+  });
   it("moves to the next bounded page", () => {
     render(
       <TitleDetailClient title={title} episodes={episodes} initial={initial} />,

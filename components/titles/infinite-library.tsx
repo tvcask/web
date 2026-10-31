@@ -16,6 +16,7 @@ export function InfiniteLibrary({
   view,
   status,
   favorite,
+  queue = false,
   initial,
   total,
   returnTo
@@ -24,6 +25,8 @@ export function InfiniteLibrary({
   view: "grid" | "list";
   status?: string;
   favorite?: boolean;
+  /** The Shows screen's action queue, rather than a browsable library page. */
+  queue?: boolean;
   initial: UserTitleWithTitle[];
   total: number;
   returnTo: string;
@@ -31,12 +34,12 @@ export function InfiniteLibrary({
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useLibrary({ type, status, favorite, initial, total });
   const { markComplete, removeLocally } = useCompleteFromLibrary(type, status, favorite);
   const items = data.pages.flatMap((page) => page.items);
-  // Grid and list are layouts for the same actionable show watchlist, so it
-  // holds only what someone might watch next. Completed and dropped are both
-  // finished with, for opposite reasons. The nextEpisode guard also hides
-  // legacy completed records with incomplete episode rows from before
-  // completed shows populated their watched history.
-  const visibleItems = type === "show"
+  // Grid and list are layouts for the same queue, so it holds only what someone
+  // might watch next. Completed and dropped are both finished with, for opposite
+  // reasons. The nextEpisode guard also hides legacy completed records with
+  // incomplete episode rows from before completed shows populated their watched
+  // history.
+  const visibleItems = queue
     ? items.filter(
         (item) => item.status !== "completed" && item.status !== "dropped" && item.nextEpisode != null
       )
@@ -63,7 +66,7 @@ export function InfiniteLibrary({
 
   return (
     <>
-      {type === "show" && visibleItems.length === 0 && !hasNextPage ? (
+      {queue && visibleItems.length === 0 && !hasNextPage ? (
         <div className="surface mx-auto max-w-2xl rounded-[16px] p-8 text-center">
           <h2 className="display text-xl text-white">You&apos;re all caught up</h2>
           <p className="mt-2 text-white/50">Nothing left to watch right now. New episodes will show up here.</p>
