@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { api, ApiError } from "@/lib/api";
 import { TOKEN_COOKIE } from "@/lib/auth/constants";
-import type { ImportRecord } from "@/lib/data";
+import type { ImportRecord, UserListDetail } from "@/lib/data";
 import { isWatchRegion } from "@/lib/regions";
 
 type AuthResponse = { token: string; expiresAt: string };
@@ -89,18 +89,28 @@ export async function resetPasswordAction(formData: FormData) {
   redirect("/login?reset=1");
 }
 
+const PUBLIC_PROFILE_FIELDS = ["bio", "instagram", "letterboxd", "website"] as const;
+
 export async function updateProfileAction(formData: FormData) {
-  const body: { name?: string; username?: string; avatarUrl?: string } = {};
+  const body: Record<string, string> = {};
   const name = formData.get("name");
   const username = formData.get("username");
   const avatarUrl = formData.get("avatarUrl");
   if (typeof name === "string" && name.trim()) body.name = name.trim();
   if (typeof username === "string" && username.trim()) body.username = username.trim();
   if (typeof avatarUrl === "string") body.avatarUrl = avatarUrl.trim();
+  // Sent even when empty, which is how they get cleared.
+  for (const field of PUBLIC_PROFILE_FIELDS) {
+    const value = formData.get(field);
+    if (typeof value === "string") body[field] = value;
+  }
   try {
     await api("/v1/me", { method: "PATCH", body });
   } catch (e) {
-    const reason = e instanceof ApiError && e.status === 409 ? "username" : "profile";
+    const invalidField = e instanceof ApiError && e.status === 400
+      ? PUBLIC_PROFILE_FIELDS.find((field) => e.message.toLowerCase().includes(field))
+      : undefined;
+    const reason = e instanceof ApiError && e.status === 409 ? "username" : (invalidField ?? "profile");
     redirect(`/app/profile/edit?error=${reason}`);
   }
   revalidatePath("/app/profile");
@@ -198,6 +208,26 @@ export async function updateListAction(formData: FormData) {
   revalidatePath("/app/profile");
   revalidatePath(`/app/lists/${id}`);
   redirect(`/app/lists/${id}?saved=1`);
+}
+
+// Turns on what a shared link needs, so Share can go ahead straight after. A list
+// keeps its name and description: the update replaces them.
+export async function publishListAction(listId: string, listPublic: boolean) {
+  if (!listPublic) {
+    const list = await api<UserListDetail>(`/v1/lists/${listId}`);
+    await api(`/v1/me/lists/${listId}`, {
+      method: "PATCH",
+      body: { name: list.name, description: list.description ?? "", isPublic: true }
+    });
+  }
+  await enablePublicPageAction();
+  revalidatePath(`/app/lists/${listId}`);
+}
+
+export async function enablePublicPageAction() {
+  await api("/v1/me/settings", { method: "PATCH", body: { publicPage: true } });
+  revalidatePath("/app/profile");
+  revalidatePath("/app/profile/edit");
 }
 
 export async function deleteListAction(formData: FormData) {

@@ -7,6 +7,10 @@ export type SessionUser = {
   email: string;
   username?: string;
   avatarUrl?: string;
+  bio?: string;
+  instagram?: string;
+  letterboxd?: string;
+  website?: string;
   emailVerified?: boolean;
   // Ride along on /v1/me so the profile header does not need a second request
   // to the by-handle social endpoint just to render two numbers.
