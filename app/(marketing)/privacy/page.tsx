@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection, LEGAL_CONTACT } from "@/components/marketing/legal";
 
-const UPDATED = "July 13, 2026";
+const UPDATED = "October 31, 2026";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | tvcask",
-  description: "How tvcask collects, uses, and protects your data — and how to delete it.",
+  description: "How tvcask collects, uses, and protects your data, and how to delete it.",
   alternates: { canonical: "/privacy" },
   openGraph: {
     title: "Privacy Policy | tvcask",
-    description: "How tvcask collects, uses, and protects your data — and how to delete it.",
+    description: "How tvcask collects, uses, and protects your data, and how to delete it.",
     type: "website",
     url: "/privacy"
   }
@@ -38,22 +38,38 @@ export default function PrivacyPage() {
         <LegalList
           items={[
             <>
-              <b className="text-white/80">Account details</b> — your email address, a display name, an optional
+              <b className="text-white/80">Account details</b>: your email address, a display name, an optional
               username, and an optional avatar image URL. Your password is stored only as a salted hash; we never see
               it in plain text.
             </>,
             <>
-              <b className="text-white/80">Your library</b> — the shows and movies you track, their status
+              <b className="text-white/80">Profile details</b>: an optional bio, Instagram and Letterboxd usernames,
+              and a website link.
+            </>,
+            <>
+              <b className="text-white/80">Your library</b>: the shows and movies you track, their status
               (watchlist, watching, watched), episodes you mark watched, ratings, favorites, and any lists you create.
             </>,
             <>
-              <b className="text-white/80">Imported data</b> — when you import a TV Time export, we read the shows,
+              <b className="text-white/80">Social activity</b>: who you follow, who you block, reports you submit, and
+              your notifications.
+            </>,
+            <>
+              <b className="text-white/80">Device details</b>: if you allow notifications on iOS, a push token and
+              your device platform, so we can send them to you.
+            </>,
+            <>
+              <b className="text-white/80">AI connections</b>: if you connect an AI assistant, the name of that
+              assistant, the permissions you approved, and when you connected it.
+            </>,
+            <>
+              <b className="text-white/80">Imported data</b>: when you import a TV Time export, we read the shows,
               movies, watched episodes, favorites, and lists needed to recreate your history. Official TV Time GDPR
               archives can contain unrelated account, login, device, and network files. tvcask does not open or use
               those files.
             </>,
             <>
-              <b className="text-white/80">Basic technical logs</b> — standard server logs (such as request times and
+              <b className="text-white/80">Basic technical logs</b>: standard server logs (such as request times and
               error diagnostics) used to keep the service reliable and secure.
             </>
           ]}
@@ -70,10 +86,59 @@ export default function PrivacyPage() {
             "To create and secure your account and sign you in.",
             "To store and display your tracked shows, movies, episodes, lists, and stats.",
             "To match your titles against catalog data and show artwork and episode details.",
+            "To show your profile, lists, and activity to others, as described below.",
             "To send account emails you request, such as email verification and password resets.",
+            "To send notifications you allow, such as new followers and new episodes.",
+            "To give an AI assistant access to your library, if you connect one.",
             "To keep the service running, debug problems, prevent abuse, and respond to support requests."
           ]}
         />
+      </LegalSection>
+
+      <LegalSection title="What other people can see">
+        <p>
+          Your email address and password are never shown to other people. What else is visible depends on your
+          settings.
+        </p>
+        <p>
+          <b className="text-white/80">Other tvcask members.</b> Unless your profile is private, anyone signed in to
+          tvcask can find you by name or username and see your profile: your username, display name, avatar, follower
+          counts, stats, badges, library, and public lists. Following someone takes effect immediately, with no approval
+          step. People who follow you also see recent activity in their feed, including the titles you track, their
+          status, your progress, favorites, and ratings, along with new public lists.
+        </p>
+        <p>
+          <b className="text-white/80">Anyone with a link.</b> If you turn on your public page, which is off by default,
+          anyone with the link can see your name, username, avatar, bio, links, and public lists, including each
+          list&rsquo;s name, description, and titles, without an account. They cannot see your email address, watch
+          history, library, stats, badges, or followers. We ask search engines not to index these pages.
+        </p>
+        <p>You control this:</p>
+        <LegalList
+          items={[
+            <>
+              <b className="text-white/80">Private profile</b>: turning this on hides your profile, activity, and public
+              page from everyone but you, and overrides your public page setting.
+            </>,
+            <>
+              <b className="text-white/80">Public page</b>: turning this off makes your page and its list links stop
+              working right away.
+            </>,
+            <>
+              <b className="text-white/80">Lists</b>: new lists are private unless you make them public, and you can
+              change this for each list.
+            </>,
+            <>
+              <b className="text-white/80">Blocking</b>: blocking someone hides your profile from them while they are
+              signed in. It cannot apply to someone viewing your public page without an account.
+            </>
+          ]}
+        />
+        <p>
+          Once something has been public, we cannot control copies other people made, such as screenshots, copied text,
+          or link previews saved by messaging apps. Links on your public page go to other sites, which have their own
+          privacy policies.
+        </p>
       </LegalSection>
 
       <LegalSection title="Administrative access">
@@ -92,16 +157,25 @@ export default function PrivacyPage() {
         <LegalList
           items={[
             <>
-              <b className="text-white/80">TMDB</b> — we query The Movie Database for catalog data (titles, posters,
-              episodes). We send search terms and title identifiers, not your personal details.
+              <b className="text-white/80">TMDB and TheTVDB</b>: we query these services for catalog data (titles,
+              posters, episodes). We send search terms and title identifiers, not your personal details.
             </>,
             <>
-              <b className="text-white/80">Email delivery</b> — a transactional email provider sends verification and
+              <b className="text-white/80">Email delivery</b>: a transactional email provider sends verification and
               password-reset messages to your address.
             </>,
             <>
-              <b className="text-white/80">Hosting</b> — our servers and database run with a cloud hosting provider on
+              <b className="text-white/80">Hosting</b>: our servers and database run with a cloud hosting provider on
               our behalf.
+            </>,
+            <>
+              <b className="text-white/80">Push notifications</b>: if you allow notifications, Expo and Apple deliver
+              them. They receive your push token and the notification text.
+            </>,
+            <>
+              <b className="text-white/80">AI assistants you connect</b>: if you connect one, such as ChatGPT, it can
+              read your library and, if you approved it, change your library. Its provider handles that data under its
+              own privacy policy. You can disconnect it at any time in Settings &rarr; AI connections.
             </>
           ]}
         />
@@ -120,12 +194,12 @@ export default function PrivacyPage() {
         <LegalList
           items={[
             <>
-              <b className="text-white/80">Delete your account in the app</b> — Settings &rarr; Security &rarr; Delete
+              <b className="text-white/80">Delete your account in the app</b>: Settings &rarr; Security &rarr; Delete
               account (or the equivalent on the web). This permanently removes your account and all of your tracking
               data and cannot be undone.
             </>,
             <>
-              <b className="text-white/80">By email</b> — write to{" "}
+              <b className="text-white/80">By email</b>: write to{" "}
               <a href={`mailto:${LEGAL_CONTACT}`} className="font-semibold text-[color:var(--accent-text)]">
                 {LEGAL_CONTACT}
               </a>{" "}

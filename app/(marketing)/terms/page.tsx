@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection, LEGAL_CONTACT } from "@/components/marketing/legal";
 
-const UPDATED = "July 10, 2026";
+const UPDATED = "October 31, 2026";
 
 export const metadata: Metadata = {
   title: "Terms of Service | tvcask",
@@ -53,8 +53,8 @@ export default function TermsPage() {
 
       <LegalSection title="Your content">
         <p>
-          Your library, lists, and profile details are yours. You grant us the limited permission needed to store and
-          display them back to you so the service works. You can delete your content at any time by deleting your
+          Your library, lists, and profile details are yours. You grant us the limited permission needed to store them, display
+          them back to you, and show them to other people as your settings allow, so the service works. You can delete your content at any time by deleting your
           account.
         </p>
       </LegalSection>

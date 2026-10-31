@@ -504,7 +504,7 @@ export function TitleDetailClient({
 
         <section>
           <div className="mb-3 flex items-end justify-between gap-3">
-            <div><h2 className="display text-base text-white">Your rating</h2><p className="mt-1 text-xs text-white/40">Private to you until you choose to share it.</p></div>
+            <div><h2 className="display text-base text-white">Your rating</h2><p className="mt-1 text-xs text-white/40">People who follow you can see your rating, unless your profile is private.</p></div>
             {personalRating ? <span className="display text-xl text-[var(--accent-text)]">{personalRating}/10</span> : null}
           </div>
           <div className="nos flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Rate this title out of 10">
