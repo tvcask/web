@@ -2,13 +2,15 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowLeft01Icon, Delete02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { deleteListAction, removeListItemAction, updateListAction } from "@/app/actions";
+import { deleteListAction, publishListAction, removeListItemAction, updateListAction } from "@/app/actions";
+import { ShareButton } from "@/components/public-page/share-button";
 import { CopyListButton } from "@/components/lists/copy-list-button";
 import { Poster } from "@/components/titles/poster";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { getList, type UserListDetail } from "@/lib/data";
+import { getList, getSettings, type UserListDetail } from "@/lib/data";
+import { publicListPath, publicUrl } from "@/lib/public-page-paths";
 import { getCurrentUser } from "@/lib/auth/session";
 import { formatListAsText } from "@/lib/list-text";
 
@@ -19,7 +21,7 @@ export default async function ListPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ saved?: string; returnTo?: string }>;
 }) {
-  const [{ id }, { saved, returnTo }, viewer] = await Promise.all([params, searchParams, getCurrentUser()]);
+  const [{ id }, { saved, returnTo }, viewer, settings] = await Promise.all([params, searchParams, getCurrentUser(), getSettings()]);
   const list = await getList(id);
   if (!list) notFound();
 
@@ -28,6 +30,10 @@ export default async function ListPage({
   if (list.userId !== viewer?.id) {
     return <PublicListView list={list} returnTo={returnTo} />;
   }
+
+  // Only true once a stranger could actually open it, so copied text never carries
+  // a link that 404s.
+  const linkIsLive = list.isPublic && settings.publicPage && !settings.privateProfile && Boolean(viewer?.username);
 
   return (
     <div className="mx-auto max-w-[980px] space-y-6">
@@ -70,9 +76,30 @@ export default async function ListPage({
             <p className="eyebrow">Titles</p>
             <p className="display mt-2 text-3xl text-white">{list.items.length.toLocaleString()}</p>
             {list.importedFrom ? <p className="mt-2 text-sm font-semibold text-white/40">Imported from TV Time</p> : null}
-            {list.items.length > 0 ? (
+            {list.items.length > 0 && viewer?.username ? (
               <div className="mt-5">
-                <CopyListButton text={formatListAsText(list)} />
+                <ShareButton
+                  path={publicListPath(list.id)}
+                  title={list.name}
+                  blocker={settings.privateProfile ? {
+                    title: "Your profile is private",
+                    message: "A private profile stays hidden from everyone, including its public lists. Turn it off in settings to share this.",
+                    href: "/app/settings",
+                    hrefLabel: "Privacy settings"
+                  } : !list.isPublic || !settings.publicPage ? {
+                    title: "Share this list?",
+                    message: `${list.isPublic ? "This turns on your public page." : "This makes the list public and turns on your public page."} Anyone with the link will see this list, plus your name, bio, links and other public lists. Never your history or stats.`,
+                    confirmLabel: "Make public and share",
+                    confirm: publishListAction.bind(null, list.id, list.isPublic)
+                  } : undefined}
+                  className="accent-fill cask-focus inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-bold"
+                />
+              </div>
+            ) : null}
+            {/* Never asks to publish anything: this is the private way to share. */}
+            {list.items.length > 0 ? (
+              <div className={viewer?.username ? "mt-2" : "mt-5"}>
+                <CopyListButton text={formatListAsText(list, linkIsLive ? publicUrl(publicListPath(list.id)) : undefined)} />
               </div>
             ) : null}
             <form action={deleteListAction} className="mt-6">

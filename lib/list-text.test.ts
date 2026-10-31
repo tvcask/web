@@ -15,6 +15,12 @@ describe("formatListAsText", () => {
     ).toBe("My K-Dramas (2 titles)\n\nFavorites to recommend\n\n- Moving (2023)\n- Reply 1988");
   });
 
+  it("ends with the link when there is one", () => {
+    expect(
+      formatListAsText({ name: "Next up", items: [{ title: { title: "Monster" } }] }, "https://tvcask.com/lists/1"),
+    ).toBe("Next up (1 title)\n\n- Monster\n\nhttps://tvcask.com/lists/1");
+  });
+
   it("uses the singular label and drops blank descriptions", () => {
     expect(
       formatListAsText({

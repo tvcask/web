@@ -4,9 +4,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { TitleRail } from "@/components/titles/title-rail";
 import { ListCard } from "@/components/lists/list-card";
+import { ShareButton, type ShareBlocker } from "@/components/public-page/share-button";
+import { enablePublicPageAction } from "@/app/actions";
+import { publicPagePath } from "@/lib/public-page-paths";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ProfileHero, heroActionClass, heroControlClass } from "@/components/social/profile-hero";
-import { getBadges, getLibrary, getLibraryPage, getList, getLists, getStats, type UserListDetail } from "@/lib/data";
+import { getBadges, getLibrary, getLibraryPage, getList, getLists, getSettings, getStats, type UserListDetail } from "@/lib/data";
 import { duration } from "@/lib/dates";
 
 export default async function ProfilePage() {
@@ -22,6 +25,23 @@ export default async function ProfilePage() {
     getLists()
   ]);
   const listDetails = (await Promise.all(lists.slice(0, 6).map((list) => getList(list.id)))).filter(Boolean) as UserListDetail[];
+
+  const settings = await getSettings();
+  const shareBlocker: ShareBlocker | undefined = settings.privateProfile
+    ? {
+        title: "Your profile is private",
+        message: "A private profile stays hidden from everyone, including on your public page. Turn it off in settings to share it.",
+        href: "/app/settings",
+        hrefLabel: "Privacy settings"
+      }
+    : settings.publicPage
+      ? undefined
+      : {
+          title: "Turn on your public page?",
+          message: "Anyone with the link will be able to see your name, bio, links and public lists. Never your history or stats.",
+          confirmLabel: "Turn on and share",
+          confirm: enablePublicPageAction
+        };
 
   const displayName = user?.name || user?.email?.split("@")[0] || "you";
   const allShows = showsPage.items;
@@ -68,6 +88,15 @@ export default async function ProfilePage() {
               >
                 <HugeiconsIcon icon={ViewIcon} className="size-[18px]" />
               </Link>
+            ) : null}
+            {user?.username ? (
+              <ShareButton
+                path={publicPagePath(user.username)}
+                title={displayName}
+                iconOnly
+                className={heroControlClass}
+                blocker={shareBlocker}
+              />
             ) : null}
             <Link href="/app/people" aria-label="Find people" className={heroControlClass}>
               <HugeiconsIcon icon={UserAdd01Icon} className="size-[18px]" />

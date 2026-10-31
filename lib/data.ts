@@ -49,6 +49,7 @@ export type Settings = {
   theme: string;
   titlesInLanguage: boolean;
   privateProfile: boolean;
+  publicPage: boolean;
   followAlerts: boolean;
   newEpisodeAlerts: boolean;
   badgeAlerts: boolean;

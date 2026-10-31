@@ -7,11 +7,11 @@ type TextList = {
 };
 
 /** Format a list for pasting into messages, notes, or any other text field. */
-export function formatListAsText(list: TextList): string {
+export function formatListAsText(list: TextList, link?: string): string {
   const count = list.items.length;
   const heading = `${list.name} (${count.toLocaleString()} ${count === 1 ? "title" : "titles"})`;
   const description = list.description?.trim();
   const titles = list.items.map(({ title }) => `- ${title.title}${title.year ? ` (${title.year})` : ""}`);
 
-  return [heading, description, titles.join("\n")].filter(Boolean).join("\n\n");
+  return [heading, description, titles.join("\n"), link].filter(Boolean).join("\n\n");
 }
