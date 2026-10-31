@@ -1,10 +1,9 @@
 import { Poster } from "@/components/titles/poster";
 
-// From a real run on a real library, so keep it true if it's ever edited.
 const SORTED = [
-  { title: "Dali & Cocky Prince", list: "Falling Hard", poster: "https://image.tmdb.org/t/p/w342/r6X8JNFfgiq91MDtXBm3fzzmyGB.jpg" },
-  { title: "Doctor Slump", list: "Cozy Hearts", poster: "https://image.tmdb.org/t/p/w342/iOWmbZEbhvrYyWm6O4W3oHf2S9B.jpg" },
-  { title: "Oh My Ghost", list: "Love, Laughs & Chaos", poster: "https://image.tmdb.org/t/p/w342/fOcfOZn9jFQqUdBznfMDPkgXEik.jpg" },
+  { title: "Severance", list: "Mind Games", poster: "https://image.tmdb.org/t/p/w342/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg" },
+  { title: "The Bear", list: "Found Family", poster: "https://image.tmdb.org/t/p/w342/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg" },
+  { title: "Demon Slayer", list: "Anime Hall of Fame", poster: "https://image.tmdb.org/t/p/w342/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg" },
   { title: "Taxi Driver", list: "No Mercy", poster: "https://image.tmdb.org/t/p/w342/lghfb8beej1aH9ML8QyeSixniom.jpg" }
 ];
 
@@ -13,7 +12,7 @@ export function AiConversation() {
     <figure className="min-w-0">
       <blockquote className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-[16px] bg-white/[0.06] px-4 py-3 text-[15px] leading-6 text-white/85">
         <span className="text-xs font-bold text-white/45">In ChatGPT</span>
-        <span className="min-w-0">Look at my tvcask library and tell me which K-dramas belong in my custom lists.</span>
+        <span className="min-w-0">Look at my tvcask library and tell me which shows belong in my custom lists.</span>
       </blockquote>
       <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4">
         {SORTED.map((show) => (
@@ -25,7 +24,7 @@ export function AiConversation() {
         ))}
       </ul>
       <figcaption className="mt-5 text-center text-xs leading-5 text-white/35 sm:mt-10">
-        What ChatGPT suggested in a real conversation, shortened. Other AI assistants that support MCP can connect too.
+        An example of what you can ask. Other AI assistants that support MCP can connect too.
       </figcaption>
     </figure>
   );
