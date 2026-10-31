@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { celebrate } from "@/lib/celebrate";
+import { toast } from "@/lib/toast";
 import type { UserTitleWithTitle } from "@/lib/services/types";
 
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
@@ -48,15 +49,17 @@ export function UpNextCard({
     mutationFn: async () => {
       // Wait alongside a short delay so the check animation always plays.
       const [res] = await Promise.all([
-        fetch(`/api/v1/me/titles/${item.title.id}/next`, { method: "POST" })
-          .then((r) => r.json() as Promise<NextResponse>)
-          .catch(() => null),
+        fetch(`/api/v1/me/titles/${item.title.id}/next`, { method: "POST" }).then((r) => {
+          if (!r.ok) throw new Error(`mark next failed: ${r.status}`);
+          return r.json() as Promise<NextResponse>;
+        }),
         new Promise((resolve) => setTimeout(resolve, 420))
       ]);
       return res;
     },
+    onError: () => toast("Couldn't save your change. Try again."),
     onSuccess: (res) => {
-      if (!res || res.completed || res.nextEpisode == null) {
+      if (res.completed || res.nextEpisode == null) {
         celebrate(item.title.title);
         onComplete?.(item.id);
         return;
