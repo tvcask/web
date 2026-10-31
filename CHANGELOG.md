@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.12.0](https://github.com/tvcask/web/compare/tvcask-web-v0.11.0...tvcask-web-v0.12.0) (2026-10-31)
+
+
+### Features
+
+* add public profile and list pages ([e875c2e](https://github.com/tvcask/web/commit/e875c2e2ebc413d8349e9a401db63629d20b554c))
+* add public profile and list pages ([5b4746e](https://github.com/tvcask/web/commit/5b4746e4c41551309380a69e1661c20d84e853e1))
+* **lists:** separate copy link from copy as text ([6e12572](https://github.com/tvcask/web/commit/6e125727b4a94c6894c32410f39e6a95c4858fd3))
+* **marketing:** add AI section to landing page ([f39f7e2](https://github.com/tvcask/web/commit/f39f7e269a9c8e37b1f8bcac875bcfddd9b5ce98))
+* **marketing:** add AI section to landing page ([3494597](https://github.com/tvcask/web/commit/34945973ac5947b9a02c7c505c3a1ff681da1ccb))
+* **marketing:** add ChatGPT connection page ([a0d74d7](https://github.com/tvcask/web/commit/a0d74d7c80157b1152cc591d18aca4d6f867d3e3))
+* **marketing:** add ChatGPT connection page ([a9cf85f](https://github.com/tvcask/web/commit/a9cf85f4d1cffea0594e2dc8a55f18a6f94d4810))
+* **marketing:** add TV Time alternatives comparison page ([d9aab6d](https://github.com/tvcask/web/commit/d9aab6dd8de6cf2074cccf913286cfda0386b488))
+* **marketing:** add TV Time alternatives comparison page ([8f0ab65](https://github.com/tvcask/web/commit/8f0ab6514a2b7fd0542b71ffeae0cc41c5512b42))
+* **marketing:** center AI section with a clear headline and button ([3638e97](https://github.com/tvcask/web/commit/3638e97b67033b3e3c2a2006823822a9fe337705))
+* **marketing:** open the ChatGPT page with setup steps ([3baae72](https://github.com/tvcask/web/commit/3baae72a16144f717a8b99f1bfe32932915b3aeb))
+* **marketing:** open the ChatGPT page with setup steps ([9cab11d](https://github.com/tvcask/web/commit/9cab11da34a02a4444d9562e715545f99d7e55af))
+* **marketing:** rebuild AI section around real posters ([e15bdf4](https://github.com/tvcask/web/commit/e15bdf4392957e85d7a1e8dc4c8294a2c3017f1b))
+* **marketing:** use a mix of genres in AI section ([56efc89](https://github.com/tvcask/web/commit/56efc89d8892cf872392ab8e62f7a66cb7acbdc5))
+* **public:** redesign title and actor pages with cacheable readable urls ([f7b67fa](https://github.com/tvcask/web/commit/f7b67fa56689aeaa0457d5311e31e938afe9a201))
+* **public:** redesign title and actor pages with cacheable readable urls ([904f1f3](https://github.com/tvcask/web/commit/904f1f3ae5031f4f493b377a6cdae128b5234bc4))
+
+
+### Bug Fixes
+
+* **marketing:** make the ChatGPT connection clear on landing ([2b75e50](https://github.com/tvcask/web/commit/2b75e50ce457a371f95f4896d9e68c4a2a59e0bf))
+* organize long shows and library by progress ([e911461](https://github.com/tvcask/web/commit/e9114610799a1eec57fa6d19850a173883c73353))
+* organize long shows and library by progress ([795fd12](https://github.com/tvcask/web/commit/795fd124407406d0f142f014513c71fba4cfd224))
+* polish detail drawer, actor page and lists ([368f384](https://github.com/tvcask/web/commit/368f384e60560d61f11f3951758bf0b905ab99b5))
+* reopen detail drawer after a full page load ([8396876](https://github.com/tvcask/web/commit/8396876379d6bf72300021a4ac4a03d9227198ef))
+
 ## [0.11.0](https://github.com/tvcask/web/compare/tvcask-web-v0.10.0...tvcask-web-v0.11.0) (2026-10-29)
 
 
