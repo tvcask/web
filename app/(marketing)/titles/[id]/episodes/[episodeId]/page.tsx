@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { EpisodeDetail } from "@/components/episodes/episode-detail";
+import { Providers } from "@/components/providers";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const detail = await getEpisodeDetail(titleId, episodeId);
   if (!detail) return { title: `Episode not found | ${site.displayName}` };
   const name = detail.episode.name || `Episode ${detail.episode.episodeNumber}`;
-  const title = `${name} — ${detail.title.title} | ${site.displayName}`;
+  const title = `${name} · ${detail.title.title} | ${site.displayName}`;
   const description = detail.episode.overview?.trim().slice(0, 200) || `Explore ${name} from ${detail.title.title} on ${site.displayName}.`;
   const url = `/titles/${titleId}/episodes/${episodeId}`;
   return {
     title,
     description,
     alternates: { canonical: url },
+    // Many episodes have no synopsis yet, and thin pages drag down the good ones.
+    robots: detail.episode.overview?.trim() ? undefined : { index: false },
     openGraph: {
       title,
       description,
@@ -43,7 +46,10 @@ export default async function PublicEpisodePage({ params }: Params) {
       <MarketingHeader />
       <main className="mx-auto w-full max-w-2xl px-5 pb-16 pt-8 sm:pb-20">
         <section className="overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0a0a0c]">
-          <EpisodeDetail titleId={titleId} episodeId={episodeId} mode="public" />
+          {/* The client component shares its code with the app, which needs React Query. */}
+          <Providers>
+            <EpisodeDetail titleId={titleId} episodeId={episodeId} mode="public" />
+          </Providers>
           <div className="mx-5 mb-7 flex flex-col gap-3 border-t border-white/[0.08] pt-6 sm:mx-8 sm:flex-row sm:items-center">
             <div className="min-w-0 flex-1"><p className="display text-lg text-white">Never lose your place</p><p className="mt-1 text-sm text-white/55">Track episodes and see what to watch next.</p></div>
             <Button asChild className="h-11 px-5"><Link href="/signup">Create account</Link></Button>

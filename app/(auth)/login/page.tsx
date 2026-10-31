@@ -8,12 +8,12 @@ import { hasActiveSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; reset?: string; returnTo?: string }> }) {
-  if (await hasActiveSession()) {
-    redirect("/app/shows");
-  }
-
   const { error, reset, returnTo } = await searchParams;
   const safeReturnTo = typeof returnTo === "string" && (returnTo.startsWith("/app/") || returnTo.startsWith("/connect?")) ? returnTo : "";
+  // Public pages link here for everyone, so anyone signed in should carry on.
+  if (await hasActiveSession()) {
+    redirect(safeReturnTo || "/app/shows");
+  }
   return (
     <AuthCard
       title="Welcome back"

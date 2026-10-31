@@ -5,8 +5,10 @@ import { Logo } from "@/components/marketing/logo";
 import { getToken } from "@/lib/api";
 import { site } from "@/lib/site";
 
-export async function MarketingFooter() {
-  const isAuthenticated = Boolean(await getToken());
+// Cached public pages pass auth={false}, because reading the cookie would make every
+// request render fresh.
+export async function MarketingFooter({ auth = true }: { auth?: boolean }) {
+  const isAuthenticated = auth && Boolean(await getToken());
 
   return (
     <footer className="border-t border-white/[0.06]">

@@ -8,6 +8,7 @@ import { PublicShell } from "@/components/public-page/public-shell";
 import { Poster } from "@/components/titles/poster";
 import { Avatar } from "@/components/ui/avatar";
 import { getPublicList, publicListPath, publicPagePath } from "@/lib/public-page";
+import { publicTitlePath } from "@/lib/public-urls";
 import { site } from "@/lib/site";
 
 type Params = { params: Promise<{ id: string }> };
@@ -54,8 +55,8 @@ export default async function PublicListPage({ params }: Params) {
       {list.titles.length > 0 ? (
         <div className="mt-8 grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-5">
           {list.titles.map((title) => (
-            <Link key={title.id} href={`/titles/${title.id}`} className="lift min-w-0">
-              <Poster src={title.posterUrl} title={title.title} className="rounded-[12px]" />
+            <Link key={title.id} href={publicTitlePath(title)} className="lift min-w-0">
+              <Poster src={title.posterUrl} title={title.title} alt={`${title.title} poster`} className="rounded-[12px]" />
               <p className="mt-2 truncate text-xs font-bold text-white/85">{title.title}</p>
               {title.year ? <p className="text-[11px] text-white/40">{title.year}</p> : null}
             </Link>

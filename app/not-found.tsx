@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { MarketingFooter } from "@/components/marketing/footer";
-import { MarketingHeader } from "@/components/marketing/header";
+import { PublicHeader } from "@/components/public-page/public-header";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
     <>
-      <MarketingHeader />
+      {/* Part of every route's tree, so reading a cookie here would stop public pages being cached. */}
+      <PublicHeader />
       <main className="mx-auto flex min-h-[64vh] max-w-4xl items-center px-5 py-16 sm:py-24">
         <section className="w-full text-center">
           <p className="display text-5xl text-[color:var(--accent-text)] sm:text-6xl">
@@ -28,7 +29,7 @@ export default function NotFound() {
           </div>
         </section>
       </main>
-      <MarketingFooter />
+      <MarketingFooter auth={false} />
     </>
   );
 }
