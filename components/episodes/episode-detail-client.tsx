@@ -9,9 +9,11 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Poster } from "@/components/titles/poster";
+import { DetailDrawerTitle, useInDetailDrawer } from "@/components/ui/detail-drawer";
 import type { TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import { mutate } from "@/lib/mutate";
+import { patchSavedWatched } from "@/lib/title-view";
 import { toast } from "@/lib/toast";
 import type { Episode } from "@/lib/services/types";
 
@@ -36,6 +38,7 @@ export function EpisodeDetailClient({
   initial?: EpisodeTracking;
 }) {
   const router = useRouter();
+  const inDrawer = useInDetailDrawer();
   const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState(episodeId);
   const [watched, setWatched] = useState(() => new Set(initial?.watched ?? []));
@@ -67,7 +70,7 @@ export function EpisodeDetailClient({
     const prefix = mode === "app" ? "/app" : "";
     const suffix = query.toString();
     window.history.replaceState(null, "", `${prefix}/titles/${title.id}/episodes/${target.id}${suffix ? `?${suffix}` : ""}`);
-    document.querySelector('[data-episode-scroll]')?.scrollTo({ top: 0, behavior: "smooth" });
+    document.querySelector('[data-detail-scroll], [data-episode-scroll]')?.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function toggleWatched() {
@@ -87,6 +90,7 @@ export function EpisodeDetailClient({
     })
       .then(() => {
         toast(isWatched ? "Marked unwatched" : "Marked watched");
+        patchSavedWatched(title.id, [...nextWatched]);
         void queryClient.invalidateQueries({ queryKey: ["library"] });
       })
       .catch(() => {
@@ -107,15 +111,18 @@ export function EpisodeDetailClient({
 
   return (
     <article data-episode-scroll className="min-h-0 overflow-y-auto overscroll-contain">
+      <DetailDrawerTitle>{hideFutureDetails ? title.title : episode.name || title.title}</DetailDrawerTitle>
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-white/[0.04]">
         {!hideFutureDetails && episode.stillUrl ? (
-          <Image src={episode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 560px" className="object-cover" priority />
+          <Image src={episode.stillUrl} alt="" fill sizes="(max-width: 640px) 100vw, 720px" className="object-cover" priority />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-transparent to-black/20" />
       </div>
 
       <div key={episode.id} className="episode-detail-enter px-5 pb-10 sm:px-8">
-        {fromTitle && mode === "app" ? (
+        {fromTitle && inDrawer ? (
+          <div className="h-4" />
+        ) : fromTitle && mode === "app" ? (
           <button type="button" onClick={() => router.back()} className="group mx-auto -mt-4 mb-5 flex max-w-[90%] items-center gap-2 rounded-full bg-[#0a0a0c] px-3 py-2 text-sm font-bold text-white/65 ring-1 ring-white/10 transition hover:text-white">
             <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4 transition-transform group-hover:-translate-x-0.5" /> Back to {title.title}
           </button>

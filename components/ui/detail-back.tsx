@@ -3,9 +3,12 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
+import { useInDetailDrawer } from "@/components/ui/detail-drawer";
 
 export function DetailBack({ label }: { label: string }) {
   const router = useRouter();
+  // The drawer's header already has a Back button.
+  if (useInDetailDrawer()) return null;
   return (
     <button
       type="button"

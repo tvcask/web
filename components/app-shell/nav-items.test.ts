@@ -17,6 +17,10 @@ describe("title detail navigation context", () => {
     expect(activeLabel("/app/titles/123", returnTo)).toBe(label);
   });
 
+  it("keeps the same tab lit when a drawer moves from a title to an actor", () => {
+    expect(activeLabel("/app/people/42", "/app/shows?tab=watchlist")).toBe("Shows");
+  });
+
   it("keeps people search under Explore", () => {
     expect(activeLabel("/app/people")).toBe("Explore");
   });

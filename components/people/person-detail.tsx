@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Poster } from "@/components/titles/poster";
 import { DetailBack } from "@/components/ui/detail-back";
+import { DetailDrawerTitle } from "@/components/ui/detail-drawer";
 import { getPerson, getPersonCredits } from "@/lib/data";
 
 type PersonDetailProps = {
@@ -24,7 +25,7 @@ function formatPersonDates(birthday?: string, deathday?: string): string {
 
 function titleHref(id: string, mode: PersonDetailProps["mode"], returnTo?: string): string {
   if (mode === "public") return `/titles/${id}`;
-  const params = new URLSearchParams();
+  const params = new URLSearchParams({ fromDetail: "1" });
   if (returnTo?.startsWith("/app/")) params.set("returnTo", returnTo);
   const query = params.toString();
   return `/app/titles/${id}${query ? `?${query}` : ""}`;
@@ -41,6 +42,7 @@ export async function PersonDetail({ id, mode, character, titleId, returnTo }: P
 
   return (
     <article className="px-5 pb-10 pt-7 sm:px-8 sm:pt-9">
+      <DetailDrawerTitle>{person.name}</DetailDrawerTitle>
       {mode === "app" && titleId ? <DetailBack label="Back to title" /> : null}
       <div className="grid gap-7 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8">
         <aside className="sm:sticky sm:top-8 sm:self-start">

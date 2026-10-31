@@ -1,8 +1,9 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import type { TitleDetail } from "@/lib/data";
 import { TitleDetailClient } from "./title-detail-client";
 import { mutate } from "@/lib/mutate";
+import { saveTitleView } from "@/lib/title-view";
 vi.mock("@/lib/mutate", () => ({
   mutate: vi.fn().mockResolvedValue(undefined),
 }));
@@ -20,6 +21,12 @@ vi.mock("@/components/lists/title-list-membership", () => ({
   TitleListMembership: () => null,
 }));
 vi.mock("@/lib/celebrate", () => ({ celebrate: vi.fn() }));
+// Episodes live behind a tab.
+const render = (ui: React.ReactElement) => {
+  const result = rtlRender(ui);
+  fireEvent.click(screen.getByRole("tab", { name: /Episodes/ }));
+  return result;
+};
 const title: TitleDetail = {
   id: "show",
   title: "Running Man",
@@ -55,7 +62,7 @@ describe("large episode libraries", () => {
       screen.getAllByRole("button", { name: /Toggle S01E/ }).length,
     ).toBeLessThanOrEqual(50);
   });
-  it("asks before marking earlier episodes", () => {
+  it("marks the clicked episode at once, then offers the earlier ones", async () => {
     vi.mocked(mutate).mockClear();
     render(
       <TitleDetailClient
@@ -67,14 +74,61 @@ describe("large episode libraries", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Toggle S01E03 watched" }),
     );
-    expect(mutate).not.toHaveBeenCalled();
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Only this episode" }));
+    expect(mutate).toHaveBeenCalledTimes(1);
     expect(mutate).toHaveBeenCalledWith(
       "me/titles/show/episodes",
       "POST",
       expect.objectContaining({ episode: 3, watched: true }),
     );
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(
+      await screen.findByText("Also mark 2 earlier episodes?"),
+    ).toBeInTheDocument();
+  });
+  it("leaves ticks usable while another episode is saving", () => {
+    vi.mocked(mutate).mockClear();
+    vi.mocked(mutate).mockReturnValueOnce(new Promise(() => {}));
+    render(
+      <TitleDetailClient
+        title={title}
+        episodes={episodes.slice(0, 3)}
+        initial={initial}
+      />,
+    );
+    const first = screen.getByRole("button", { name: "Toggle S01E01 watched" });
+    fireEvent.click(first);
+    fireEvent.click(first);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Toggle S01E02 watched" }),
+    );
+    // The repeat click on E01 waits for its save; E02 goes straight through.
+    expect(mutate).toHaveBeenCalledTimes(2);
+  });
+  it("restores tab, year and ticks when coming back from a nested page", () => {
+    const dated = episodes.slice(0, 120).map((e, i) => ({
+      ...e,
+      airDate: i < 60 ? "2010-07-11" : "2011-03-06",
+    }));
+    saveTitleView("show", {
+      tab: "episodes",
+      openSection: "1-1",
+      pages: {},
+      filter: "all",
+      query: "",
+      watched: ["1-61"],
+    });
+    rtlRender(
+      <TitleDetailClient title={title} episodes={dated} initial={initial} />,
+    );
+    expect(screen.getByRole("tab", { name: /Episodes/ })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: /2011/ })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    expect(screen.getByText("1/60")).toBeInTheDocument();
   });
   it("finds a late episode without rendering the preceding pages", () => {
     render(
@@ -120,7 +174,7 @@ describe("large episode libraries", () => {
       screen.getByRole("button", { name: "Toggle S01E04 watched" }),
     ).toBeInTheDocument();
   });
-  it("only marks earlier episodes after choosing the bulk action", () => {
+  it("only marks earlier episodes when the offer is taken", async () => {
     vi.mocked(mutate).mockClear();
     render(
       <TitleDetailClient
@@ -132,30 +186,19 @@ describe("large episode libraries", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Toggle S01E03 watched" }),
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "This and all previous episodes" }),
-    );
+    const mark = await screen.findByRole("button", { name: "Mark" });
     expect(mutate).toHaveBeenCalledTimes(1);
+    fireEvent.click(mark);
     expect(mutate).toHaveBeenCalledWith(
       "me/titles/show/episodes/through",
       "POST",
       { season: 1, episode: 3 },
     );
-  });
-  it("cancels without changing history", () => {
-    vi.mocked(mutate).mockClear();
-    render(
-      <TitleDetailClient
-        title={title}
-        episodes={episodes.slice(0, 3)}
-        initial={initial}
-      />,
+    await vi.waitFor(() =>
+      expect(screen.getByRole("button", { name: "Toggle S01E01 watched" })).toHaveStyle({
+        background: "var(--accent)",
+      }),
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Toggle S01E03 watched" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-    expect(mutate).not.toHaveBeenCalled();
   });
   describe("air year sections", () => {
     // 2010: E1-60, 2011: E61-120, plus an undated E121 announced after them.
@@ -259,7 +302,7 @@ describe("large episode libraries", () => {
   });
   it("tracks a new show as not started, then watching once an episode is marked", () => {
     vi.mocked(mutate).mockClear();
-    render(
+    rtlRender(
       <TitleDetailClient
         title={title}
         episodes={episodes.slice(0, 1)}
@@ -271,9 +314,11 @@ describe("large episode libraries", () => {
       titleId: "show",
       status: "watchlist",
     });
+    fireEvent.click(screen.getByRole("tab", { name: /Episodes/ }));
     fireEvent.click(
       screen.getByRole("button", { name: "Toggle S01E01 watched" }),
     );
+    fireEvent.click(screen.getByRole("tab", { name: "Overview" }));
     expect(screen.getByRole("button", { name: "Watching" })).toHaveClass(
       "accent-fill",
     );

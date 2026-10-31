@@ -5,7 +5,7 @@ import { Cancel01Icon, FavouriteIcon, PlusSignIcon, Share01Icon, Tick02Icon } fr
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Drawer, DrawerContent, DrawerTitle, DrawerDescription, DrawerClose } from "@/components/ui/drawer";
+import { DetailDrawerTitle } from "@/components/ui/detail-drawer";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { celebrate } from "@/lib/celebrate";
@@ -13,6 +13,7 @@ import { TitleListMembership } from "@/components/lists/title-list-membership";
 import { mutate } from "@/lib/mutate";
 import { useSetTracked } from "@/lib/query/tracking";
 import { useTitleCast } from "@/lib/query/titles";
+import { clearTitleView, peekTitleView, saveTitleView, type TitleView } from "@/lib/title-view";
 import { toast } from "@/lib/toast";
 import Link from "next/link";
 import type { TitleDetail } from "@/lib/data";
@@ -21,6 +22,7 @@ import type { Episode, Title } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
 
 const EPISODES_PER_PAGE = 50;
+const OFFER_MS = 7000;
 // Past this, a single season is split into collapsible air years.
 const LONG_SEASON = 100;
 
@@ -71,25 +73,42 @@ export function TitleDetailClient({
   const [status, setStatus] = useState(initial.status || "watchlist");
   const [favorite, setFavorite] = useState(initial.favorite);
   const [personalRating, setPersonalRating] = useState(initial.rating);
-  const [watched, setWatched] = useState<Set<string>>(() => new Set(initial.watched));
+  const [savedView] = useState(() => peekTitleView(title.id));
+  useEffect(() => {
+    clearTitleView(title.id);
+  }, [title.id]);
+  const [tab, setTab] = useState<TitleView["tab"]>(savedView?.tab ?? "overview");
+  const [watched, setWatched] = useState<Set<string>>(() => new Set(savedView?.watched ?? initial.watched));
   const sections = useMemo(() => episodeSections(episodes), [episodes]);
   // Open where the viewer actually is: the first section with something left to
   // watch, or the last one if they've finished the show. Fixed at mount, so
   // finishing a section doesn't collapse it under them.
   const isNextUp = (e: Episode) => hasAired(e) && !watched.has(key(e.seasonNumber, e.episodeNumber));
   const [openSection, setOpenSection] = useState<string | null>(
-    () => (sections.find((s) => s.episodes.some(isNextUp)) ?? sections.at(-1))?.id ?? null
+    () => savedView ? savedView.openSection : (sections.find((s) => s.episodes.some(isNextUp)) ?? sections.at(-1))?.id ?? null
   );
-  const [episodeChoice, setEpisodeChoice] = useState<Episode | null>(null);
-  const [episodeSaving, setEpisodeSaving] = useState(false);
-  const [episodeFilter, setEpisodeFilter] = useState("all");
-  const [episodeQuery, setEpisodeQuery] = useState("");
+  const savingEpisodes = useRef(new Set<string>());
+  // Shown inside the panel rather than as a toast: the open drawer traps focus and
+  // hides everything outside it from assistive tech, so a toast's button would be
+  // mouse-only.
+  const [episodeOffer, setEpisodeOffer] = useState<{ message: string; label: string; onClick: () => void } | null>(null);
+  useEffect(() => {
+    if (!episodeOffer) return;
+    const timer = setTimeout(() => setEpisodeOffer(null), OFFER_MS);
+    return () => clearTimeout(timer);
+  }, [episodeOffer]);
+  const hero = useRef<HTMLDivElement>(null);
+  const [episodeFilter, setEpisodeFilter] = useState(savedView?.filter ?? "all");
+  const [episodeQuery, setEpisodeQuery] = useState(savedView?.query ?? "");
   const [episodePages, setEpisodePages] = useState<Record<string, number>>(() => {
+    if (savedView) return savedView.pages;
     const nextUp = sections.find((s) => s.id === openSection)?.episodes.findIndex(isNextUp) ?? -1;
     return openSection && nextUp > 0 ? { [openSection]: Math.floor(nextUp / EPISODES_PER_PAGE) } : {};
   });
   const returnTo = searchParams.get("returnTo");
   const detailQuery = returnTo?.startsWith("/app/") ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
+  const rememberView = () =>
+    saveTitleView(title.id, { tab, openSection, pages: episodePages, filter: episodeFilter, query: episodeQuery, watched: [...watched] });
 
   // Keep the cached library lists in sync with the drawer — debounced so rapid
   // toggles trigger a single refetch.
@@ -109,6 +128,7 @@ export function TitleDetailClient({
     if (!target) return;
     const section = sections.find((s) => s.episodes.includes(target));
     if (!section) return;
+    setTab("episodes");
     setOpenSection(section.id);
     setEpisodeFilter("all");
     setEpisodeQuery("");
@@ -146,79 +166,88 @@ export function TitleDetailClient({
   const isComplete = (set: Set<string>) =>
     !isMovie && episodes.length > 0 && episodes.every((e) => set.has(key(e.seasonNumber, e.episodeNumber)));
 
-  function toggleEpisode(ep: Episode, choice?: "single" | "through") {
-    if (episodeSaving) return;
+  // Ticks stay usable while a save is in flight, so rollbacks only touch the keys
+  // they changed. A second click on the same episode waits for its save to land.
+  function setKeysWatched(keys: string[], value: boolean) {
+    setWatched((current) => {
+      const next = new Set(current);
+      for (const k of keys) {
+        if (value) next.add(k);
+        else next.delete(k);
+      }
+      return next;
+    });
+  }
+
+  function toggleEpisode(ep: Episode) {
     const k = key(ep.seasonNumber, ep.episodeNumber);
+    if (savingEpisodes.current.has(k)) return;
     const willWatch = !watched.has(k);
     if (willWatch && !hasAired(ep)) return;
+    savingEpisodes.current.add(k);
 
-    // Offer an explicit choice when earlier aired episodes are still unwatched.
-    // Unchecking always affects only the selected episode.
-    const through = willWatch
-      ? airedEpisodes.filter((e) => isAtOrBefore(e, ep) && !watched.has(key(e.seasonNumber, e.episodeNumber)))
+    // Mark the one that was clicked, then offer the earlier ones. Unchecking only
+    // ever affects the selected episode.
+    const earlier = willWatch
+      ? airedEpisodes.filter((e) => isAtOrBefore(e, ep) && e.id !== ep.id && !watched.has(key(e.seasonNumber, e.episodeNumber)))
       : [];
-    if (through.length > 1 && choice === undefined) {
-      setEpisodeChoice(ep);
-      return;
-    }
-    setEpisodeChoice(null);
-    setEpisodeSaving(true);
-    const markThrough = choice === "through" && through.length > 1;
 
     const nextWatched = new Set(watched);
-    if (markThrough) {
-      for (const e of through) nextWatched.add(key(e.seasonNumber, e.episodeNumber));
-    } else if (willWatch) {
-      nextWatched.add(k);
-    } else {
-      nextWatched.delete(k);
-    }
+    if (willWatch) nextWatched.add(k);
+    else nextWatched.delete(k);
 
-    const prev = { watched, tracked };
-    setWatched(nextWatched);
+    const wasTracked = tracked;
+    setKeysWatched([k], willWatch);
     setTracked(true);
     if (willWatch && status === "watchlist") setStatus("watching");
     if (willWatch && !isComplete(watched) && isComplete(nextWatched)) celebrate(title.title);
     scheduleRefresh();
-
-    if (markThrough) {
-      mutate(`me/titles/${title.id}/episodes/through`, "POST", {
-        season: ep.seasonNumber,
-        episode: ep.episodeNumber
-      })
-        .then(() =>
-          toast(`Marked ${through.length} episodes`, {
-            // Avoid hundreds of individual requests for a large bulk undo.
-            ...(through.length <= 50 ? {
-              action: { label: "Undo", onClick: () => undoMarkThrough(through, prev.watched, nextWatched) }
-            } : {})
-          })
-        )
-        .catch(onSaveError(() => {
-          setWatched(prev.watched);
-          setTracked(prev.tracked);
-        })).finally(() => setEpisodeSaving(false));
-      return;
-    }
 
     mutate(`me/titles/${title.id}/episodes`, "POST", {
       season: ep.seasonNumber,
       episode: ep.episodeNumber,
       episodeId: ep.id,
       watched: willWatch
-    }).catch(onSaveError(() => {
-      setWatched(prev.watched);
-      setTracked(prev.tracked);
-    })).finally(() => setEpisodeSaving(false));
+    })
+      .then(() => {
+        if (earlier.length === 0) return;
+        const others = earlier.length === 1 ? "1 earlier episode" : `${earlier.length} earlier episodes`;
+        setEpisodeOffer({ message: `Also mark ${others}?`, label: "Mark", onClick: () => markEarlier(ep, earlier, nextWatched) });
+      })
+      .catch(onSaveError(() => {
+        setKeysWatched([k], !willWatch);
+        setTracked(wasTracked);
+      }))
+      .finally(() => savingEpisodes.current.delete(k));
   }
 
-  // Reverse a mark-through. There's no bulk-unmark endpoint, so clear the run
-  // episode by episode; `before`/`after` are the watched sets to roll to.
-  function undoMarkThrough(marked: Episode[], before: Set<string>, after: Set<string>) {
-    setWatched(before);
+  function markEarlier(ep: Episode, earlier: Episode[], base: Set<string>) {
+    const keys = earlier.map((e) => key(e.seasonNumber, e.episodeNumber));
+    setEpisodeOffer(null);
+    setKeysWatched(keys, true);
+    if (!isComplete(base) && isComplete(new Set([...base, ...keys]))) celebrate(title.title);
+    scheduleRefresh();
+    mutate(`me/titles/${title.id}/episodes/through`, "POST", {
+      season: ep.seasonNumber,
+      episode: ep.episodeNumber
+    })
+      .then(() => {
+        const message = `Marked ${earlier.length} earlier ${earlier.length === 1 ? "episode" : "episodes"}`;
+        // Avoid hundreds of individual requests for a large bulk undo.
+        if (earlier.length <= 50) setEpisodeOffer({ message, label: "Undo", onClick: () => undoMarkEarlier(earlier) });
+        else toast(message);
+      })
+      .catch(onSaveError(() => setKeysWatched(keys, false)));
+  }
+
+  // There's no bulk-unmark endpoint, so clear the run episode by episode.
+  function undoMarkEarlier(earlier: Episode[]) {
+    const keys = earlier.map((e) => key(e.seasonNumber, e.episodeNumber));
+    setEpisodeOffer(null);
+    setKeysWatched(keys, false);
     scheduleRefresh();
     Promise.all(
-      marked.map((e) =>
+      earlier.map((e) =>
         mutate(`me/titles/${title.id}/episodes`, "POST", {
           season: e.seasonNumber,
           episode: e.episodeNumber,
@@ -226,7 +255,7 @@ export function TitleDetailClient({
           watched: false
         })
       )
-    ).catch(onSaveError(() => setWatched(after)));
+    ).catch(onSaveError(() => setKeysWatched(keys, true)));
   }
 
   function toggleSeason(seasonNumber: number, seasonEpisodes: Episode[], allWatched: boolean) {
@@ -307,6 +336,21 @@ export function TitleDetailClient({
     }));
   }
 
+  // Past the hero the tabs are stuck, so a new tab should start at its top rather
+  // than wherever the last one was scrolled to.
+  function selectTab(next: TitleView["tab"]) {
+    setTab(next);
+    const scroller = hero.current?.closest("[data-detail-scroll]");
+    const heroHeight = hero.current?.offsetHeight ?? 0;
+    if (scroller && scroller.scrollTop > heroHeight) scroller.scrollTop = heroHeight;
+  }
+
+  const tabs: [TitleView["tab"], string][] = [
+    ["overview", "Overview"],
+    ...(!isMovie ? [["episodes", episodes.length ? `Episodes · ${episodes.length}` : "Episodes"] as [TitleView["tab"], string]] : []),
+    ["cast", "Cast"]
+  ];
+
   function share() {
     const url = `${window.location.origin}/titles/${title.id}`;
     if (navigator.share) navigator.share({ title: title.title, url }).catch(() => {});
@@ -315,9 +359,10 @@ export function TitleDetailClient({
 
   return (
     <div>
-      <div className="relative h-[280px] px-6 pt-6 sm:px-8">
+      <DetailDrawerTitle>{title.title}</DetailDrawerTitle>
+      <div ref={hero} className="relative h-[280px] px-6 pt-6 sm:px-8">
         {title.backdropUrl ? (
-          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 560px" className="object-cover" />
+          <Image src={title.backdropUrl} alt="" fill sizes="(max-width: 640px) 100vw, 720px" className="object-cover" />
         ) : (
           <div className="absolute inset-0" style={{ background: seededGradient(title.title) }} />
         )}
@@ -333,7 +378,23 @@ export function TitleDetailClient({
         </div>
       </div>
 
-      <div className="space-y-6 px-6 pb-10 pt-5 sm:px-8">
+      <div role="tablist" aria-label="Title sections" className="nos sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#0a0a0c] px-6 py-3 sm:px-8">
+        {tabs.map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={tab === value}
+            onClick={() => selectTab(value)}
+            className={`cask-focus whitespace-nowrap rounded-full px-4 py-2 text-sm font-extrabold transition ${tab === value ? "accent-fill" : "bg-white/5 text-white/70 hover:text-white"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-6 px-6 pb-10 pt-3 sm:px-8">
+        {tab === "overview" ? <div className="space-y-6">
         <div className="flex items-center gap-3">
           {tracked ? (
             <button
@@ -478,16 +539,18 @@ export function TitleDetailClient({
             <p className="text-[15px] leading-7 text-white/70">{title.overview}</p>
           </div>
         ) : null}
+        </div> : null}
 
-        {cast.length > 0 ? (
+        {tab !== "cast" ? null : cast.length > 0 ? (
           <div>
-            <h2 className="display mb-3 text-base text-white">Cast</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2">
+            <h2 className="sr-only">Cast</h2>
+            <div className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-5">
               {cast.map((person) => (
                 <Link
                   key={person.id}
                   href={`/app/people/${person.id}?titleId=${encodeURIComponent(title.id)}&character=${encodeURIComponent(person.character ?? "")}${detailQuery}`}
-                  className="w-[82px] shrink-0 text-center"
+                  onClick={rememberView}
+                  className="min-w-0 text-center"
                   aria-label={`View ${person.name}'s biography`}
                 >
                   <div className="relative mx-auto size-16 overflow-hidden rounded-full bg-white/[0.06] ring-1 ring-white/10">
@@ -507,7 +570,6 @@ export function TitleDetailClient({
           </div>
         ) : castPending ? (
           <div aria-label="Loading cast" aria-busy="true">
-            <h2 className="display mb-3 text-base text-white">Cast</h2>
             <div className="flex gap-4 overflow-hidden pb-2" aria-hidden="true">
               {[0, 1, 2, 3].map((item) => (
                 <div key={item} className="w-[82px] shrink-0 animate-pulse">
@@ -517,11 +579,13 @@ export function TitleDetailClient({
               ))}
             </div>
           </div>
-        ) : null}
+        ) : (
+          <p className="surface rounded-[14px] p-5 text-sm text-white/50">Cast details aren&apos;t available yet.</p>
+        )}
 
-        {!isMovie ? (
+        {tab === "episodes" && !isMovie ? (
           <div>
-            <h2 className="display mb-3 text-base text-white">Episodes</h2>
+            <h2 className="sr-only">Episodes</h2>
             <div className="mb-4 flex flex-wrap gap-2">
               <input
                 aria-label="Find episode by number or name"
@@ -599,6 +663,7 @@ export function TitleDetailClient({
                               </div>
                               <Link
                                 href={`/app/titles/${title.id}/episodes/${episode.id}?fromTitle=1${detailQuery}`}
+                                onClick={rememberView}
                                 className="min-w-0 flex-1 text-left"
                                 aria-label={`View details for ${episode.name || `episode ${episode.episodeNumber}`}`}
                               >
@@ -609,7 +674,7 @@ export function TitleDetailClient({
                               </Link>
                               <button
                                 onClick={() => toggleEpisode(episode)}
-                                disabled={episodeSaving || (future && !isWatched)}
+                                disabled={future && !isWatched}
                                 className="grid size-7 shrink-0 place-items-center rounded-full transition"
                                 style={
                                   isWatched
@@ -629,17 +694,32 @@ export function TitleDetailClient({
                 })}
               </div>
             )}
+            <div role="status" className="pointer-events-none sticky bottom-4 z-10 mt-3 flex justify-center">
+              {episodeOffer ? (
+                <div className="pointer-events-auto flex items-stretch rounded-full border border-white/10 bg-[#14110d] text-sm font-bold text-white shadow-2xl shadow-black/50">
+                  <span className="py-3 pl-5 pr-3">{episodeOffer.message}</span>
+                  <button
+                    type="button"
+                    onClick={episodeOffer.onClick}
+                    className="cask-focus rounded-r-full border-l border-white/10 px-4 font-extrabold text-[var(--accent-text)] transition hover:bg-white/5"
+                  >
+                    {episodeOffer.label}
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         ) : null}
 
-        {related.length > 0 ? (
+        {tab === "overview" && related.length > 0 ? (
           <section>
             <h2 className="display mb-3 text-base text-white">More like this</h2>
             <div className="nos flex gap-3 overflow-x-auto pb-2">
               {related.slice(0, 12).map((item) => (
                 <Link
                   key={item.id}
-                  href={`/app/titles/${item.id}${returnTo?.startsWith("/app/") ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
+                  href={`/app/titles/${item.id}?fromDetail=1${detailQuery}`}
+                  onClick={rememberView}
                   className="lift w-[112px] shrink-0"
                 >
                   <Poster src={item.posterUrl} title={item.title} className="rounded-[12px]" />
@@ -664,32 +744,6 @@ export function TitleDetailClient({
           ) : null}
         </p>
       </div>
-
-      <Drawer open={episodeChoice !== null} onOpenChange={(open) => { if (!open) setEpisodeChoice(null); }}>
-        {/* A bottom sheet on phones. On desktop it opens over a side panel, so anchor
-          it to the middle of the screen instead of straddling the panel's edge. */}
-        <DrawerContent className="mx-auto max-w-lg p-6 pb-8 text-white sm:top-0 sm:my-auto sm:h-fit sm:rounded-[22px] sm:border sm:pb-6 sm:[--initial-transform:0px] sm:after:!hidden sm:[&>[data-vaul-handle]]:!hidden">
-          <DrawerTitle className="text-lg font-bold">Mark episode {episodeChoice?.episodeNumber} watched?</DrawerTitle>
-          <DrawerDescription className="mt-2 text-sm text-white/60">
-            Choose only this episode, or also mark every earlier aired episode as watched, including earlier seasons.
-          </DrawerDescription>
-          <div className="mt-5 flex flex-col gap-2">
-            <button
-              className="rounded-full bg-[var(--accent)] px-4 py-3 font-bold text-[var(--on-accent)]"
-              onClick={() => episodeChoice && toggleEpisode(episodeChoice, "single")}
-            >
-              Only this episode
-            </button>
-            <button
-              className="rounded-full border border-white/15 px-4 py-3"
-              onClick={() => episodeChoice && toggleEpisode(episodeChoice, "through")}
-            >
-              This and all previous episodes
-            </button>
-            <DrawerClose className="px-4 py-2 text-white/60">Cancel</DrawerClose>
-          </div>
-        </DrawerContent>
-      </Drawer>
     </div>
   );
 }

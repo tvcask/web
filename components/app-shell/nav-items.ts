@@ -17,7 +17,8 @@ export const navItems: NavItem[] = [
 ];
 
 export function navContextPath(pathname: string, returnTo?: string | null) {
-  if (!pathname.startsWith("/app/titles/") || !returnTo?.startsWith("/app/")) {
+  const inDetail = pathname.startsWith("/app/titles/") || pathname.startsWith("/app/people/");
+  if (!inDetail || !returnTo?.startsWith("/app/")) {
     return pathname;
   }
 

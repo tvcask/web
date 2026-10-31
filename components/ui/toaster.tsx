@@ -32,6 +32,7 @@ export function Toaster() {
         {toasts.map((t) => (
           <motion.div
             key={t.id}
+            data-toast
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}

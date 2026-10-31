@@ -32,7 +32,7 @@ describe("PersonDetail", () => {
     expect(screen.getByText("A real biography.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Another Show/ })).toHaveAttribute(
       "href",
-      "/app/titles/t1?returnTo=%2Fapp%2Fexplore"
+      "/app/titles/t1?fromDetail=1&returnTo=%2Fapp%2Fexplore"
     );
   });
 
