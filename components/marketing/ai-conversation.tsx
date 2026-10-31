@@ -1,37 +1,30 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { Poster } from "@/components/titles/poster";
 
 // From a real run on a real library, so keep it true if it's ever edited.
 const SORTED = [
-  { title: "Dali & Cocky Prince", list: "Falling Hard" },
-  { title: "Doctor Slump", list: "Cozy Hearts" },
-  { title: "Oh My Ghost", list: "Love, Laughs & Chaos" },
-  { title: "Taxi Driver", list: "No Mercy" }
+  { title: "Dali & Cocky Prince", list: "Falling Hard", poster: "https://image.tmdb.org/t/p/w342/r6X8JNFfgiq91MDtXBm3fzzmyGB.jpg" },
+  { title: "Doctor Slump", list: "Cozy Hearts", poster: "https://image.tmdb.org/t/p/w342/iOWmbZEbhvrYyWm6O4W3oHf2S9B.jpg" },
+  { title: "Oh My Ghost", list: "Love, Laughs & Chaos", poster: "https://image.tmdb.org/t/p/w342/fOcfOZn9jFQqUdBznfMDPkgXEik.jpg" },
+  { title: "Taxi Driver", list: "No Mercy", poster: "https://image.tmdb.org/t/p/w342/lghfb8beej1aH9ML8QyeSixniom.jpg" }
 ];
 
 export function AiConversation() {
   return (
-    <figure className="rounded-[16px] border border-white/[0.08] bg-[#0a0a0c] p-4 sm:p-5">
-      <div className="ml-auto max-w-[88%] rounded-[16px] rounded-br-[4px] bg-white/[0.08] px-4 py-3 text-sm leading-6 text-white/90">
+    <figure className="min-w-0">
+      <blockquote className="rounded-[16px] bg-white/[0.06] px-4 py-3 text-[15px] leading-6 text-white/85">
         Look at my tvcask library and tell me which K-dramas belong in my custom lists.
-      </div>
-      <p className="mt-4 flex items-center gap-2 text-xs font-bold text-white/40">
-        <HugeiconsIcon icon={Tick02Icon} className="size-3.5" style={{ color: "var(--accent-text)" }} />
-        Checked your tvcask library
-      </p>
-      <p className="mt-2 text-sm leading-6 text-white/75">
-        Quite a few dramas you&apos;ve watched have no list yet. These are strong matches:
-      </p>
-      <dl className="mt-3 divide-y divide-white/[0.06] text-sm">
-        {SORTED.map((row) => (
-          <div key={row.title} className="flex items-baseline justify-between gap-4 py-2">
-            <dt className="min-w-0 truncate font-semibold text-white/85">{row.title}</dt>
-            <dd className="shrink-0 text-xs font-bold" style={{ color: "var(--accent-text)" }}>{row.list}</dd>
-          </div>
+      </blockquote>
+      <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4">
+        {SORTED.map((show) => (
+          <li key={show.title} className="min-w-0 sm:even:translate-y-5">
+            <Poster src={show.poster} title={show.title} alt={`${show.title} poster`} className="rounded-[12px] ring-1 ring-white/10" />
+            <p className="mt-2.5 text-[13px] font-bold leading-snug" style={{ color: "var(--accent-text)" }}>{show.list}</p>
+            <p className="mt-0.5 truncate text-xs text-white/45">{show.title}</p>
+          </li>
         ))}
-      </dl>
-      <figcaption className="mt-3 border-t border-white/[0.06] pt-3 text-xs text-white/35">
-        From a real ChatGPT conversation, shortened.
+      </ul>
+      <figcaption className="mt-4 text-xs text-white/35 sm:mt-9">
+        What ChatGPT suggested in a real conversation, shortened.
       </figcaption>
     </figure>
   );
