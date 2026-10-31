@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.1](https://github.com/tvcask/web/compare/tvcask-web-v0.11.0...tvcask-web-v0.11.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* organize long shows and library by progress ([e911461](https://github.com/tvcask/web/commit/e9114610799a1eec57fa6d19850a173883c73353))
+* organize long shows and library by progress ([795fd12](https://github.com/tvcask/web/commit/795fd124407406d0f142f014513c71fba4cfd224))
+
 ## [0.11.0](https://github.com/tvcask/web/compare/tvcask-web-v0.10.0...tvcask-web-v0.11.0) (2026-10-29)
 
 
