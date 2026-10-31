@@ -1,12 +1,14 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
+import { AiConversation } from "@/components/marketing/ai-conversation";
 import { MarketingHeader } from "@/components/marketing/header";
 import { HeroProductPreview, MobileAppSection, TrendingCatalogBand } from "@/components/marketing/product-showcase";
 import { AppStoreBadge } from "@/components/marketing/app-store-badge";
 import { Reveal } from "@/components/marketing/reveal";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter } from "@/components/marketing/footer";
+import { TmdbAttribution } from "@/components/tmdb-attribution";
 
 const worksToday = [
   "Track shows and movies episode by episode",
@@ -76,6 +78,27 @@ export default function HomePage() {
         </Reveal>
 
         <Reveal>
+          <section className="mx-auto max-w-4xl px-5 pb-20 pt-12 sm:pt-16">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="display text-balance text-3xl leading-[1.08] text-white md:text-[46px]">
+                Your watch history, inside ChatGPT.
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-[17px] leading-7 text-white/55">
+                Connect tvcask, then ask what to watch next, where you left off, or how to sort your shows into lists.
+              </p>
+              <Button asChild variant="secondary" className="mt-6 h-12 px-6 text-[15px]">
+                <Link href="/ai">
+                  Connect tvcask to ChatGPT <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-10 sm:mt-12">
+              <AiConversation />
+            </div>
+          </section>
+        </Reveal>
+
+        <Reveal>
           <TrendingCatalogBand />
         </Reveal>
 
@@ -91,6 +114,7 @@ export default function HomePage() {
               Import your export <HugeiconsIcon icon={ArrowRight02Icon} className="ml-1.5 size-4" />
             </span>
           </Link>
+          <TmdbAttribution className="mt-5" />
         </Reveal>
       </main>
       <MarketingFooter />

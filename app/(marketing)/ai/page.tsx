@@ -9,6 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AiConversation } from "@/components/marketing/ai-conversation";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
@@ -181,33 +182,7 @@ export default async function AiPage() {
             </div>
           </div>
 
-          <figure className="surface rounded-[18px] p-4 sm:p-5">
-            <div className="ml-auto max-w-[85%] rounded-[16px] rounded-br-[4px] bg-white/[0.08] px-4 py-3 text-sm leading-6 text-white/90">
-              What should I watch tonight that I haven&apos;t seen?
-            </div>
-            <p className="mt-4 flex items-center gap-2 text-xs font-bold text-white/40">
-              <HugeiconsIcon icon={Tick02Icon} className="size-3.5" style={{ color: "var(--accent-text)" }} />
-              Checked your tvcask library
-            </p>
-            <div className="mt-2 space-y-2 text-sm leading-6 text-white/75">
-              <p>You loved Reply 1988 and just finished Frankly Speaking, so here are three you haven&apos;t tracked:</p>
-              <ul className="list-disc space-y-1 pl-5 marker:text-white/30">
-                <li>
-                  <b className="text-white">Hospital Playlist</b>: the same warmth and friendships
-                </li>
-                <li>
-                  <b className="text-white">My Liberation Notes</b>: slower and quieter
-                </li>
-                <li>
-                  <b className="text-white">Our Beloved Summer</b>: a light rom-com
-                </li>
-              </ul>
-              <p>I skipped Goblin, since you dropped it.</p>
-            </div>
-            <figcaption className="mt-4 border-t border-white/[0.06] pt-3 text-xs text-white/35">
-              An example of the kind of answer you can get. Real answers depend on your library and your assistant.
-            </figcaption>
-          </figure>
+          <AiConversation />
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-10">
