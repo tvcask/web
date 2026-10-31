@@ -1,15 +1,8 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowDown01Icon,
-  ArrowRight02Icon,
-  CheckListIcon,
-  LockIcon,
-  Search01Icon,
-  Tick02Icon,
-} from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AiConversation } from "@/components/marketing/ai-conversation";
+import { CopyEndpoint } from "@/app/(app)/app/settings/ai/copy-endpoint";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { MarketingHeader } from "@/components/marketing/header";
 import { Button } from "@/components/ui/button";
@@ -20,7 +13,6 @@ const CHATGPT_DOCS = "https://developers.openai.com/plugins/deploy/connect-chatg
 const SETTINGS_HREF = "/app/settings/ai";
 const SIGNUP_HREF = `/signup?returnTo=${encodeURIComponent(SETTINGS_HREF)}`;
 
-const title = "Get TV recommendations from ChatGPT based on what you've actually watched";
 const description =
   "Connect your tvcask watch history to ChatGPT. Ask what to watch next and let it check your real library, so it stops suggesting shows you've already seen.";
 
@@ -43,24 +35,6 @@ export const metadata: Metadata = {
   },
 };
 
-const features = [
-  {
-    icon: Search01Icon,
-    title: "It knows what you've seen",
-    copy: "Your assistant can check suggestions against your whole library, not a list you pasted in, so finished and dropped shows can stay out.",
-  },
-  {
-    icon: CheckListIcon,
-    title: "It knows where you left off",
-    copy: "Ask about your progress and get answers from the episodes you actually marked, with names and air dates.",
-  },
-  {
-    icon: Tick02Icon,
-    title: "It can keep things up to date",
-    copy: "If you allow it, say you finished an episode or want a new list and your assistant can update tvcask from the chat.",
-  },
-];
-
 const prompts = [
   "Recommend three shows based on my tvcask favorites. Check I haven't watched or dropped them, and avoid spoilers.",
   "Use tvcask to show the series I'm watching and where I left off.",
@@ -68,29 +42,6 @@ const prompts = [
   "Add this show to my tvcask watchlist.",
   "Create a private Weekend dramas list and add the titles we picked.",
   "Mark episodes 1 to 14 of Frankly Speaking watched.",
-];
-
-const steps = [
-  {
-    n: "01",
-    title: "Start with your library",
-    copy: "Sign up and track a few shows, or import your TV Time export. The more it can see, the better the answers.",
-  },
-  {
-    n: "02",
-    title: "Add tvcask to ChatGPT",
-    copy: "In ChatGPT, add a custom MCP server, paste the address, and choose OAuth. Availability depends on your ChatGPT account and workspace.",
-  },
-  {
-    n: "03",
-    title: "Approve access",
-    copy: "Sign in to tvcask and review the permissions. You never paste a password or API key into ChatGPT.",
-  },
-  {
-    n: "04",
-    title: "Ask in a new chat",
-    copy: "Mention tvcask and ask what to watch. Your assistant reads your latest library each time it checks.",
-  },
 ];
 
 const permissions = [
@@ -153,138 +104,141 @@ const faqJsonLd = {
   })),
 };
 
+function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+  return (
+    <li className="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4 py-6 first:pt-0 last:pb-0">
+      <span
+        aria-hidden="true"
+        className="grid size-9 place-items-center rounded-full bg-white/[0.06] text-sm font-extrabold"
+        style={{ color: "var(--accent-text)" }}
+      >
+        {n}
+      </span>
+      <div className="min-w-0 pt-1.5">
+        <h2 className="font-bold text-white">{title}</h2>
+        <div className="mt-2 text-sm leading-6 text-white/60">{children}</div>
+      </div>
+    </li>
+  );
+}
+
 export default async function AiPage() {
-  // /signup sends anyone signed in to their shows and drops returnTo.
-  const connectHref = (await getToken()) ? SETTINGS_HREF : SIGNUP_HREF;
+  const signedIn = Boolean(await getToken());
   return (
     <>
       <MarketingHeader />
-      <main>
-        <section className="hero-glow relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-12 sm:pb-16 sm:pt-14 lg:grid-cols-[1fr_0.9fr]">
-          <div className="space-y-6">
-            <span className="eyebrow" style={{ color: "var(--accent-text)" }}>
-              tvcask for ChatGPT
-            </span>
-            <h1 className="display max-w-3xl text-4xl leading-[1.05] text-white sm:text-5xl">{title}</h1>
-            <p className="max-w-xl text-lg leading-8 text-white/60">
-              ChatGPT doesn&apos;t know what you&apos;ve seen, so it keeps suggesting shows you finished years ago. Connect
-              tvcask and it can check your real watch history before it answers.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild className="h-12 px-6 text-[15px]">
-                <Link href={connectHref}>
-                  Connect your library <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+      <main className="mx-auto w-full max-w-3xl px-5 pb-16 pt-10 sm:pt-14">
+        <h1 className="display text-4xl leading-[1.05] text-white sm:text-5xl">Connect tvcask to ChatGPT</h1>
+        <p className="mt-4 max-w-xl text-lg leading-8 text-white/60">
+          ChatGPT can then check your real watch history, so it can recommend what to watch next based on what you&apos;ve actually seen.
+        </p>
+
+        <ol className="surface mt-8 divide-y divide-white/[0.07] rounded-[18px] p-5 sm:p-7">
+          <Step n={1} title={signedIn ? "You're signed in" : "Create your tvcask account"}>
+            {signedIn ? (
+              <p>
+                Your full guide is also in{" "}
+                <Link href={SETTINGS_HREF} className="font-bold text-white underline decoration-white/25 underline-offset-4 transition hover:decoration-white">
+                  Settings, under AI connections
                 </Link>
-              </Button>
-              <Button asChild variant="secondary" className="h-12 px-6 text-[15px]">
-                <Link href="#setup">See how it works</Link>
-              </Button>
+                .
+              </p>
+            ) : (
+              <>
+                <p>
+                  ChatGPT reads what you track here, so add a few shows first or{" "}
+                  <Link href="/import-tv-time" className="font-bold text-white underline decoration-white/25 underline-offset-4 transition hover:decoration-white">
+                    import your TV Time export
+                  </Link>
+                  .
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-4">
+                  <Button asChild className="h-11 px-5">
+                    <Link href={SIGNUP_HREF}>Create account</Link>
+                  </Button>
+                  <Link href={`/login?returnTo=${encodeURIComponent(SETTINGS_HREF)}`} className="font-bold text-white/70 transition hover:text-white">
+                    Log in
+                  </Link>
+                </div>
+              </>
+            )}
+          </Step>
+          <Step n={2} title="Add tvcask in ChatGPT">
+            <p>
+              Open ChatGPT&apos;s Plugins page, select <strong className="text-white/85">+</strong>, then{" "}
+              <strong className="text-white/85">Add custom MCP server</strong>. Name it tvcask, paste this address, and choose{" "}
+              <strong className="text-white/85">OAuth</strong>.
+            </p>
+            <div className="mt-3">
+              <CopyEndpoint value={MCP_URL} />
             </div>
-          </div>
+            <p className="mt-1 text-xs leading-5 text-white/45">
+              Custom connections depend on your ChatGPT account and workspace. See{" "}
+              <a href={CHATGPT_DOCS} target="_blank" rel="noreferrer" className="underline transition hover:text-white">
+                ChatGPT&apos;s instructions
+              </a>
+              .
+            </p>
+          </Step>
+          <Step n={3} title="Approve access in tvcask">
+            <p>
+              ChatGPT sends you here to sign in and review permissions. You never paste a password or API key. Tick{" "}
+              <strong className="text-white/85">Also allow library management</strong> only if you want it to update your library.
+            </p>
+          </Step>
+          <Step n={4} title="Ask in a new chat">
+            <p>Type @, select tvcask, then try:</p>
+            <p className="mt-2 rounded-[12px] bg-white/[0.05] px-4 py-3 text-white/85">
+              What should I watch tonight that I haven&apos;t seen?
+            </p>
+          </Step>
+        </ol>
 
-          <AiConversation />
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <h2 className="display text-2xl text-white sm:text-3xl">Better answers, because it can check</h2>
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
-            {features.map((feature) => (
-              <div key={feature.title} className="surface rounded-[16px] p-5">
-                <HugeiconsIcon icon={feature.icon} className="size-5" style={{ color: "var(--accent-text)" }} />
-                <h3 className="mt-3 font-bold text-white">{feature.title}</h3>
-                <p className="mt-1.5 text-sm leading-6 text-white/55">{feature.copy}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <h2 className="display text-2xl text-white sm:text-3xl">Things to ask</h2>
-          <ul className="mt-6 grid gap-3 md:grid-cols-2">
+        <section className="mt-12">
+          <h2 className="display text-2xl text-white">Things to ask</h2>
+          <ul className="mt-4 space-y-2">
             {prompts.map((prompt) => (
-              <li key={prompt} className="rounded-[14px] border-l-2 border-[var(--accent)] bg-white/[0.03] px-4 py-3 text-sm leading-6 text-white/75">
-                &ldquo;{prompt}&rdquo;
+              <li key={prompt} className="rounded-[12px] bg-white/[0.03] px-4 py-3 text-sm leading-6 text-white/75">
+                {prompt}
               </li>
             ))}
           </ul>
         </section>
 
-        <section id="setup" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-10">
-          <h2 className="display text-2xl text-white sm:text-3xl">Set it up in a few minutes</h2>
-          <ol className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step) => (
-              <li key={step.n} className="surface rounded-[16px] p-5">
-                <p className="text-xs font-extrabold" style={{ color: "var(--accent-text)" }}>{step.n}</p>
-                <h3 className="mt-2 font-bold text-white">{step.title}</h3>
-                <p className="mt-1.5 text-sm leading-6 text-white/55">{step.copy}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="surface mt-3 rounded-[16px] p-5">
-            <p className="text-[13px] font-semibold text-white/60">Connection address</p>
-            <code className="mt-2 block overflow-x-auto rounded-[10px] bg-black/25 px-3.5 py-2.5 text-sm text-white/90">{MCP_URL}</code>
-            <p className="mt-3 text-xs leading-5 text-white/45">
-              Once you&apos;re signed in, the full guide is in Settings, under AI connections. See also{" "}
-              <a href={CHATGPT_DOCS} target="_blank" rel="noreferrer" className="font-bold underline transition hover:text-white">
-                ChatGPT&apos;s connection instructions
-              </a>
-              .
-            </p>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <div className="flex items-center gap-2.5">
-            <HugeiconsIcon icon={LockIcon} className="size-5" style={{ color: "var(--accent-text)" }} />
-            <h2 className="display text-2xl text-white sm:text-3xl">You decide what it can do</h2>
-          </div>
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
+        <section className="mt-12">
+          <h2 className="display text-2xl text-white">What it can do</h2>
+          <div className="mt-4 grid gap-6 sm:grid-cols-3">
             {permissions.map((group) => (
-              <div key={group.label} className="surface rounded-[16px] p-5">
-                <h3 className="font-bold text-white">{group.label}</h3>
-                <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-6 text-white/55 marker:text-white/25">
+              <div key={group.label}>
+                <h3 className="text-sm font-bold text-white">{group.label}</h3>
+                <ul className="mt-2 space-y-1.5 text-sm leading-6 text-white/55">
                   {group.items.map((item) => <li key={item}>{item}</li>)}
                 </ul>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-sm text-white/50">
+          <p className="mt-5 text-sm text-white/50">
             Disconnect any time in Settings, under AI connections, and access stops right away. Read our{" "}
             <Link href="/privacy" className="font-bold underline transition hover:text-white">privacy policy</Link>.
           </p>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <div className="surface rounded-[16px] p-6">
-            <h2 className="display text-xl text-white">Questions</h2>
-            <div className="mt-3 divide-y divide-white/[0.07]">
-              {faqs.map((faq) => (
-                <details key={faq.q} className="group py-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-white/85 transition hover:text-white [&::-webkit-details-marker]:hidden">
-                    {faq.q}
-                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 shrink-0 text-white/35 transition-transform group-open:rotate-180" />
-                  </summary>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-white/55">{faq.a}</p>
-                </details>
-              ))}
-            </div>
+        <section className="mt-12">
+          <h2 className="display text-2xl text-white">Questions</h2>
+          <div className="mt-2 divide-y divide-white/[0.07]">
+            {faqs.map((faq) => (
+              <details key={faq.q} className="group py-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-white/85 transition hover:text-white [&::-webkit-details-marker]:hidden">
+                  {faq.q}
+                  <HugeiconsIcon icon={ArrowDown01Icon} className="size-4 shrink-0 text-white/35 transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-white/55">{faq.a}</p>
+              </details>
+            ))}
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 pb-16 pt-6 text-center">
-          <h2 className="display text-2xl text-white sm:text-3xl">Ask better questions about what to watch</h2>
-          <Button asChild className="mt-5 h-12 px-6 text-[15px]">
-            <Link href={connectHref}>
-              Connect your library <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
-            </Link>
-          </Button>
-          <p className="mt-4 text-sm text-white/45">
-            Coming from TV Time?{" "}
-            <Link href="/import-tv-time" className="font-bold underline transition hover:text-white">Import your export</Link> first.
-          </p>
-        </section>
-
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c") }} />
       </main>
       <MarketingFooter />
     </>
