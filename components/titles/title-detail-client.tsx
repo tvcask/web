@@ -381,7 +381,7 @@ export function TitleDetailClient({
         </div>
       </div>
 
-      <div role="tablist" aria-label="Title sections" className="nos sticky top-14 z-10 flex gap-2 overflow-x-auto bg-[#0a0a0c] px-6 py-3 sm:px-8">
+      <div role="tablist" aria-label="Title sections" className="nos sticky top-[var(--detail-sticky-top,4rem)] z-10 flex gap-2 overflow-x-auto bg-[#0a0a0c] px-6 py-3 sm:px-8">
         {tabs.map(([value, label]) => (
           <button
             key={value}

@@ -1,5 +1,6 @@
 import { AppBottomNav } from "@/components/app-shell/app-bottom-nav";
 import { AppTopNav } from "@/components/app-shell/app-top-nav";
+import { DrawerReopener } from "@/components/ui/reopen-in-drawer";
 import { Toaster } from "@/components/ui/toaster";
 import { ImportWatcher } from "@/components/import/import-watcher";
 import type { ImportRecord } from "@/lib/data";
@@ -32,6 +33,7 @@ export function AppShell({
       <AppBottomNav />
       <ImportWatcher initial={latestImport} />
       <Toaster />
+      <DrawerReopener />
     </div>
   );
 }

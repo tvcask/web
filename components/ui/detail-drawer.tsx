@@ -171,7 +171,8 @@ export function DetailDrawer({ children }: { children: React.ReactNode }) {
           onScroll={handleScroll}
           data-detail-scroll
           className="nos min-h-0 flex-1 overflow-y-auto overscroll-contain"
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          // Sticky content sits under this drawer's header, not the app's top nav.
+          style={{ paddingBottom: "env(safe-area-inset-bottom)", "--detail-sticky-top": "3.5rem" } as React.CSSProperties}
         >
           <div ref={content}>
             <DrawerHeaderContext.Provider value={{ titleSlot }}>{children}</DrawerHeaderContext.Provider>
