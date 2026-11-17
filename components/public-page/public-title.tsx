@@ -7,9 +7,11 @@ import { MarketingFooter } from "@/components/marketing/footer";
 import { Breadcrumbs, PublicHeader } from "@/components/public-page/public-header";
 import { Poster } from "@/components/titles/poster";
 import { TmdbAttribution } from "@/components/tmdb-attribution";
+import { WatchAllLink } from "@/components/titles/watch-all-link";
 import { Button } from "@/components/ui/button";
 import { getPublicTitleCast, getPublicTitleDetail, getRelatedTitles, type TitleDetail } from "@/lib/data";
 import { publicPersonPath, publicTitlePath, titleIdFromSlug, type TitleKind } from "@/lib/public-urls";
+import { regionName } from "@/lib/regions";
 import { site } from "@/lib/site";
 
 const EPISODE_PREVIEW = 12;
@@ -124,9 +126,9 @@ export async function PublicTitleRoute({ kind, slug }: { kind: TitleKind; slug: 
               ) : null}
             </div>
 
-            {detail.watchProviders.length > 0 ? (
-              <div className="mt-6">
-                <h2 className="eyebrow">Where to watch</h2>
+            <div className="mt-6">
+              <h2 className="eyebrow break-words">Where to watch in {regionName(detail.watchRegion || "US")}</h2>
+              {detail.watchProviders.length > 0 ? (
                 <div className="mt-2.5 flex flex-wrap items-center gap-2">
                   {detail.watchProviders.map((provider) => (
                     <a
@@ -143,9 +145,14 @@ export async function PublicTitleRoute({ kind, slug }: { kind: TitleKind; slug: 
                     </a>
                   ))}
                 </div>
-                <p className="mt-2 text-[11px] text-white/30">{detail.watchProviderAttribution}</p>
+              ) : (
+                <p className="mt-2.5 text-sm text-white/55">Not streaming in {regionName(detail.watchRegion || "US")} right now.</p>
+              )}
+              <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[11px] text-white/30">{detail.watchProviderAttribution || "Powered by JustWatch"}</p>
+                <WatchAllLink href={`/titles/${detail.id}/watch`} title={detail.title} />
               </div>
-            ) : null}
+            </div>
 
             {detail.overview ? (
               <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-white/70">{detail.overview}</p>
