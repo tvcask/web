@@ -27,3 +27,33 @@ const REGION_CODES = new Set(WATCH_REGIONS.map((region) => region.code));
 export function isWatchRegion(value: string): boolean {
   return REGION_CODES.has(value.toUpperCase());
 }
+
+// Regional indicator letters render as a flag. Anything that isn't a two letter
+// code gets no flag rather than a broken glyph.
+export function regionFlag(code: string): string {
+  const upper = code.toUpperCase();
+  if (!/^[A-Z]{2}$/.test(upper)) return "";
+  return String.fromCodePoint(...[...upper].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+}
+
+let displayNames: Intl.DisplayNames | null | undefined;
+
+// The curated list wins so names match the settings picker. Other codes come
+// from Intl, and the raw code is the last resort.
+export function regionName(code: string): string {
+  const upper = code.toUpperCase();
+  const listed = WATCH_REGIONS.find((region) => region.code === upper);
+  if (listed) return listed.name;
+  if (displayNames === undefined) {
+    try {
+      displayNames = new Intl.DisplayNames(["en"], { type: "region" });
+    } catch {
+      displayNames = null;
+    }
+  }
+  try {
+    return displayNames?.of(upper) || upper;
+  } catch {
+    return upper;
+  }
+}

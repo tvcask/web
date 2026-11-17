@@ -30,6 +30,7 @@ export function DetailDrawerSpacer() {
 
 function drawerLabel(pathname: string): string {
   if (pathname.includes("/episodes/")) return "Episode details";
+  if (pathname.endsWith("/watch")) return "Where to watch";
   if (pathname.includes("/people/")) return "Actor details";
   return "Title details";
 }

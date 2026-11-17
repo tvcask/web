@@ -21,6 +21,9 @@ import type { TitleDetail } from "@/lib/data";
 import { formatAirDate, localDate } from "@/lib/dates";
 import type { Episode, Title } from "@/lib/services/types";
 import { Poster } from "@/components/titles/poster";
+import { ProviderChip } from "@/components/titles/provider-chip";
+import { WatchAllLink } from "@/components/titles/watch-all-link";
+import { regionName } from "@/lib/regions";
 
 const EPISODES_PER_PAGE = 50;
 const OFFER_MS = 7000;
@@ -153,6 +156,7 @@ export function TitleDetailClient({
   const meta = [title.year, isMovie ? "Movie" : "Series", title.genres[0]].filter(Boolean).join(" · ");
   const hasRating = typeof title.rating === "number" && title.rating > 0;
   const providers = title.watchProviders ?? [];
+  const regionCode = title.watchRegion || "US";
   const cast = titleCast.data?.status === "ready" ? titleCast.data.items : (title.cast ?? []);
   const castPending = cast.length === 0 && (titleCast.isPending || titleCast.data?.status === "pending");
 
@@ -437,52 +441,35 @@ export function TitleDetailClient({
 
         <TitleListMembership titleId={title.id} />
 
-        {hasRating || providers.length > 0 ? (
-          <div className="surface flex flex-col gap-4 rounded-[14px] p-4 sm:flex-row sm:items-center">
-            {hasRating ? (
-              <div className="shrink-0 sm:min-w-24">
-                <p className="display text-3xl text-white">{title.rating!.toFixed(1)}</p>
-                <p className="mt-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/40">
-                  Rating{title.ratingCount ? ` · ${formatVotes(title.ratingCount)}` : ""}
-                </p>
-              </div>
-            ) : null}
-            {hasRating && providers.length > 0 ? <div className="hidden h-12 w-px bg-white/10 sm:block" /> : null}
+        <div className="surface flex flex-col gap-4 rounded-[14px] p-4 sm:flex-row sm:items-center">
+          {hasRating ? (
+            <div className="shrink-0 sm:min-w-24">
+              <p className="display text-3xl text-white">{title.rating!.toFixed(1)}</p>
+              <p className="mt-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/40">
+                Rating{title.ratingCount ? ` · ${formatVotes(title.ratingCount)}` : ""}
+              </p>
+            </div>
+          ) : null}
+          {hasRating ? <div className="hidden h-12 w-px bg-white/10 sm:block" /> : null}
+          <div className="min-w-0 flex-1">
+            <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white/45">
+              Where to watch in {regionName(regionCode)}
+            </p>
             {providers.length > 0 ? (
-              <div className="min-w-0 flex-1">
-                <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white/45">Where to watch</p>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {providers.map((provider) => {
-                    const chip = (
-                      <>
-                        {provider.logoUrl ? (
-                          <Image src={provider.logoUrl} alt="" width={24} height={24} className="size-6 rounded-[5px] object-cover" />
-                        ) : null}
-                        <span className="whitespace-nowrap text-xs font-bold text-white/80">{provider.name}</span>
-                      </>
-                    );
-                    return title.watchProviderLink ? (
-                      <a
-                        key={provider.id}
-                        href={title.watchProviderLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex shrink-0 items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-1.5 pr-3 transition hover:bg-white/10"
-                      >
-                        {chip}
-                      </a>
-                    ) : (
-                      <span key={provider.id} className="flex shrink-0 items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-1.5 pr-3">
-                        {chip}
-                      </span>
-                    );
-                  })}
-                </div>
-                <p className="mt-2 text-[10px] text-white/30">{title.watchProviderAttribution || "Powered by JustWatch"}</p>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {providers.map((provider) => (
+                  <ProviderChip key={provider.id} provider={provider} href={title.watchProviderLink || undefined} className="shrink-0" />
+                ))}
               </div>
-            ) : null}
+            ) : (
+              <p className="text-sm text-white/55">Not streaming in {regionName(regionCode)} right now.</p>
+            )}
+            <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-[10px] text-white/30">{title.watchProviderAttribution || "Powered by JustWatch"}</p>
+              <WatchAllLink href={`/app/titles/${title.id}/watch?fromTitle=1`} title={title.title} />
+            </div>
           </div>
-        ) : null}
+        </div>
 
         {tracked ? (
           <div className="flex flex-wrap gap-2">

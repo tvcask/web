@@ -258,6 +258,42 @@ export async function getPublicTitleDetail(id: string, region = "US"): Promise<T
   }
 }
 
+export type CountryProviders = {
+  region: string;
+  link?: string;
+  providers: WatchProvider[];
+};
+export type TitleWatchProviders = {
+  regions: CountryProviders[];
+  attribution: string;
+};
+
+export function normalizeWatchProviders(value: unknown): TitleWatchProviders {
+  const raw = (value && typeof value === "object" ? value : {}) as Record<string, unknown>;
+  const regions = (Array.isArray(raw.regions) ? raw.regions : []).flatMap((entry): CountryProviders[] => {
+    if (!entry || typeof entry !== "object" || typeof entry.region !== "string" || !entry.region) return [];
+    const providers = Array.isArray(entry.providers) ? (entry.providers as WatchProvider[]) : [];
+    if (providers.length === 0) return [];
+    return [{ region: entry.region.toUpperCase(), link: typeof entry.link === "string" ? entry.link : undefined, providers }];
+  });
+  return { regions, attribution: typeof raw.attribution === "string" && raw.attribution ? raw.attribution : "Powered by JustWatch" };
+}
+
+// Public on purpose: the same data serves signed-in and logged-out title pages.
+// A missing title is a 404, anything else throws so the page can show an error.
+export async function getTitleWatchProviders(id: string): Promise<TitleWatchProviders | null> {
+  try {
+    const res = await api<unknown>(`/v1/titles/${encodeURIComponent(id)}/watch-providers`, {
+      auth: false,
+      revalidate: PUBLIC_REVALIDATE
+    });
+    return normalizeWatchProviders(res);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
 export async function getPublicTitleCast(id: string): Promise<TitleCast> {
   try {
     return await api<TitleCast>(`/v1/titles/${encodeURIComponent(id)}/cast`, { auth: false, revalidate: PUBLIC_REVALIDATE });
